@@ -3,14 +3,14 @@ package gitlabs
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/codeskyblue/go-sh"
-	"github.com/micro-plat/cli/logs"
-	"github.com/micro-plat/lib4go/envs"
-	"github.com/micro-plat/lib4go/sysinfo/pipes"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/codeskyblue/go-sh"
+	"github.com/micro-plat/cli/logs"
+	"github.com/micro-plat/lib4go/envs"
 )
 
 //Repository 仓库信息
@@ -22,7 +22,7 @@ type Repository struct {
 	FullPath string `json:"-"`
 }
 
-//NewRepository 创建仓库
+//NewRepository 创建分组/仓库信息
 func NewRepository(fullPath string) *Repository {
 	u, _ := url.Parse(fullPath)
 	return &Repository{FullPath: fullPath, Path: u.Path, Type: "project"}
@@ -41,11 +41,6 @@ func (r *Repository) GetLocalPath() string {
 	u, _ := url.Parse(r.FullPath)
 	gopath := envs.GetString("GOPATH")
 	return filepath.Join(gopath, "src", u.Host, r.Path)
-}
-func (r *Repository) GetShortPath(s string) string {
-	gopath := envs.GetString("GOPATH")
-	src := filepath.Join(gopath, "src")
-	return strings.Replace(r.GetLocalPath(), src, "~", -1)
 }
 
 //Exists 本地仓库是否是存在
@@ -68,25 +63,22 @@ func (r *Repository) Reset(branch ...string) error {
 			return err
 		}
 		if hasBranch(string(buff), b) {
-
-			logs.Log.Infof("%s > git reset --hard", r.GetLocalPath())
+			logs.Log.Info(r.GetLocalPath(), ">", "git", "reset", "--hard")
 			session.Command("git", "reset", "--hard")
 			if err := session.Run(); err != nil {
 				return err
 			}
-
-			logs.Log.Infof("%s > git checkout %s", r.GetLocalPath(), b)
+			logs.Log.Info(r.GetLocalPath(), ">", "git", "checkout", b)
 			session.Command("git", "checkout", b)
 			if err := session.Run(); err != nil {
 				return err
 			}
-			logs.Log.Infof("%s > git reset --hard", r.GetLocalPath())
+			logs.Log.Info(r.GetLocalPath(), ">", "git", "reset", "--hard")
 			session.Command("git", "reset", "--hard")
 			if err := session.Run(); err != nil {
 				return err
 			}
 		}
-
 	}
 	return nil
 }
@@ -102,10 +94,10 @@ func (r *Repository) Pull(branch ...string) error {
 	}
 	for _, b := range branch {
 		if hasBranch(string(buff), b) {
-			logs.Log.Infof("%s > git pull origin %s", r.GetLocalPath(), b)
+			logs.Log.Info(r.GetLocalPath(), ">", "git", "pull", "origin", b)
 			session.Command("git", "pull", "origin", b)
 		} else {
-			logs.Log.Infof("%s > git pull origin %s:%s", r.GetLocalPath(), b, b)
+			logs.Log.Info(r.GetLocalPath(), ">", "git", "pull", "origin", b+":"+b)
 			session.Command("git", "pull", "origin", b+":"+b)
 		}
 		if err := session.Run(); err != nil {
@@ -117,13 +109,17 @@ func (r *Repository) Pull(branch ...string) error {
 
 //Clone 克隆项目
 func (r *Repository) Clone() error {
-	cmd := fmt.Sprintf(`git clone %s %s`, r.FullPath, r.GetLocalPath())
-	_, err := pipes.RunString(cmd)
+	session := sh.InteractiveSession()
+	session.Command("git", "clone", r.FullPath, r.GetLocalPath())
+	logs.Log.Info("git", "clone", r.FullPath, r.GetLocalPath())
+	err := session.Run()
 	if err != nil && strings.Contains(err.Error(), "exit status 128") {
 		return fmt.Errorf("fatal: 目标路径 '%s' 已经存在，并且不是一个空目录。", r.GetLocalPath())
 	}
 	return err
 }
+
+//hasBranch 本地是否包含指定分支
 func hasBranch(s string, b string) bool {
 	items := strings.Split(s, "\n")
 	for _, i := range items {

@@ -23,6 +23,7 @@ func init() {
 		})
 }
 
+//reset 根据传入的路径(分组/仓库)重置所有本地修改
 func reset(c *cli.Context) (err error) {
 	reps, err := gitlabs.GetRepositories(c.Args().Get(0))
 	if err != nil {

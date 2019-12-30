@@ -1,6 +1,7 @@
 package pulls
 
 import (
+	"fmt"
 	"github.com/micro-plat/cli/cmds"
 	"github.com/micro-plat/cli/logs"
 	"github.com/micro-plat/gitcli/gitlabs"
@@ -23,11 +24,15 @@ func init() {
 		})
 }
 
+//pull 根据传入的路径(分组/仓库)拉取所有项目
 func pull(c *cli.Context) (err error) {
 	branch := types.GetString(c.String("branch"), "master")
 	reps, err := gitlabs.GetRepositories(c.Args().Get(0))
 	if err != nil {
 		return err
+	}
+	if len(reps) == 0 {
+		return fmt.Errorf("没有需要拉取的项目")
 	}
 	for _, rep := range reps {
 		if !rep.Exists() {

@@ -16,13 +16,13 @@ func init() {
 		})
 }
 
+//clone 根据传入的路径(分组/仓库)拉取所有仓库
 func clone(c *cli.Context) (err error) {
 	reps, err := gitlabs.GetRepositories(c.Args().Get(0))
 	if err != nil {
 		return err
 	}
 	for _, rep := range reps {
-		logs.Log.Infof("get clone %s %s", rep.FullPath, rep.GetLocalPath())
 		if err := rep.Clone(); err != nil {
 			logs.Log.Error(err)
 		}

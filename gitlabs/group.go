@@ -10,15 +10,17 @@ import (
 	"github.com/micro-plat/lib4go/net/http"
 )
 
-var NOT_FOUND = errors.New("服务未找到")
+//ErrNotFoundRepository 未找到公开的仓库
+var ErrNotFoundRepository = errors.New("未找到公开的仓库")
 
+//GetRepositories 获取所有项目仓库
 func GetRepositories(url string) ([]*Repository, error) {
 	if !strings.Contains(url, "://") {
 		url = "https://" + url
 	}
 	path := make([]*Repository, 0, 1)
 	reps, err := getChildren(url)
-	if err == NOT_FOUND {
+	if err == ErrNotFoundRepository {
 		path = append(path, NewRepository(url))
 		return path, nil
 	}
@@ -40,16 +42,18 @@ func GetRepositories(url string) ([]*Repository, error) {
 	return path, nil
 }
 
+//getChildren 获取分组或项目的子节点(分组/仓库)
 func getChildren(url string) ([]*Repository, error) {
 	u, _ := xurl.Parse(url)
 	path := fmt.Sprintf("%s://%s/groups%s/-/children.json", u.Scheme, u.Host, u.Path)
 	client, _ := http.NewHTTPClient()
+
 	result, status, err := client.Request("get", path, "", "utf-8", nil)
 	if err != nil {
 		return nil, err
 	}
 	if status != 200 || strings.Contains(result, "<!DOCTYPE html>") {
-		return nil, NOT_FOUND
+		return nil, ErrNotFoundRepository
 	}
 	groups := make([]*Repository, 0, 1)
 	if err := json.Unmarshal([]byte(result), &groups); err != nil {
