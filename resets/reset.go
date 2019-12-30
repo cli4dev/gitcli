@@ -16,7 +16,7 @@ func init() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "branch,b",
-					Usage: "分支",
+					Usage: "分支名称",
 				},
 			},
 			Action: reset,
