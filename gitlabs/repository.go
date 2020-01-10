@@ -97,8 +97,8 @@ func (r *Repository) Pull(branch ...string) error {
 			logs.Log.Info(r.GetLocalPath(), ">", "git", "pull", "origin", b)
 			session.Command("git", "pull", "origin", b)
 		} else {
-			logs.Log.Info(r.GetLocalPath(), ">", "git", "pull", "origin", b+":"+b)
-			session.Command("git", "pull", "origin", b+":"+b)
+			logs.Log.Info(r.GetLocalPath(), ">", "git", "fetch", "origin", b+":"+b)
+			session.Command("git", "fetch", "origin", b+":"+b)
 		}
 		if err := session.Run(); err != nil {
 			return err
