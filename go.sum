@@ -31,6 +31,8 @@ github.com/mattbaird/elastigo v0.0.0-20170123220020-2fe47fd29e4b/go.mod h1:5MWrJ
 github.com/mattn/go-sqlite3 v1.11.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/micro-plat/cli v0.0.0-20191226032352-33b8ea53df5d h1:h/8I6qHr7eaimIsKUs3F1M689iwZFzuhYj0qL2dCWwE=
 github.com/micro-plat/cli v0.0.0-20191226032352-33b8ea53df5d/go.mod h1:VuW7Vun3xBvR7qrifugVEUCoJPhmVGEE4nnQExyLt4c=
+github.com/micro-plat/cli v0.1.0 h1:4Evo+gap2gOhG+1MrPtjpxhEkWTR33lCt/sR/dS+ROY=
+github.com/micro-plat/cli v0.1.0/go.mod h1:VuW7Vun3xBvR7qrifugVEUCoJPhmVGEE4nnQExyLt4c=
 github.com/micro-plat/gmq v1.0.1/go.mod h1:93NeUjbgul5ywP+cm4eXERv6Zk0J8zZyrzYrY3q8GVQ=
 github.com/micro-plat/lib4go v0.2.1/go.mod h1:iXv3tW1ZU1M7HYSzcrm4aA6O9gPD+0v0HlgTH873H/A=
 github.com/micro-plat/lib4go v0.3.0 h1:7Xp34fCMu1OqnnhmbWQQTu/S3Gqkwk/gUqbUByTF5K0=
