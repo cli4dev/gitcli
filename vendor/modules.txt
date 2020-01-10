@@ -1,0 +1,36 @@
+# github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0
+github.com/codegangsta/inject
+# github.com/codeskyblue/go-sh v0.0.0-20190412065543-76bd3d59ff27
+github.com/codeskyblue/go-sh
+# github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
+github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/micro-plat/cli v0.0.0-20191226032352-33b8ea53df5d
+github.com/micro-plat/cli
+github.com/micro-plat/cli/cmds
+github.com/micro-plat/cli/logs
+# github.com/micro-plat/lib4go v0.3.0
+github.com/micro-plat/lib4go/concurrent/cmap
+github.com/micro-plat/lib4go/encoding
+github.com/micro-plat/lib4go/envs
+github.com/micro-plat/lib4go/file
+github.com/micro-plat/lib4go/jsons
+github.com/micro-plat/lib4go/logger
+github.com/micro-plat/lib4go/net
+github.com/micro-plat/lib4go/net/http
+github.com/micro-plat/lib4go/security/md5
+github.com/micro-plat/lib4go/types
+github.com/micro-plat/lib4go/utility
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
+# github.com/urfave/cli v1.22.2
+github.com/urfave/cli
+# github.com/zkfy/log v0.0.0-20180312054228-b2704c3ef896
+github.com/zkfy/log
+# golang.org/x/text v0.3.2
+golang.org/x/text/encoding
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/simplifiedchinese
+golang.org/x/text/transform
