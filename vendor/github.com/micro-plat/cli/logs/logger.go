@@ -7,7 +7,8 @@ import (
 	"github.com/zkfy/log"
 )
 
-var _ logger.ILogging = &Logger{}
+//Log 日志
+var Log logger.ILogging = New()
 
 //Logger 日志组件
 type Logger struct {
