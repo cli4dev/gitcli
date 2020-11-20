@@ -17,5 +17,14 @@ func init() {
 
 //pull 根据传入的路径(分组/仓库)拉取所有项目
 func update(c *cli.Context) (err error) {
-	return gitlabs.Update()
+	rs, err := gitlabs.GetRepositories("github.com/cli4dev/gitcli")
+	if err != nil {
+		return err
+	}
+	for _, r := range rs {
+		if err := r.Update(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

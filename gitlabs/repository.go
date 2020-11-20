@@ -83,6 +83,23 @@ func (r *Repository) Reset(branch ...string) error {
 	return nil
 }
 
+//Update 更新项目
+func (r *Repository) Update() error {
+	session := sh.InteractiveSession()
+	session.SetDir(r.GetLocalPath())
+	logs.Log.Info("gitcli", "pull", r.GetLocalPath())
+	session.Command("gitcli", "pull", r.GetLocalPath())
+	if err := session.Run(); err != nil {
+		return err
+	}
+	logs.Log.Info("go", "install")
+	session.Command("go", "install")
+	if err := session.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
 //Pull 拉取项目
 func (r *Repository) Pull(branch ...string) error {
 	session := sh.InteractiveSession()

@@ -7,8 +7,6 @@ import (
 	xurl "net/url"
 	"strings"
 
-	"github.com/codeskyblue/go-sh"
-	"github.com/micro-plat/cli/logs"
 	"github.com/micro-plat/lib4go/net/http"
 )
 
@@ -65,22 +63,4 @@ func getChildren(url string) ([]*Repository, error) {
 		g.FullPath = fmt.Sprintf("%s://%s%s", u.Scheme, u.Host, g.Path)
 	}
 	return groups, nil
-}
-
-//Update 更新项目
-func Update() error {
-	session := sh.InteractiveSession()
-
-	logs.Log.Info("gitcli", "pull", "github.com/cli4dev/gitcli")
-	session.Command("gitcli", "pull", "github.com/cli4dev/gitcli")
-	if err := session.Run(); err != nil {
-		return err
-	}
-	session.SetDir("$GOPATH/src/github.com/cli4dev/gitcli")
-	logs.Log.Info("go", "install")
-	session.Command("go", "install")
-	if err := session.Run(); err != nil {
-		return err
-	}
-	return nil
 }
