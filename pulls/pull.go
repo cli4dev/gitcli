@@ -43,12 +43,15 @@ func pull(c *cli.Context) (err error) {
 				logs.Log.Infof("get clone %s %s", rep.FullPath, rep.GetLocalPath())
 				if err := rep.Clone(); err != nil {
 					logs.Log.Error(err)
+					continue
 				}
 			}
 			if err := rep.Pull(branch); err != nil {
 				logs.Log.Error(err)
+				continue
 			}
 		}
+		break
 	}
 	return nil
 
