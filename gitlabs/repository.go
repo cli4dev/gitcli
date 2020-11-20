@@ -92,13 +92,13 @@ func (r *Repository) Update() error {
 	if err := session.Run(); err != nil {
 		return err
 	}
-	logs.Log.Info("go", "install")
+	logs.Log.Info(r.GetLocalPath(), ">", "go", "install")
 	session.Command("go", "install")
 	if err := session.Run(); err != nil {
 		return err
 	}
 
-	logs.Log.Info("gitcli", "--version")
+	logs.Log.Info(r.GetLocalPath(), ">", "gitcli", "--version")
 	session.Command("gitcli", "--version")
 	if err := session.Run(); err != nil {
 		return err
