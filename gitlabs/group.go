@@ -76,8 +76,9 @@ func Update() error {
 	if err := session.Run(); err != nil {
 		return err
 	}
-	logs.Log.Info("go", "install", "github.com/cli4dev/gitcli")
-	session.Command("go", "install", "github.com/cli4dev/gitcli")
+	session.SetDir("$GOPATH/src/github.com/cli4dev/gitcli")
+	logs.Log.Info("go", "install")
+	session.Command("go", "install")
 	if err := session.Run(); err != nil {
 		return err
 	}
