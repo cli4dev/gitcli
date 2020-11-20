@@ -33,7 +33,7 @@ func pull(c *cli.Context) (err error) {
 		branch := types.GetString(c.String("branch"), b)
 		reps, err := gitlabs.GetRepositories(c.Args().Get(0))
 		if err != nil {
-			return err
+			logs.Log.Error(err)
 		}
 		if len(reps) == 0 {
 			return fmt.Errorf("没有需要拉取的项目")
