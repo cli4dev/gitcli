@@ -9,6 +9,6 @@ import (
 )
 
 func main() {
-	var app = cli.New(cli.WithVersion("0.1.0"))
+	var app = cli.New(cli.WithVersion("0.1.1"))
 	app.Start()
 }

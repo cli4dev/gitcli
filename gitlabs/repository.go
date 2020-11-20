@@ -97,6 +97,12 @@ func (r *Repository) Update() error {
 	if err := session.Run(); err != nil {
 		return err
 	}
+
+	logs.Log.Info("gitcli", "--version")
+	session.Command("gitcli", "--version")
+	if err := session.Run(); err != nil {
+		return err
+	}
 	return nil
 }
 
