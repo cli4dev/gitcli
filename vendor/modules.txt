@@ -5,6 +5,9 @@ github.com/codegangsta/inject
 github.com/codeskyblue/go-sh
 # github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
 github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/jordan-wright/email v0.0.0-20200917010138-e1c00e156980
+## explicit
+github.com/jordan-wright/email
 # github.com/micro-plat/cli v1.0.0
 ## explicit
 github.com/micro-plat/cli

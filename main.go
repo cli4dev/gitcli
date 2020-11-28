@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/micro-plat/cli"
 	_ "github.com/micro-plat/gitcli/clones"
+	_ "github.com/micro-plat/gitcli/email"
 	_ "github.com/micro-plat/gitcli/pulls"
 	_ "github.com/micro-plat/gitcli/resets"
 	_ "github.com/micro-plat/gitcli/update"
