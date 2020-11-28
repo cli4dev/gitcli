@@ -58,10 +58,10 @@ func upload(c *cli.Context) (err error) {
 	f := strings.Split(from, ",")
 
 	if len(f) != 2 || f[0] == "" || f[1] == "" {
-		return fmt.Errorf("邮件发送人密码不能为空，格式:sender@mail.com,pwd")
+		return fmt.Errorf("邮件发送人密码不能为空%s，格式:sender@mail.com,pwd", from)
 	}
-	if len(f) != 2 || f[0] == "" || f[1] == "" || to == "" {
-		return fmt.Errorf("参数不能为空from:%s to:%s", from, to)
+	if to == "" {
+		return fmt.Errorf("收件人不能为空:%s", to)
 	}
 	mail := &email.Email{
 		To:      []string{to},
