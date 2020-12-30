@@ -19,7 +19,7 @@ func init() {
 			Subcommands: []cli.Command{
 				{
 					Name:   "sql",
-					Usage:  "创建mysql文件",
+					Usage:  "创建mysql文件,gitcli create sql  db.md  ../modules/const/sql/mysql ",
 					Action: createSQL,
 					Flags: []cli.Flag{
 						cli.BoolFlag{
@@ -30,7 +30,7 @@ func init() {
 				},
 				{
 					Name:   "gofile",
-					Usage:  "创建go文件",
+					Usage:  "创建go文件,gitcli create gofile db.md  ../modules/const/sql/mysql ",
 					Action: createGoFile,
 				},
 			},
