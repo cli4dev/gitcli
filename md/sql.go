@@ -29,7 +29,7 @@ func init() {
 					},
 				},
 				{
-					Name:   "go",
+					Name:   "gofile",
 					Usage:  "创建go文件",
 					Action: createGoFile,
 				},
