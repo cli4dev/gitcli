@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/codeskyblue/go-sh"
-	"github.com/micro-plat/cli/logs"
+	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/lib4go/envs"
 )
 

@@ -1,7 +1,7 @@
 package update
 
 import (
-	"github.com/micro-plat/cli/cmds"
+	"github.com/lib4dev/cli/cmds"
 	"github.com/micro-plat/gitcli/gitlabs"
 	"github.com/urfave/cli"
 )

@@ -1,8 +1,8 @@
 package clones
 
 import (
-	"github.com/micro-plat/cli/cmds"
-	"github.com/micro-plat/cli/logs"
+	"github.com/lib4dev/cli/cmds"
+	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/gitlabs"
 	"github.com/urfave/cli"
 )
