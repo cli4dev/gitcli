@@ -3,6 +3,7 @@ package md
 import (
 	"fmt"
 
+	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/md/db"
 	"github.com/urfave/cli"
 )
@@ -28,7 +29,7 @@ func showEntity(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-		fmt.Println(c)
+		logs.Log.Info(c)
 	}
 	return nil
 
