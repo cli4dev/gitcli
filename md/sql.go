@@ -5,37 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lib4dev/cli/cmds"
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/md/db"
 	"github.com/urfave/cli"
 )
-
-func init() {
-	cmds.Register(
-		cli.Command{
-			Name:  "create",
-			Usage: "SQL语句",
-			Subcommands: []cli.Command{
-				{
-					Name:   "sql",
-					Usage:  "创建mysql文件,gitcli create sql  db.md  ../modules/const/sql/mysql ",
-					Action: createSQL,
-					Flags: []cli.Flag{
-						cli.BoolFlag{
-							Name:  "cover,v",
-							Usage: `-文件已存在时自动覆盖`,
-						},
-					},
-				},
-				{
-					Name:   "gofile",
-					Usage:  "创建go文件,gitcli create gofile db.md  ../modules/const/sql/mysql ",
-					Action: createGoFile,
-				},
-			},
-		})
-}
 
 //createSQL 生成SQL语句
 func createSQL(c *cli.Context) (err error) {

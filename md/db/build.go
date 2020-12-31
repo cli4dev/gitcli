@@ -8,16 +8,20 @@ import (
 //GetSQL 获取sql语句
 func (tb *Table) GetSQL(outPath string) (fpath string, c string, err error) {
 	fpath = filepath.Join(outPath, fmt.Sprintf("%s.sql", tb.Name))
-	c, err = tb.translate(mysqlTmpl, tb.GetTmpt(""))
+	c, err = tb.Translate(mysqlTmpl, tb.GetTmpt(""))
 	return fpath, c, err
 }
 
 //GetGoFile 获取sql语句
 func (tb *Table) GetGoFile(outPath string) (fpath string, c string, err error) {
-
 	fpath = filepath.Join(outPath, fmt.Sprintf("%s.sql.go", tb.Name))
-	c, err = tb.translate(mysqlTmpl, tb.GetTmpt(outPath))
+	c, err = tb.Translate(mysqlTmpl, tb.GetTmpt(outPath))
 	return fpath, c, err
+}
+
+//GetEntity 获取实体
+func (tb *Table) GetEntity() (c string, err error) {
+	return tb.Translate(entityTmpl, tb.GetTmpt(""))
 }
 
 //GetDBInstallFile 获取db install文件

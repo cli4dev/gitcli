@@ -64,7 +64,7 @@ func (tb *Table) GetTmpt(outpath string) map[string]interface{} {
 	}
 }
 
-func (tb *Table) translate(c string, input interface{}) (string, error) {
+func (tb *Table) Translate(c string, input interface{}) (string, error) {
 	var tmpl = template.New("mysql").Funcs(tb.makeFunc())
 	np, err := tmpl.Parse(c)
 	if err != nil {
@@ -248,11 +248,14 @@ func (tb *Table) getAutoIncrement() string {
 }
 
 func (tb *Table) makeFunc() map[string]interface{} {
-	return map[string]interface{}{
-		"cName": tb.fGetCName,
-		"nName": tb.fGetNName,
-		"sub1":  tb.sub1,
-	}
+	// nfuncs := funcs
+	// nfuncs[]
+	//  map[string]interface{}{return
+	// 	"cName": tb.fGetCName,
+	// 	"nName": tb.fGetNName,
+	// 	"sub1":  tb.sub1,
+	// }
+	return funcs
 }
 func (tb *Table) fGetCName(n string) string {
 	items := strings.Split(n, "_")
@@ -310,8 +313,4 @@ func getBracketContent(s string, key string) []string {
 	str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
 	str = strings.TrimRight(str, ")")
 	return strings.Split(str, ",")
-}
-
-func (tb *Table) sub1(n int) int {
-	return n - 1
 }
