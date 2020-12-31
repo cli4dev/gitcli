@@ -9,3 +9,7 @@ require (
 	github.com/micro-plat/lib4go v0.3.1
 	github.com/urfave/cli v1.22.4
 )
+
+replace github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
+
+replace github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go

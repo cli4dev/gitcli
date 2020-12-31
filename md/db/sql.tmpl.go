@@ -1,10 +1,12 @@
 package db
 
-const DBMysqlTmpl = `
+const mysqlTmpl = `
 {{- if .pkg}}package {{.pkg}}
 {{end -}}
 
-{{- if .pkg}} const {{.name}}={###}{{end -}}
+{{- if .pkg}} 
+//{{.name}} {{.desc}}
+const {{.name}}={###}{{end -}}
 	{{$luks:=len .uks|sub1 -}}
 	{{$lkeys:=len .keys|sub1 -}}
 	CREATE TABLE  {{.name}} (
@@ -21,4 +23,25 @@ const DBMysqlTmpl = `
 		{{end}}{{end -}}
   ) ENGINE=InnoDB {{.auto_increment}} DEFAULT CHARSET=utf8 COMMENT='{{.desc}}';
   {{- if .pkg}}{###}{{end -}} 
+`
+
+const mysqlInstallTmpl = `
+package {{.pkg}}
+
+import (
+	"github.com/micro-plat/hydra"
+)
+		
+func init() {
+	//注册服务包
+	hydra.DBCli.OnStarting(func(c hydra.ICli) error {
+		hydra.Installer.DB.AddSQL(
+		{{range $i,$c:=.tbs -}}
+		{{$c.Name}},
+		{{end -}}
+		)
+		return nil
+	})
+
+}
 `

@@ -3,75 +3,69 @@ package db
 import (
 	"bytes"
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 	"text/template"
+
+	"github.com/micro-plat/lib4go/types"
 )
 
-type mysqlTable struct {
-}
-
-//GetSQL 获取sql语句
-func GetSQL(tbs []*Table, outPath string, pkg string) (tmpls map[string]string, err error) {
-	t := &mysqlTable{}
-	tmpls = make(map[string]string, len(tbs))
-	for _, tb := range tbs {
-		columns := make([]map[string]interface{}, 0, len(tb.Columns))
-		for i, v := range tb.Columns {
-			cType, err := t.fGetType(v.Type, tb.DBType)
-			if err != nil {
-				return nil, err
-			}
-			descExt := ""
-			if v.DescExt != "" {
-				descExt = fmt.Sprintf("(%s)", v.DescExt)
-			}
-			columns = append(columns, map[string]interface{}{
-				"name":     v.Cname,
-				"desc":     strings.Replace(v.Desc, ";", " ", -1),
-				"desc_ext": descExt,
-				"type":     cType,
-				"len":      v.Len,
-				"def":      t.getDef(v.Def, v.Con, cType),
-				"seq":      t.getSeq(v.Con),
-				"null":     t.getNull(v.IsNull),
-				"not_end":  i < len(tb.Columns)-1,
-			})
-		}
-		uks, err := t.getUniqueKeys(tb)
-		if err != nil {
-			return nil, err
-		}
-		keys, err := t.getKeys(tb)
-		if err != nil {
-			return nil, err
-		}
-		fpath := filepath.Join(outPath, fmt.Sprintf("%s.sql", tb.Name))
-		if pkg != "" {
-			fpath = filepath.Join(outPath, fmt.Sprintf("%s.sql.go", tb.Name))
-		}
-		tmpls[fpath], err = t.translate(DBMysqlTmpl, map[string]interface{}{
-			"name":           tb.Name,
-			"pkg":            pkg,
-			"desc":           tb.Desc,
-			"columns":        columns,
-			"uks":            uks,
-			"pk":             t.getPk(tb),
-			"auto_increment": t.getAutoIncrement(tb),
-			"keys":           keys,
-		})
-		if err != nil {
-			return nil, err
-		}
+func getPkg(path string) string {
+	if path == "" {
+		return ""
 	}
-	return tmpls, nil
+	names := strings.Split(strings.Trim(path, "/"), "/")
+	pkgName := names[len(names)-1]
+	return pkgName
 }
 
-func (t *mysqlTable) translate(c string, input interface{}) (string, error) {
-	var tmpl = template.New("mysql").Funcs(t.makeFunc())
+//GetTmpt 获取转换模板
+func (tb *Table) GetTmpt(outpath string) map[string]interface{} {
+	pkg := getPkg(outpath)
+	columns := make([]map[string]interface{}, 0, len(tb.Columns))
+	for i, v := range tb.Columns {
+		cType, err := tb.fGetType(v.Type, tb.DBType)
+		if err != nil {
+			return nil
+		}
+
+		descExt := types.DecodeString(v.DescExt, "", "", fmt.Sprintf("(%s)", v.DescExt))
+		columns = append(columns, map[string]interface{}{
+			"name":     v.Cname,
+			"desc":     strings.Replace(v.Desc, ";", " ", -1),
+			"desc_ext": descExt,
+			"type":     cType,
+			"len":      v.Len,
+			"def":      tb.getDef(v.Def, v.Con, cType),
+			"seq":      tb.getSeq(v.Con),
+			"null":     tb.getNull(v.IsNull),
+			"not_end":  i < len(tb.Columns)-1,
+		})
+	}
+	uks, err := tb.getUniqueKeys()
+	if err != nil {
+		return nil
+	}
+	keys, err := tb.getKeys()
+	if err != nil {
+		return nil
+	}
+	return map[string]interface{}{
+		"name":           tb.Name,
+		"pkg":            pkg,
+		"desc":           tb.Desc,
+		"columns":        columns,
+		"uks":            uks,
+		"pk":             tb.getPk(),
+		"auto_increment": tb.getAutoIncrement(),
+		"keys":           keys,
+	}
+}
+
+func (tb *Table) translate(c string, input interface{}) (string, error) {
+	var tmpl = template.New("mysql").Funcs(tb.makeFunc())
 	np, err := tmpl.Parse(c)
 	if err != nil {
 		return "", err
@@ -83,14 +77,14 @@ func (t *mysqlTable) translate(c string, input interface{}) (string, error) {
 	return strings.Replace(buff.String(), "{###}", "`", -1), nil
 }
 
-func (t *mysqlTable) getNull(n bool) string {
+func (tb *Table) getNull(n bool) string {
 	if n {
 		return ""
 	}
 	return "not null"
 }
 
-func (t *mysqlTable) getDef(n string, c string, ctype string) string {
+func (tb *Table) getDef(n string, c string, ctype string) string {
 	if strings.Contains(c, "SEQ") {
 		return ""
 	}
@@ -111,8 +105,8 @@ func (t *mysqlTable) getDef(n string, c string, ctype string) string {
 	return "default " + n
 }
 
-//名最长64
-func (t *mysqlTable) getUniqueKeys(tb *Table) ([]map[string]string, error) {
+//getUniqueKeys 名最长64
+func (tb *Table) getUniqueKeys() ([]map[string]string, error) {
 	uks := make([]map[string]string, 0)
 	orderUks := make(map[string][]string) //带顺序的uk
 	for _, v := range tb.Columns {
@@ -138,7 +132,6 @@ func (t *mysqlTable) getUniqueKeys(tb *Table) ([]map[string]string, error) {
 					orderUks[params[0]] = []string{v.Cname}
 					continue
 				}
-				//if len(params) == 2
 				order, err := strconv.Atoi(params[1])
 				if err != nil {
 					return nil, fmt.Errorf("%s的UNQ格式的顺序不正确:%+v", v.Cname, err)
@@ -168,8 +161,8 @@ func (t *mysqlTable) getUniqueKeys(tb *Table) ([]map[string]string, error) {
 	return uks, nil
 }
 
-//名最长64
-func (t *mysqlTable) getKeys(tb *Table) ([]map[string]string, error) {
+//getKeys 名最长64
+func (tb *Table) getKeys() ([]map[string]string, error) {
 	keys := []map[string]string{}
 	orderKeys := map[string][]string{} //带顺序的KEY
 	for _, v := range tb.Columns {
@@ -225,8 +218,8 @@ func (t *mysqlTable) getKeys(tb *Table) ([]map[string]string, error) {
 	}
 	return keys, nil
 }
-func (t *mysqlTable) getPk(tbs *Table) string {
-	for _, v := range tbs.Columns {
+func (tb *Table) getPk() string {
+	for _, v := range tb.Columns {
 		if strings.Contains(v.Con, "PK") {
 			return v.Cname
 		}
@@ -234,15 +227,15 @@ func (t *mysqlTable) getPk(tbs *Table) string {
 	return ""
 }
 
-func (t *mysqlTable) getSeq(v string) string {
+func (tb *Table) getSeq(v string) string {
 	if strings.Contains(v, "SEQ") {
 		return "AUTO_INCREMENT"
 	}
 	return ""
 }
 
-func (t *mysqlTable) getAutoIncrement(tbs *Table) string {
-	for _, v := range tbs.Columns {
+func (tb *Table) getAutoIncrement() string {
+	for _, v := range tb.Columns {
 		if strings.Contains(v.Con, "SEQ") {
 			strs := getBracketContent(v.Con, "SEQ")
 			if len(strs) == 1 {
@@ -254,14 +247,14 @@ func (t *mysqlTable) getAutoIncrement(tbs *Table) string {
 	return ""
 }
 
-func (t *mysqlTable) makeFunc() map[string]interface{} {
+func (tb *Table) makeFunc() map[string]interface{} {
 	return map[string]interface{}{
-		"cName": t.fGetCName,
-		"nName": t.fGetNName,
-		"sub1":  t.sub1,
+		"cName": tb.fGetCName,
+		"nName": tb.fGetNName,
+		"sub1":  tb.sub1,
 	}
 }
-func (t *mysqlTable) fGetCName(n string) string {
+func (tb *Table) fGetCName(n string) string {
 	items := strings.Split(n, "_")
 	nitems := make([]string, 0, len(items))
 	for _, i := range items {
@@ -269,7 +262,7 @@ func (t *mysqlTable) fGetCName(n string) string {
 	}
 	return strings.Join(nitems, "")
 }
-func (t *mysqlTable) fGetNName(n string) string {
+func (tb *Table) fGetNName(n string) string {
 	items := strings.Split(n, "_")
 	if len(items) <= 1 {
 		return n
@@ -277,7 +270,7 @@ func (t *mysqlTable) fGetNName(n string) string {
 	return strings.Join(items[1:], "_")
 }
 
-func (t *mysqlTable) fGetType(n string, dbType string) (string, error) {
+func (tb *Table) fGetType(n string, dbType string) (string, error) {
 	if dbType == "mysql" {
 		return n, nil
 	}
@@ -285,13 +278,13 @@ func (t *mysqlTable) fGetType(n string, dbType string) (string, error) {
 	return ConvertDataType(n)
 }
 
-func (m *mysqlTable) getFilterName(t string, f string) string {
+func (tb *Table) getFilterName(t string, f string) string {
 	text := make([]string, 0, 1)
-	tb := strings.Split(t, "_")
+	ti := strings.Split(t, "_")
 	fs := strings.Split(f, "_")
 	for _, v := range fs {
 		ex := false
-		for _, k := range tb {
+		for _, k := range ti {
 			if v == k {
 				ex = true
 				break
@@ -319,6 +312,6 @@ func getBracketContent(s string, key string) []string {
 	return strings.Split(str, ",")
 }
 
-func (t *mysqlTable) sub1(n int) int {
+func (tb *Table) sub1(n int) int {
 	return n - 1
 }

@@ -2,12 +2,14 @@ package db
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"text/template"
 )
 
 type MarkDownDB struct {
@@ -21,6 +23,19 @@ type Line struct {
 
 type TableLine struct {
 	Lines [][]*Line
+}
+
+func (tb *MarkDownDB) translate(c string, input interface{}) (string, error) {
+	var tmpl = template.New("mysql")
+	np, err := tmpl.Parse(c)
+	if err != nil {
+		return "", err
+	}
+	buff := bytes.NewBufferString("")
+	if err := np.Execute(buff, input); err != nil {
+		return "", err
+	}
+	return strings.Replace(buff.String(), "{###}", "`", -1), nil
 }
 
 //TableAddition 对表进行附加处理

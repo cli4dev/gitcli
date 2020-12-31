@@ -52,14 +52,9 @@ func createSQL(c *cli.Context) (err error) {
 		return err
 	}
 
-	//转换为SQL语句
-	files, err := db.GetSQL(tb.Tables, c.Args().Get(1), "")
-	if err != nil {
-		return err
-	}
-
 	//生成文件
-	for path, content := range files {
+	for _, tb := range tb.Tables {
+		path, content, err := tb.GetSQL(c.Args().Get(1))
 		fs, err := createPath(path, c.Bool("cover"))
 		if err != nil {
 			return err

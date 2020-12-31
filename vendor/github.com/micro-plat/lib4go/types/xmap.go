@@ -2,41 +2,132 @@ package types
 
 import (
 	"bytes"
-	"encoding/gob"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
-	"io"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
+
+	"github.com/clbanning/mxj"
 )
 
 var _ IXMap = XMap{}
 
+//IXMap 扩展map
 type IXMap interface {
+	//Keys map中的所有键名
 	Keys() []string
+
+	//Get 获取指定键对应的值，当存在时第二个值返回false
 	Get(name string) (interface{}, bool)
+
+	//GetValue 获取键对应的值，当值不存在时返回nil
 	GetValue(name string) interface{}
-	GetString(name string) string
-	GetInt(name string, def ...int) int
-	GetInt64(name string, def ...int64) int64
-	GetFloat32(name string, def ...float32) float32
-	GetFloat64(name string, def ...float64) float64
+
+	//Append 添加键值对，输入参数以:键，值，键，值...的顺序传入
+	Append(kv ...interface{})
+
+	//SetValue 设置值
 	SetValue(name string, value interface{})
-	Has(name string) bool
-	GetMustString(name string) (string, bool)
-	GetMustInt(name string) (int, bool)
-	GetMustFloat32(name string) (float32, bool)
-	GetMustFloat64(name string) (float64, bool)
+
+	//GetString 获取字符串
+	GetString(name string, def ...string) string
+
+	//GetInt 获取类型为int的值
+	GetInt(name string, def ...int) int
+
+	//GetInt32 获取类型为int32的值
+	GetInt32(name string, def ...int32) int32
+
+	//GetInt64 获取类型为int64的值
+	GetInt64(name string, def ...int64) int64
+
+	//GetFloat32 获取类型为float32的值
+	GetFloat32(name string, def ...float32) float32
+
+	//GetFloat64 获取类型为float64的值
+	GetFloat64(name string, def ...float64) float64
+
+	//GetDecimal 获取类型为Decimal的值
+	GetDecimal(name string, def ...Decimal) Decimal
+
+	//GetDatetime 获取日期类型的值
 	GetDatetime(name string, format ...string) (time.Time, error)
+
+	//GetStrings 获取值为[]string类型的值
+	GetStrings(name string, def ...string) (r []string)
+
+	//GetArray 获取值为数组类型的值
+	GetArray(name string, def ...interface{}) (r []interface{})
+
+	//GetBool 获取bool类型的值
+	GetBool(name string, def ...bool) bool
+
+	//Has 是否包含键
+	Has(name string) bool
+
+	//MustString 值是否是string并返回相关的值与判断结果
+	MustString(name string) (string, bool)
+
+	//MustInt 值是否是int并返回相关的值与判断结果
+	MustInt(name string) (int, bool)
+
+	//MustInt32 值是否是int32并返回相关的值与判断结果
+	MustInt32(name string) (int32, bool)
+
+	//MustInt64 值是否是int64并返回相关的值与判断结果
+	MustInt64(name string) (int64, bool)
+
+	//MustFloat32  值是否是int并返回相关的值与判断结果
+	MustFloat32(name string) (float32, bool)
+
+	//MustFloat64   值是否是int并返回相关的值与判断结果
+	MustFloat64(name string) (float64, bool)
+
+	//Marshal 将当前对转转换为json
+	Marshal() []byte
+
+	//GetJSON 将指定的键对应的值转换为json
+	GetJSON(name string) (r []byte, err error)
+
+	//IsXMap 指定的键是否是map[string]interface{}类型
+	IsXMap(name string) bool
+
+	//GetXMap 将指定的键的值转换为xmap
+	GetXMap(name string) (c XMap)
+
+	//IsEmpty 是否是空结构
 	IsEmpty() bool
+
+	//Len 获取元素个数
 	Len() int
+
+	//ToStruct 将当前map转换为结构值对象
 	ToStruct(o interface{}) error
+
+	//ToAnyStruct 转换为任意struct,struct中无须设置数据类型(性能较差)
+	ToAnyStruct(out interface{}) error
+
+	//ToMap 转换为map[string]interface{}
 	ToMap() map[string]interface{}
+
+	//ToSMap 转换为map[string]string
+	ToSMap() map[string]string
+
+	//Cascade 将多层map转换为单层map
 	Cascade(m IXMap)
+
+	//Translate 翻译带参数的变量支持格式有 @abc,{@abc}
+	Translate(format string) string
+
+	//Merge 合并多个xmap
 	Merge(m IXMap)
+
+	//MergeMap 合并map[string]interface{}
 	MergeMap(anr map[string]interface{})
+
+	//MergeSMap 合并map[string]string
 	MergeSMap(anr map[string]string)
 }
 
@@ -55,14 +146,46 @@ func NewXMapByMap(i map[string]interface{}) XMap {
 
 //NewXMapBySMap  根据map[string]string构建xmap
 func NewXMapBySMap(i map[string]string) XMap {
-	return GetIMap(i)
+	n := make(map[string]interface{})
+	for k, v := range i {
+		n[k] = v
+	}
+	return n
 }
 
 //NewXMapByJSON 根据json创建XMap
 func NewXMapByJSON(j string) (XMap, error) {
 	var query XMap
-	err := json.Unmarshal([]byte(j), &query)
+	d := json.NewDecoder(bytes.NewBuffer(StringToBytes(j)))
+	d.UseNumber()
+	err := d.Decode(&query)
 	return query, err
+}
+
+//NewXMapByXML 将xml转换为xmap
+func NewXMapByXML(j string) (XMap, error) {
+	data := make(map[string]interface{})
+	mxj.PrependAttrWithHyphen(false) //修改成可以转换成多层map
+	m, err := mxj.NewMapXml(StringToBytes(j))
+	if err != nil {
+		return nil, err
+	}
+	if len(m) != 1 {
+		return nil, fmt.Errorf("xml根节点错误:%s", j)
+	}
+	root := ""
+	for k := range m {
+		root = k
+	}
+	value := reflect.ValueOf(m[root])
+	if value.Kind() != reflect.Map {
+		data = m
+		return data, nil
+	}
+	for _, key := range value.MapKeys() {
+		data[GetString(key)] = value.MapIndex(key).Interface()
+	}
+	return data, nil
 }
 
 //Merge 合并
@@ -73,22 +196,45 @@ func (q XMap) Merge(m IXMap) {
 	}
 }
 
+//MergeMap 将传入的xmap合并到当前xmap
+func (q XMap) MergeMap(anr map[string]interface{}) {
+	for k, v := range anr {
+		q.SetValue(k, v)
+	}
+}
+
+//MergeSMap 将传入的xmap合并到当前xmap
+func (q XMap) MergeSMap(anr map[string]string) {
+	for k, v := range anr {
+		q.SetValue(k, v)
+	}
+}
+
 //Cascade 对map进行级联累加，即将多级map转化为一级map,key使用"."进行边拉
 func (q XMap) Cascade(m IXMap) {
 	keys := m.Keys()
 	for _, key := range keys {
 		m := GetCascade(key, m.GetValue(key))
-		q.Merge(NewXMapByMap(m))
+		q.Merge(XMap(m))
 	}
+}
+
+//Append 追加键值对
+func (q XMap) Append(kv ...interface{}) {
+	if len(kv) == 0 || len(kv)%2 != 0 {
+		return
+	}
+	for i := 0; i < len(kv)/2; i++ {
+		q.SetValue(fmt.Sprint(kv[i]), kv[i+1])
+	}
+	return
 }
 
 //Keys 从对象中获取数据值，如果不是字符串则返回空
 func (q XMap) Keys() []string {
-	keys := make([]string, len(q))
-	idx := 0
+	keys := make([]string, 0, len(q))
 	for k := range q {
-		keys[idx] = k
-		idx++
+		keys = append(keys, k)
 	}
 	return keys
 }
@@ -115,38 +261,18 @@ func (q XMap) GetValue(name string) interface{} {
 }
 
 //GetString 从对象中获取数据值，如果不是字符串则返回空
-func (q XMap) GetString(name string) string {
-	parties := strings.Split(name, ":")
-	if len(parties) == 1 {
-		return GetString(q[name])
-	}
-	tmpv := q[parties[0]]
-	for i, cnt := 1, len(parties); i < cnt; i++ {
-		if v, ok := tmpv.(map[string]interface{}); ok {
-			tmpv = v[parties[i]]
-			continue
-		}
-		if v, ok := tmpv.(XMap); ok {
-			tmpv = v[parties[i]]
-			continue
-		}
-		if v, ok := tmpv.(*XMap); ok {
-			tmpv = v.GetValue(parties[i])
-			continue
-		}
-		if v, ok := tmpv.(string); ok {
-			tmp := map[string]interface{}{}
-			json.Unmarshal([]byte(v), &tmp)
-			tmpv = tmp[parties[i]]
-			continue
-		}
-	}
-	return GetString(tmpv)
+func (q XMap) GetString(name string, def ...string) string {
+	return GetString(q[name], def...)
 }
 
 //GetInt 从对象中获取数据值，如果不是字符串则返回0
 func (q XMap) GetInt(name string, def ...int) int {
 	return GetInt(q[name], def...)
+}
+
+//GetInt32 从对象中获取数据值，如果不是字符串则返回0
+func (q XMap) GetInt32(name string, def ...int32) int32 {
+	return GetInt32(q[name], def...)
 }
 
 //GetInt64 从对象中获取数据值，如果不是字符串则返回0
@@ -164,6 +290,11 @@ func (q XMap) GetFloat64(name string, def ...float64) float64 {
 	return GetFloat64(q[name], def...)
 }
 
+//GetDecimal 获取类型为Decimal的值
+func (q XMap) GetDecimal(name string, def ...Decimal) Decimal {
+	return GetDecimal(q[name], def...)
+}
+
 //GetBool 从对象中获取bool类型值，表示为true的值有：1, t, T, true, TRUE, True, YES, yes, Yes, Y, y, ON, on, On
 func (q XMap) GetBool(name string, def ...bool) bool {
 	return GetBool(q[name], def...)
@@ -174,6 +305,76 @@ func (q XMap) GetDatetime(name string, format ...string) (time.Time, error) {
 	return GetDatetime(q[name], format...)
 }
 
+//GetStrings 获取字符串数组
+func (q XMap) GetStrings(name string, def ...string) (r []string) {
+	if v := q.GetString(name); v != "" {
+		if r = strings.Split(v, ";"); len(r) > 0 {
+			return r
+		}
+	}
+	if len(def) > 0 {
+		return def
+	}
+	return nil
+}
+
+//GetArray 获取数组对象
+func (q XMap) GetArray(name string, def ...interface{}) (r []interface{}) {
+	v, ok := q.Get(name)
+	if !ok && len(def) > 0 || v == nil {
+		return def
+	}
+
+	s := reflect.ValueOf(v)
+	r = make([]interface{}, 0, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		r = append(r, s.Index(i).Interface())
+	}
+	return r
+}
+
+//Marshal 转换为json数据
+func (q XMap) Marshal() []byte {
+	r, _ := json.Marshal(q)
+	return r
+}
+
+//GetJSON 获取JSON串
+func (q XMap) GetJSON(name string) (r []byte, err error) {
+	v, ok := q.Get(name)
+	if !ok {
+		return nil, fmt.Errorf("%s不存在或值为空", name)
+	}
+
+	buffer, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	return buffer, nil
+}
+
+//IsXMap 是否存在节点
+func (q XMap) IsXMap(name string) bool {
+	v, ok := q.Get(name)
+	if !ok {
+		return false
+	}
+	_, ok = v.(map[string]interface{})
+	return ok
+}
+
+//GetXMap 指定节点名称获取JSONConf
+func (q XMap) GetXMap(name string) (c XMap) {
+	v, ok := q.Get(name)
+	if !ok {
+		return map[string]interface{}{}
+	}
+	if data, ok := v.(map[string]interface{}); ok {
+		return data
+	}
+	return map[string]interface{}{}
+}
+
 //SetValue 获取时间字段
 func (q XMap) SetValue(name string, value interface{}) {
 	q[name] = value
@@ -181,37 +382,53 @@ func (q XMap) SetValue(name string, value interface{}) {
 
 //Has 检查对象中是否存在某个值
 func (q XMap) Has(name string) bool {
-	_, ok := q[name]
+	_, ok := q.Get(name)
 	return ok
 }
 
-//GetMustString 从对象中获取数据值，如果不是字符串则返回空
-func (q XMap) GetMustString(name string) (string, bool) {
+//MustString 从对象中获取数据值，如果不是字符串则返回空
+func (q XMap) MustString(name string) (string, bool) {
 	return MustString(q[name])
 }
 
-//GetMustInt 从对象中获取数据值，如果不是字符串则返回0
-func (q XMap) GetMustInt(name string) (int, bool) {
+//MustInt 从对象中获取数据值，如果不是字符串则返回0
+func (q XMap) MustInt(name string) (int, bool) {
 	return MustInt(q[name])
 }
 
-//GetMustFloat32 从对象中获取数据值，如果不是字符串则返回0
-func (q XMap) GetMustFloat32(name string) (float32, bool) {
+//MustInt32 从对象中获取数据值，如果不是字符串则返回0
+func (q XMap) MustInt32(name string) (int32, bool) {
+	return MustInt32(q[name])
+}
+
+//MustInt64 从对象中获取数据值，如果不是字符串则返回0
+func (q XMap) MustInt64(name string) (int64, bool) {
+	return MustInt64(q[name])
+}
+
+//MustFloat32 从对象中获取数据值，如果不是字符串则返回0
+func (q XMap) MustFloat32(name string) (float32, bool) {
 	return MustFloat32(q[name])
 }
 
-//GetMustFloat64 从对象中获取数据值，如果不是字符串则返回0
-func (q XMap) GetMustFloat64(name string) (float64, bool) {
+//MustFloat64 从对象中获取数据值，如果不是字符串则返回0
+func (q XMap) MustFloat64(name string) (float64, bool) {
 	return MustFloat64(q[name])
 }
 
 //ToStruct 将当前对象转换为指定的struct
-func (q XMap) ToStruct(o interface{}) error {
-	fval := reflect.ValueOf(o)
-	if fval.Kind() != reflect.Ptr {
-		return fmt.Errorf("输入参数必须是指针:%v", fval.Kind())
+func (q XMap) ToStruct(out interface{}) error {
+	buff, err := json.Marshal(q)
+	if err != nil {
+		return err
 	}
-	return Map2Struct(q, o)
+	err = json.Unmarshal(buff, &out)
+	return err
+}
+
+//ToAnyStruct 转换为任意struct,struct中无须设置数据类型(性能较差)
+func (q XMap) ToAnyStruct(out interface{}) error {
+	return Map2Struct(out, q, "json")
 }
 
 //ToMap 转换为map[string]interface{}
@@ -221,186 +438,37 @@ func (q XMap) ToMap() map[string]interface{} {
 
 //ToSMap 转换为map[string]string
 func (q XMap) ToSMap() map[string]string {
-	v, _ := ToStringMap(q)
-	return v
-}
-
-//MergeMap 将传入的xmap合并到当前xmap
-func (q XMap) MergeMap(anr map[string]interface{}) {
-	for k, v := range anr {
-		q.SetValue(k, v)
-	}
-}
-
-//MergeSMap 将传入的xmap合并到当前xmap
-func (q XMap) MergeSMap(anr map[string]string) {
-	for k, v := range anr {
-		q.SetValue(k, v)
-	}
-}
-
-type xmlMapEntry struct {
-	XMLName xml.Name
-	Value   string `xml:",chardata"`
-}
-
-//MarshalXML 转换为xml字符串
-func (q XMap) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	if len(q) == 0 {
-		return nil
-	}
-
-	err := e.EncodeToken(start)
-	if err != nil {
-		return err
-	}
-
+	rmap := make(map[string]string)
 	for k, v := range q {
-		if v == nil || GetString(v) == "" {
-			continue
-		}
-		e.Encode(xmlMapEntry{XMLName: xml.Name{Local: k}, Value: GetString(v)})
-	}
-
-	return e.EncodeToken(start.End())
-}
-
-//UnmarshalXML xml转换为xmap
-func (q XMap) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	if q == nil {
-		q = XMap{}
-	}
-	for {
-		var e xmlMapEntry
-
-		err := d.Decode(&e)
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return err
-		}
-
-		(q)[e.XMLName.Local] = e.Value
-	}
-	return nil
-}
-
-//XMaps 多行数据
-type XMaps []XMap
-
-//NewXMaps 构建xmap对象
-func NewXMaps(len ...int) XMaps {
-	return make(XMaps, 0, GetIntByIndex(len, 0, 1))
-}
-
-//NewXMapsByJSON 根据json创建XMaps
-func NewXMapsByJSON(j string) (XMaps, error) {
-	var query XMaps
-	err := json.Unmarshal([]byte(j), &query)
-	return query, err
-}
-
-//Append 追加xmap
-func (q *XMaps) Append(i ...XMap) XMaps {
-	*q = append(*q, i...)
-	return *q
-}
-
-//ToStructs 将当前对象转换为指定的struct
-func (q XMaps) ToStructs(o interface{}) error {
-	fval := reflect.ValueOf(o)
-	if fval.Kind() == reflect.Interface || fval.Kind() == reflect.Ptr {
-		fval = fval.Elem()
-	} else {
-		return fmt.Errorf("输入参数必须是指针:%v", fval.Kind())
-	}
-	// we only accept structs
-	if fval.Kind() != reflect.Slice {
-		return fmt.Errorf("传入参数错误，必须是切片类型:%v", fval.Kind())
-	}
-	val := reflect.Indirect(reflect.ValueOf(o))
-	typ := val.Type()
-	for _, r := range q {
-		mVal := reflect.Indirect(reflect.New(typ.Elem().Elem())).Addr()
-		if err := r.ToStruct(mVal.Interface()); err != nil {
-			return err
-		}
-		val = reflect.Append(val, mVal)
-	}
-	deepCopy(o, val.Interface())
-	return nil
-}
-func deepCopy(dst, src interface{}) error {
-	var buf bytes.Buffer
-	if err := gob.NewEncoder(&buf).Encode(src); err != nil {
-		return err
-	}
-	return gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(dst)
-}
-
-//IsEmpty 当前数据集是否为空
-func (q XMaps) IsEmpty() bool {
-	return q == nil || len(q) == 0
-}
-
-//Len 获取当前数据集的长度
-func (q XMaps) Len() int {
-	return len(q)
-}
-
-//Get 获取指定索引的数据
-func (q XMaps) Get(i int) XMap {
-	if q == nil || i >= len(q) || i < 0 {
-		return XMap{}
-	}
-	return q[i]
-}
-
-//ParseBool 将字符串转换为bool值
-func ParseBool(val interface{}) (value bool, err error) {
-	if val != nil {
-		switch v := val.(type) {
-		case bool:
-			return v, nil
-		case string:
-			switch v {
-			case "1", "t", "T", "true", "TRUE", "True", "YES", "yes", "Yes", "Y", "y", "ON", "on", "On":
-				return true, nil
-			case "0", "f", "F", "false", "FALSE", "False", "NO", "no", "No", "N", "n", "OFF", "off", "Off":
-				return false, nil
+		if s, ok := v.(string); ok {
+			rmap[k] = s
+		} else if _, ok := v.(float64); ok {
+			rmap[k] = q.GetString(k)
+		} else if s, ok := v.(interface{}); ok {
+			buff, err := json.Marshal(s)
+			if err != nil {
+				rmap[k] = fmt.Sprint(v)
+				continue
 			}
-		case int8, int32, int64:
-			strV := fmt.Sprintf("%s", v)
-			if strV == "1" {
-				return true, nil
-			} else if strV == "0" {
-				return false, nil
-			}
-		case float64:
-			if v == 1 {
-				return true, nil
-			} else if v == 0 {
-				return false, nil
-			}
+			rmap[k] = string(buff)
+		} else {
+			rmap[k] = fmt.Sprint(v)
 		}
-		return false, fmt.Errorf("parsing %q: invalid syntax", val)
 	}
-	return false, fmt.Errorf("parsing <nil>: invalid syntax")
+	return rmap
 }
 
-//Copy 拷贝一个新的map,并追加新的键值对
-func Copy(input map[string]interface{}, kv ...string) XMap {
-	nmap := make(map[string]interface{}, len(input))
-	for k, v := range input {
-		nmap[k] = v
-	}
-	if len(kv) == 0 || len(kv)%2 != 0 {
-		return nmap
-	}
-	for i := 0; i < len(kv)/2; i++ {
-		nmap[kv[i]] = kv[i+1]
-	}
-	return nmap
+//Translate 翻译带参数的变量支持格式有 @abc,{@abc}
+func (q XMap) Translate(format string) string {
+	brackets, _ := regexp.Compile(`\{@\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*\}`)
+	result := brackets.ReplaceAllStringFunc(format, func(s string) string {
+		return q.GetString(s[2 : len(s)-1])
+	})
+	word, _ := regexp.Compile(`@\w+[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*[\.]?\w*`)
+	result = word.ReplaceAllStringFunc(result, func(s string) string {
+		return q.GetString(s[1:])
+	})
+	return result
 }
 
 //GetCascade 根据key将值转换为map[string]ineterface{}
@@ -426,7 +494,6 @@ func GetCascade(key string, value interface{}) map[string]interface{} {
 		}
 		return nmap
 	default:
-
 		m, err := IToMap(value)
 		if err != nil {
 			nmap[key] = value
@@ -448,7 +515,7 @@ func IToMap(o interface{}) (map[string]interface{}, error) {
 		case map[string]interface{}:
 			return v, nil
 		case map[string]string:
-			return GetIMap(v), nil
+			return NewXMapBySMap(v), nil
 		}
 	}
 	if val.Kind() == reflect.Interface || val.Kind() == reflect.Ptr {
