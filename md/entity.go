@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	logs "github.com/lib4dev/cli/logger"
-	"github.com/micro-plat/gitcli/md/db"
+	"github.com/micro-plat/gitcli/md/tmpts"
 	"github.com/urfave/cli"
 )
 
@@ -15,7 +15,7 @@ func showEntity(c *cli.Context) (err error) {
 	}
 
 	//读取文件
-	tb, err := db.Markdown2DB(c.Args().First())
+	tb, err := tmpts.Markdown2DB(c.Args().First())
 	if err != nil {
 		return err
 	}
