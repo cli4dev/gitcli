@@ -92,6 +92,17 @@ func (t *Table) SetPkg(path string) {
 	t.PKG = names[len(names)-1]
 }
 
+//GetPKS 获取主键列表
+func (t *Table) GetPKS() []string {
+	list := make([]string, 0, 1)
+	for _, r := range t.Rows {
+		if isCons(r.Con, "pk") {
+			list = append(list, r.Name)
+		}
+	}
+	return list
+}
+
 //GetIndexs 获取所有索引信息
 func (t *Table) GetIndexs() Indexs {
 	if t.Indexs != nil {

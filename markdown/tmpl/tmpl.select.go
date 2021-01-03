@@ -1,14 +1,17 @@
 package tmpl
 
-const selectSingle = `
-//Get{{.name|rmheader|cname}} 查询单条数据{{.desc}}
-const Get{{.name|rmheader|cname}} = {###}
+const SelectSingle = `
+{{$count:=.Rows|rMaxIndex -}}
+{{$rcount:=.|pks|sMaxIndex -}}
+//Select{{.Name|rmhd|pascal}} 查询单条数据{{.Desc}}
+const Select{{.Name|rmhd|pascal}} = {###}
 select 
-{{$lkeys:=len .keys|sub1 -}}
-{{- range $i,$c:=.columns}}
-t.{{$c.name}}{{if lt $i $lkeys}},{{end}}
+{{- range $i,$c:=.Rows}}
+t.{{$c.Name}}{{if lt $i $count}},{{end}}
 {{- end}} 
-from {{.name}} t
+from {{.Name}} t
 where
-{{.pk}}=@{{.pk}}
+{{- range $i,$c:=.|pks}}
+t.{{$c}}=@{{$c}}{{if lt $i $rcount}} and {{end}}
+{{- end}} 
 {###}`

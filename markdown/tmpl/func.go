@@ -13,18 +13,25 @@ const MYSQL = "mysql"
 type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
-	return map[string]interface{}{"pascal": fPascal,
-		"rmhd":     rmhd,
-		"isnull":   isNull(tp),
-		"short":    shortWord,
-		"sql":      sqlType(tp),
-		"code":     codeType,
-		"def":      defValue(tp),
-		"seq":      getSEQ(tp),
-		"pk":       getPrimaryKey(tp),
-		"maxIndex": getMaxIndex,
-		"index":    getDBIndex(tp),
+	return map[string]interface{}{
+		"pascal":    fPascal,            //获取pascal变量名称
+		"rmhd":      rmhd,               //去除首段名称
+		"isnull":    isNull(tp),         //返回空语句
+		"short":     shortWord,          //获取特殊字段前的字符串
+		"sql":       sqlType(tp),        //转换为SQL的数据类型
+		"codeType":  codeType,           //转换为GO代码的数据类型
+		"def":       defValue(tp),       //返回SQL中的默认值
+		"seq":       getSEQ(tp),         //获取SEQ的变量值
+		"pks":       getPKS,             //获取主键列表
+		"rMaxIndex": getMaxIndex,        //获取ROW最大索引值
+		"sMaxIndex": getMaxIndexBySlice, //获取[]string的最大索引值
+		"indexs":    getDBIndex(tp),     //获取表的索引串
+		"lower":     getLower,           //获取变量的最小写字符
 	}
+}
+
+func getLower(s string) string {
+	return strings.ToLower(s)
 }
 
 //去掉首段名称
@@ -60,6 +67,10 @@ func fPascal(input string) string {
 		}
 		if len(item) == 1 {
 			nitems = append(nitems, strings.ToUpper(item[0:1]))
+			continue
+		}
+		if strings.EqualFold(item, "id") {
+			nitems = append(nitems, strings.ToUpper(item))
 			continue
 		}
 		nitems = append(nitems, strings.ToUpper(item[0:1])+item[1:])
@@ -131,7 +142,9 @@ func defValue(tp string) callHanlder {
 	}
 	return func(input string) string { return "" }
 }
-
+func getPKS(t *Table) []string {
+	return t.GetPKS()
+}
 func getSEQ(tp string) func(r *Row) string {
 	switch tp {
 	case MYSQL:
@@ -145,6 +158,9 @@ func getSEQ(tp string) func(r *Row) string {
 	return func(r *Row) string { return "" }
 }
 func getMaxIndex(r []*Row) int {
+	return len(r) - 1
+}
+func getMaxIndexBySlice(r []string) int {
 	return len(r) - 1
 }
 
@@ -164,23 +180,18 @@ func isCons(input string, tp string) bool {
 	return false
 }
 
-func getPrimaryKey(tp string) func(r *Table) string {
-	switch tp {
-	case MYSQL:
-		return func(r *Table) string {
-			keys := make([]string, 0, 1)
-			for _, r := range r.Rows {
-				if isCons(r.Con, "pk") {
-					keys = append(keys, r.Name)
-				}
-			}
-			if len(keys) == 0 {
-				return ""
-			}
-			return fmt.Sprintf(",PRIMARY KEY (%s)", strings.Join(keys, ","))
+func getPKINdex(r *Table) string {
+	keys := make([]string, 0, 1)
+	for _, r := range r.Rows {
+		if isCons(r.Con, "pk") {
+			keys = append(keys, r.Name)
 		}
 	}
-	return func(r *Table) string { return "" }
+	if len(keys) == 0 {
+		return ""
+	}
+	return fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(keys, ","))
+
 }
 func getDBIndex(tp string) func(r *Table) string {
 	switch tp {
@@ -190,6 +201,10 @@ func getDBIndex(tp string) func(r *Table) string {
 			list := make([]string, 0, len(indexs))
 			for _, index := range indexs {
 				list = append(list, fmt.Sprintf("KEY %s(%s)", index.Name, index.fields.Join(",")))
+			}
+			pks := getPKINdex(r)
+			if pks != "" {
+				list = append(list, pks)
 			}
 			if len(list) > 0 {
 				return "," + strings.Join(list, ",")

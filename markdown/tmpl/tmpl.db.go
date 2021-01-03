@@ -4,7 +4,7 @@ const SQLTmpl = `
 {{- if .PKG}}package {{.PKG}}
 {{end -}}
 
-{{$count:=.Rows|maxIndex -}}
+{{$count:=.Rows|rMaxIndex -}}
 
 {{- if .PKG}} 
 //{{.Name}} {{.Desc}}
@@ -13,5 +13,5 @@ const {{.Name}}={###}{{end -}}
 		{{range $i,$c:=.Rows -}}
 		{{$c.Name}} {{$c.Type|sql}} {{$c.Def|def}} {{$c.IsNull|isnull}} {{$c|seq}} comment '{{$c.Desc}}' {{if lt $i $count}},{{end}}
 		{{end -}}
-	{{.|index}}{{.|pk}}) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='{{.Desc}}'
+	{{.|indexs}}) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='{{.Desc}}'
   {{- if .PKG}}{###}{{end -}} `

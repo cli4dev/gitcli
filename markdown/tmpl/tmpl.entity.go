@@ -1,12 +1,12 @@
 package tmpl
 
-const entityTmpl = `
-
-//{{.name|rmheader|cname}} {{.desc}} 
-type {{.name|rmheader|cname}} struct {		
-	{{range $i,$c:=.columns -}}
-	//{{$c.name|cname}} {{$c.desc}}
-	{{$c.name|cname}} {{$c.type|cstype}} {###}json:"{{$c.name|lower}}" {{if not .isnull}} valid:"required"{{end}}{###}
+const EntityTmpl = `
+//{{.Name|rmhd|pascal}} {{.Desc}} 
+type {{.Name|rmhd|pascal}} struct {
+			
+	{{range $i,$c:=.Rows -}}
+	//{{$c.Name|pascal}} {{$c.Desc}}
+	{{$c.Name|pascal}} {{$c.Type|codeType}} {###}json:"{{$c.Name|lower}}"{###}
 
 	{{end -}}	
 }

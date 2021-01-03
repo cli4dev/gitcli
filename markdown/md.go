@@ -44,8 +44,19 @@ func init() {
 				},
 				{
 					Name:   "select",
-					Usage:  "获取查询语句",
+					Usage:  "select语句",
 					Action: showSelect,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						},
+					},
+				}, {
+					Name:   "update",
+					Usage:  "update语句",
+					Action: showUpdate,
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:     "table,t",
