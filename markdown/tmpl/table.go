@@ -103,21 +103,18 @@ func (t *Table) GetIndexs() Indexs {
 		if !ok {
 			continue
 		}
-
 		index = types.DecodeInt(index, 0, ri)
 		if v, ok := indexs[name]; ok {
 			v.fields = append(v.fields, &Field{Name: r.Name, Index: index})
 			continue
 		}
 		indexs[name] = &Index{Name: name, fields: []*Field{{Name: r.Name, Index: index}}}
-
 	}
 	for _, index := range indexs {
 		sort.Sort(index.fields)
 	}
 	t.Indexs = indexs
 	return t.Indexs
-
 }
 func (t *Table) String() string {
 	buff := strings.Builder{}
