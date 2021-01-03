@@ -1,8 +1,8 @@
 package tmpl
 
 const SelectSingle = `
-{{$count:=.Rows|rMaxIndex -}}
-{{$rcount:=.|pks|sMaxIndex -}}
+{{$count:=.Rows|maxIndex -}}
+{{$rcount:=.|pks|maxIndex -}}
 //Select{{.Name|rmhd|pascal}} 查询单条数据{{.Desc}}
 const Select{{.Name|rmhd|pascal}} = {###}
 select 

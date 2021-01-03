@@ -2,6 +2,7 @@ package tmpl
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -14,19 +15,18 @@ type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
 	return map[string]interface{}{
-		"pascal":    fPascal,            //获取pascal变量名称
-		"rmhd":      rmhd,               //去除首段名称
-		"isnull":    isNull(tp),         //返回空语句
-		"short":     shortWord,          //获取特殊字段前的字符串
-		"sql":       sqlType(tp),        //转换为SQL的数据类型
-		"codeType":  codeType,           //转换为GO代码的数据类型
-		"def":       defValue(tp),       //返回SQL中的默认值
-		"seq":       getSEQ(tp),         //获取SEQ的变量值
-		"pks":       getPKS,             //获取主键列表
-		"rMaxIndex": getMaxIndex,        //获取ROW最大索引值
-		"sMaxIndex": getMaxIndexBySlice, //获取[]string的最大索引值
-		"indexs":    getDBIndex(tp),     //获取表的索引串
-		"lower":     getLower,           //获取变量的最小写字符
+		"pascal":   fPascal,      //获取pascal变量名称
+		"rmhd":     rmhd,         //去除首段名称
+		"isnull":   isNull(tp),   //返回空语句
+		"short":    shortWord,    //获取特殊字段前的字符串
+		"sql":      sqlType(tp),  //转换为SQL的数据类型
+		"codeType": codeType,     //转换为GO代码的数据类型
+		"def":      defValue(tp), //返回SQL中的默认值
+		"seq":      getSEQ(tp),   //获取SEQ的变量值
+		"pks":      getPKS,       //获取主键列表
+		"maxIndex": getMaxIndex,
+		"indexs":   getDBIndex(tp), //获取表的索引串
+		"lower":    getLower,       //获取变量的最小写字符
 	}
 }
 
@@ -157,11 +157,15 @@ func getSEQ(tp string) func(r *Row) string {
 	}
 	return func(r *Row) string { return "" }
 }
-func getMaxIndex(r []*Row) int {
-	return len(r) - 1
-}
-func getMaxIndexBySlice(r []string) int {
-	return len(r) - 1
+func getMaxIndex(r interface{}) int {
+	v := reflect.ValueOf(r)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() == reflect.Slice || v.Kind() == reflect.Array || v.Kind() == reflect.Map {
+		return v.Len() - 1
+	}
+	return 0
 }
 
 //去掉首段名称

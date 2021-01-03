@@ -4,7 +4,7 @@ const SQLTmpl = `
 {{- if .PKG}}package {{.PKG}}
 {{end -}}
 
-{{$count:=.Rows|rMaxIndex -}}
+{{$count:=.Rows|maxIndex -}}
 
 {{- if .PKG}} 
 //{{.Name}} {{.Desc}}
