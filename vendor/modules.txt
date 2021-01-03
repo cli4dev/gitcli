@@ -9,6 +9,8 @@ github.com/codegangsta/inject
 github.com/codeskyblue/go-sh
 # github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d
 github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
 # github.com/jordan-wright/email v0.0.0-20200917010138-e1c00e156980
 ## explicit
 github.com/jordan-wright/email
@@ -19,6 +21,7 @@ github.com/lib4dev/cli/cmds
 github.com/lib4dev/cli/logger
 # github.com/micro-plat/lib4go v0.3.1 => ../../../github.com/micro-plat/lib4go
 ## explicit
+github.com/micro-plat/lib4go/assert
 github.com/micro-plat/lib4go/concurrent/cmap
 github.com/micro-plat/lib4go/encoding
 github.com/micro-plat/lib4go/envs
@@ -30,12 +33,16 @@ github.com/micro-plat/lib4go/net/http
 github.com/micro-plat/lib4go/security/md5
 github.com/micro-plat/lib4go/types
 github.com/micro-plat/lib4go/utility
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/russross/blackfriday/v2 v2.0.1
 github.com/russross/blackfriday/v2
 # github.com/shopspring/decimal v1.2.0
 github.com/shopspring/decimal
 # github.com/shurcooL/sanitized_anchor_name v1.0.0
 github.com/shurcooL/sanitized_anchor_name
+# github.com/stretchr/testify v1.6.1
+github.com/stretchr/testify/assert
 # github.com/urfave/cli v1.22.4
 ## explicit
 github.com/urfave/cli
@@ -47,5 +54,7 @@ golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
 golang.org/x/text/encoding/simplifiedchinese
 golang.org/x/text/transform
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+gopkg.in/yaml.v3
 # github.com/micro-plat/hydra => ../../../github.com/micro-plat/hydra
 # github.com/micro-plat/lib4go => ../../../github.com/micro-plat/lib4go
