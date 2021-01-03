@@ -12,6 +12,6 @@ t.{{$c.Name}} = @{{$c.Name}}{{if lt $i $count}},{{end}}
 from {{.Name}} t
 where
 {{- range $i,$c:=.|pks}}
-t.{{$c}}=@{{$c}}{{if lt $i $rcount}} and {{end}}
+t.{{$c}} = @{{$c}}{{if lt $i $rcount}} and {{end}}
 {{- end}} 
 {###}`
