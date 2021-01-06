@@ -13,8 +13,8 @@ var tp2mysql = map[string]string{
 	"^number\\(1[1-9]{1}\\)$":     "bigint",
 	"^number\\(2[0-9]{1}\\)$":     "bigint",
 	"^number\\((\\d+),(\\d+)\\)$": "decimal(*)",
-	"^varchar(\\d+)$":             "varchar(*)",
-	"^varchar2(\\d+)$":            "varchar(*)",
+	"^varchar\\((\\d+)\\)$":       "varchar(*)",
+	"^varchar2\\((\\d+)\\)$":      "varchar(*)",
 	"^string$":                    "tinytext",
 	"^text$":                      "text",
 	"^longtext$":                  "longtext",
@@ -54,6 +54,8 @@ var any2code = map[string]string{
 
 const idx = "[^idx\\((\\w+)[,]?[\\d]?\\)"
 
+var keywordMatch = []string{"^\\w*%s\\w*$", ",\\w*%s\\w*,", "^\\w*%s\\w*,", ",\\w*%s\\w*$"}
+
 var cons = map[string][]string{
 	"pk":  {"[^pk]?[,]?pk[,]?[^pk]?"},
 	"seq": {"[^seq]?[,]?seq[,]?[^seq]?"},
@@ -61,6 +63,7 @@ var cons = map[string][]string{
 	"dn":  {"[^dn]?[,]?dn[,]?[^dn]?"},
 	"sl":  {"^sl\\(\\w+\\)$", ",sl\\(\\w+\\),", "^sl\\(\\w+\\),", ",sl\\(\\w+\\)$"},
 	"idx": {"^idx\\((\\w+)[,]?([\\d]?)\\)$", ",idx\\((\\w+)[,]?([\\d]?)\\),", "^idx\\((\\w+)[,]?([\\d]?)\\),", ",idx\\((\\w+)[,]?([\\d]?)\\)$"},
+	"unq": {"^unq\\((\\w+)[,]?([\\d]?)\\)$", ",unq\\((\\w+)[,]?([\\d]?)\\),", "^unq\\((\\w+)[,]?([\\d]?)\\),", ",unq\\((\\w+)[,]?([\\d]?)\\)$"},
 }
 var mysqlIsNull = map[string]string{
 	"否":   "not null",

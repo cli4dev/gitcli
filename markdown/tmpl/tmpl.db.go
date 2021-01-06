@@ -1,6 +1,7 @@
 package tmpl
 
 const SQLTmpl = `
+
 {{- if .PKG}}package {{.PKG}}
 {{end -}}
 
@@ -9,9 +10,12 @@ const SQLTmpl = `
 {{- if .PKG}} 
 //{{.Name}} {{.Desc}}
 const {{.Name}}={###}{{end -}}
-	CREATE TABLE  {{.Name}} (
+	{{- if .Drop}}
+	DROP TABLE IF EXISTS {{.Name}};
+	{{end -}}
+	CREATE TABLE IF NOT EXISTS {{.Name}} (
 		{{range $i,$c:=.Rows -}}
-		{{$c.Name}} {{$c.Type|sql}} {{$c.Def|def}} {{$c.IsNull|isnull}} {{$c|seq}} comment '{{$c.Desc}}' {{if lt $i $count}},{{end}}
-		{{end -}}
-	{{.|indexs}}) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='{{.Desc}}'
+		{{$c.Name}} {{$c.Type|dbType}} {{$c|defValue}} {{$c|isNull}} {{$c|seqTag}} comment '{{$c.Desc}}' {{if lt $i $count}},{{end}}
+		{{end -}}{{.|indexs}}
+	) ENGINE=InnoDB {{.|seqValue}} DEFAULT CHARSET=utf8 COMMENT='{{.Desc}}'
   {{- if .PKG}}{###}{{end -}} `

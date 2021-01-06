@@ -11,14 +11,50 @@ import (
 
 //Tables markdown中的所有表信息
 type Tables struct {
-	PKG string
-	Tbs []*Table
+	PKG       string
+	RawTables []*Table
+	Tbs       []*Table
+	Drop      bool
+	SEQFile   bool
+}
+
+//FilteByKW	过滤行信息
+func (t *Tables) FilteByKW(kwc string) {
+	if kwc == "" {
+		return
+	}
+	tbs := make([]*Table, 0, 1)
+	for _, tb := range t.RawTables {
+		if strings.Contains(tb.Name, kwc) {
+			tbs = append(tbs, tb)
+		}
+	}
+	t.Tbs = tbs
+}
+
+//BuildSEQFile 生成seq_ids脚本
+func (t *Tables) BuildSEQFile(d bool) {
+	t.SEQFile = d
+}
+
+//DropTable 如果表存在是否删除
+func (t *Tables) DropTable(d bool) {
+	t.Drop = d
+	for _, tb := range t.RawTables {
+		tb.Drop = d
+	}
+	for _, tb := range t.Tbs {
+		tb.Drop = d
+	}
 }
 
 //SetPkg 添加行信息
 func (t *Tables) SetPkg(path string) {
 	names := strings.Split(strings.Trim(path, "/"), "/")
 	t.PKG = names[len(names)-1]
+	for _, tb := range t.RawTables {
+		tb.SetPkg(t.PKG)
+	}
 	for _, tb := range t.Tbs {
 		tb.SetPkg(t.PKG)
 	}
@@ -127,9 +163,10 @@ func tableLine2Table(lines TableLine) (tables *Tables, err error) {
 			}
 		}
 		if tb != nil {
-			tables.Tbs = append(tables.Tbs, tb)
+			tables.RawTables = append(tables.RawTables, tb)
 		}
 	}
+	tables.Tbs = tables.RawTables
 	return tables, nil
 }
 

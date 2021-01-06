@@ -8,7 +8,7 @@ import (
 func init() {
 	cmds.Register(
 		cli.Command{
-			Name:  "md2",
+			Name:  "md",
 			Usage: "SQL语句",
 			Subcommands: []cli.Command{
 				{
@@ -25,38 +25,38 @@ func init() {
 							Usage: `-表名称`,
 						},
 						cli.BoolFlag{
+							Name:  "drop,d",
+							Usage: `-包含表删除语句`,
+						},
+						cli.BoolFlag{
+							Name:  "seqfile,s",
+							Usage: `-包含序列文件`,
+						},
+						cli.BoolFlag{
 							Name:  "cover,v",
 							Usage: `-文件已存在时自动覆盖`,
 						},
 					},
-				},
-				{
-					Name:   "entity",
-					Usage:  "显示实体信息 ",
-					Action: showEntity,
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:     "table,t",
-							Required: true,
-							Usage:    `-表名称`,
-						},
-					},
-				},
-				{
-					Name:   "select",
-					Usage:  "select语句",
-					Action: showSelect,
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:     "table,t",
-							Required: true,
-							Usage:    `-表名称`,
-						},
-					},
 				}, {
-					Name:   "update",
-					Usage:  "update语句",
-					Action: showUpdate,
+					Name:   "sql",
+					Usage:  "sql语句,如：select,update,insert",
+					Action: showSQL,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						},
+					},
+				},
+				{
+					Name:   "code",
+					Usage:  "显示实体信息 ",
+					Action: showCode,
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:     "table,t",

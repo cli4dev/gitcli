@@ -12,11 +12,13 @@ import (
 
 //Table 表名称
 type Table struct {
-	Name   string //表名
-	Desc   string //表描述
-	PKG    string //包名称
-	Rows   []*Row
-	Indexs Indexs
+	Name    string //表名
+	Desc    string //表描述
+	PKG     string //包名称
+	Drop    bool   //创建表前是否先删除
+	Rows    []*Row
+	RawRows []*Row
+	Indexs  Indexs
 }
 
 //Row 行信息
@@ -36,6 +38,7 @@ type Indexs map[string]*Index
 type Index struct {
 	fields fields
 	Name   string
+	Type   string
 }
 type fields []*Field
 
@@ -45,6 +48,13 @@ type Field struct {
 	Index int
 }
 
+func (t fields) List() []string {
+	list := make([]string, 0, len(t))
+	for _, fi := range t {
+		list = append(list, fi.Name)
+	}
+	return list
+}
 func (t fields) Len() int {
 	return len(t)
 }
@@ -74,15 +84,17 @@ func (t fields) Swap(i, j int) {
 //NewTable 创建表
 func NewTable(name, desc string) *Table {
 	return &Table{
-		Name: name,
-		Desc: desc,
-		Rows: make([]*Row, 0, 1),
+		Name:    name,
+		Desc:    desc,
+		Rows:    make([]*Row, 0, 1),
+		RawRows: make([]*Row, 0, 1),
 	}
 }
 
 //AddRow 添加行信息
 func (t *Table) AddRow(r *Row) error {
 	t.Rows = append(t.Rows, r)
+	t.RawRows = append(t.RawRows, r)
 	return nil
 }
 
@@ -94,13 +106,27 @@ func (t *Table) SetPkg(path string) {
 
 //GetPKS 获取主键列表
 func (t *Table) GetPKS() []string {
-	list := make([]string, 0, 1)
-	for _, r := range t.Rows {
-		if isCons(r.Con, "pk") {
-			list = append(list, r.Name)
+	indexs := t.GetIndexs()
+	for _, index := range indexs {
+		if index.Type == "pk" {
+			return index.fields.List()
 		}
 	}
-	return list
+	return nil
+}
+
+//FilteRowByKW	过滤行信息
+func (t *Table) FilteRowByKW(kwc string) {
+	if kwc == "" {
+		return
+	}
+	rows := make([]*Row, 0, 1)
+	for _, row := range t.RawRows {
+		if getKWCons(row.Con, kwc) {
+			rows = append(rows, row)
+		}
+	}
+	t.Rows = rows
 }
 
 //GetIndexs 获取所有索引信息
@@ -110,16 +136,9 @@ func (t *Table) GetIndexs() Indexs {
 	}
 	indexs := map[string]*Index{}
 	for ri, r := range t.Rows {
-		ok, name, index := getIndex(r.Con)
-		if !ok {
-			continue
-		}
-		index = types.DecodeInt(index, 0, ri)
-		if v, ok := indexs[name]; ok {
-			v.fields = append(v.fields, &Field{Name: r.Name, Index: index})
-			continue
-		}
-		indexs[name] = &Index{Name: name, fields: []*Field{{Name: r.Name, Index: index}}}
+		t.getIndex(indexs, r, ri, "idx")
+		t.getIndex(indexs, r, ri, "unq")
+		t.getIndex(indexs, r, ri, "pk")
 	}
 	for _, index := range indexs {
 		sort.Sort(index.fields)
@@ -127,6 +146,22 @@ func (t *Table) GetIndexs() Indexs {
 	t.Indexs = indexs
 	return t.Indexs
 }
+func (t *Table) getIndex(indexs map[string]*Index, row *Row, ri int, tp string) {
+	ok, name, index := getIndex(row.Con, tp)
+	if !ok {
+		return
+	}
+	if name == "" {
+		name = row.Name
+	}
+	index = types.DecodeInt(index, 0, ri)
+	if v, ok := indexs[name]; ok {
+		v.fields = append(v.fields, &Field{Name: row.Name, Index: index})
+		return
+	}
+	indexs[name] = &Index{Name: name, Type: tp, fields: []*Field{{Name: row.Name, Index: index}}}
+}
+
 func (t *Table) String() string {
 	buff := strings.Builder{}
 	buff.WriteString(t.Name)

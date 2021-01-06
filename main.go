@@ -6,7 +6,6 @@ import (
 	_ "github.com/micro-plat/gitcli/email"
 	_ "github.com/micro-plat/gitcli/markdown"
 
-	_ "github.com/micro-plat/gitcli/md"
 	_ "github.com/micro-plat/gitcli/pulls"
 	_ "github.com/micro-plat/gitcli/resets"
 	_ "github.com/micro-plat/gitcli/update"

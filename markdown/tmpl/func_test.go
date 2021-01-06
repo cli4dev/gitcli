@@ -33,7 +33,7 @@ func TestPascalFunc(t *testing.T) {
 		{input: "input", result: "Input"},
 	}
 	for _, c := range cases {
-		r := fPascal(c.input)
+		r := getVarName(c.input)
 		assert.Equal(t, c.result, r, c.input)
 	}
 }
@@ -50,7 +50,7 @@ func TestShowWordFunc(t *testing.T) {
 		{input: "杨,杨", result: "杨"},
 	}
 	for _, c := range cases {
-		r := shortWord(c.input)
+		r := shortName(c.input)
 		assert.Equal(t, c.result, r, c.input)
 	}
 }
@@ -92,9 +92,10 @@ func TestMysqlTypes(t *testing.T) {
 		{input: "number(20,1)", result: "decimal(20,1)"},
 		{input: "varchar(32)", result: "varchar(32)"},
 		{input: "varchar(2)", result: "varchar(2)"},
+		{input: "varchar2(2)", result: "varchar(2)"},
 	}
 	for _, c := range cases {
-		r := sqlType(MYSQL)(c.input)
+		r := dbType(MYSQL)(c.input)
 		assert.Equal(t, c.result, r, c.input)
 	}
 }
@@ -208,22 +209,66 @@ func TestIsCon(t *testing.T) {
 func TestGetIndex(t *testing.T) {
 	cases := []struct {
 		input  string
+		tp     string
 		index  int
 		name   string
 		result bool
 	}{
-		{input: "idx(a_b_c)", result: true, index: 0, name: "a_b_c"},
-		{input: "pk,idx(a_b_c)", result: true, index: 0, name: "a_b_c"},
-		{input: "idx(a_b_c),pk", result: true, index: 0, name: "a_b_c"},
-		{input: "idx(a_b_c,1),pk", result: true, index: 1, name: "a_b_c"},
-		{input: "idx(a_b_c,2),pk", result: true, index: 2, name: "a_b_c"},
-		{input: "seq,idx(a_b_c),pk", result: true, index: 0, name: "a_b_c"},
-		{input: "LCRUQ,IDX(IDX_DICTIONARY_INFO_TYPE,3)", result: true, index: 3, name: "idx_dictionary_info_type"},
+		{input: "idx(a_b_c)", tp: "idx", result: true, index: 0, name: "a_b_c"},
+		{input: "pk,idx(a_b_c)", tp: "idx", result: true, index: 0, name: "a_b_c"},
+		{input: "idx(a_b_c),pk", tp: "idx", result: true, index: 0, name: "a_b_c"},
+		{input: "idx(a_b_c,1),pk", tp: "idx", result: true, index: 1, name: "a_b_c"},
+		{input: "idx(a_b_c,2),pk", tp: "idx", result: true, index: 2, name: "a_b_c"},
+		{input: "seq,idx(a_b_c),pk", tp: "idx", result: true, index: 0, name: "a_b_c"},
+		{input: "LCRUQ,IDX(IDX_DICTIONARY_INFO_TYPE,3)", tp: "idx", result: true, index: 3, name: "idx_dictionary_info_type"},
+
+		{input: "unq(a_b_c)", tp: "unq", result: true, index: 0, name: "a_b_c"},
+		{input: "pk,unq(a_b_c)", tp: "unq", result: true, index: 0, name: "a_b_c"},
+		{input: "unq(a_b_c),pk", tp: "unq", result: true, index: 0, name: "a_b_c"},
+		{input: "unq(a_b_c,1),pk", tp: "unq", result: true, index: 1, name: "a_b_c"},
+		{input: "unq(a_b_c,2),pk", tp: "unq", result: true, index: 2, name: "a_b_c"},
+		{input: "seq,unq(a_b_c),pk", tp: "unq", result: true, index: 0, name: "a_b_c"},
+		{input: "LCRUQ,unq(unq_DICTIONARY_INFO_TYPE,3)", tp: "unq", result: true, index: 3, name: "unq_dictionary_info_type"},
+
+		{input: "pk", tp: "pk", result: true},
+		{input: "pk,seq", tp: "pk", result: true},
+		{input: "seq,pk", tp: "pk", result: true},
+		{input: "seq,pk,di", tp: "pk", result: true},
 	}
 	for _, c := range cases {
-		ok, name, index := getIndex(c.input)
+		ok, name, index := getIndex(c.input, c.tp)
 		assert.Equal(t, c.result, ok, c.input)
 		assert.Equal(t, c.name, name, c.input)
 		assert.Equal(t, index, c.index, c.input)
+	}
+}
+func TestGetUIC(t *testing.T) {
+	cases := []struct {
+		input   string
+		keyword string
+		result  bool
+	}{
+		{input: "CRQUL,SL(ots_spp_supplier)", keyword: "Q", result: true},
+		{input: "CRQUL,SL(ots_spp_supplier)", keyword: "R", result: true},
+		{input: "CRQUL,SL(ots_spp_supplier)", keyword: "U", result: true},
+		{input: "CRQUL,SL(ots_spp_supplier)", keyword: "L", result: true},
+		{input: "CRQUL,SL(ots_spp_supplier)", keyword: "C", result: true},
+		{input: "CRQUL,SL(ots_spp_supplier)", keyword: "O", result: false},
+		{input: "CRUQL,DN", keyword: "Q", result: true},
+		{input: "CRUQL,DN", keyword: "R", result: true},
+		{input: "CRUQL,DN", keyword: "U", result: true},
+		{input: "CRUQL,DN", keyword: "L", result: true},
+		{input: "CRUQL,DN", keyword: "C", result: true},
+		{input: "CRUQL,DN", keyword: "O", result: false},
+		{input: "CRUL", keyword: "R", result: true},
+		{input: "CRUL", keyword: "U", result: true},
+		{input: "CRUL", keyword: "L", result: true},
+		{input: "CRUL", keyword: "C", result: true},
+		{input: "CRUL", keyword: "Q", result: false},
+	}
+
+	for _, c := range cases {
+		r := getKWCons(c.input, c.keyword)
+		assert.Equalf(t, c.result, r, "%s--%s", c.input, c.keyword)
 	}
 }

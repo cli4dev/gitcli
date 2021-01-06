@@ -2,7 +2,6 @@ package markdown
 
 import (
 	"fmt"
-	"strings"
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
@@ -31,12 +30,16 @@ func createScheme(c *cli.Context) (err error) {
 		tbs.SetPkg(c.Args().Get(1))
 	}
 
+	//是否删除表
+	tbs.DropTable(c.Bool("drop"))
+
+	//过滤数据表
+	tbs.FilteByKW(c.String("table"))
+
+	tbs.BuildSEQFile(c.Bool("seqfile"))
+
 	//循环创建表
 	for _, tb := range tbs.Tbs {
-		if !strings.Contains(tb.Name, c.String("table")) {
-			continue
-		}
-
 		//创建文件
 		path := tmpl.GetSchemePath(c.Args().Get(1), tb.Name, c.Bool(gofile))
 
@@ -54,6 +57,22 @@ func createScheme(c *cli.Context) (err error) {
 			return err
 		}
 	}
+	if tbs.SEQFile {
+		content, err := tmpl.Translate(tmpl.CreateSEQTable, dbtp, tbs)
+		if err != nil {
+			return err
+		}
+		path := tmpl.GetSEQFilePath(c.Args().Get(1))
+		fs, err := tmpl.Create(path, c.Bool("cover"))
+		if err != nil {
+			return err
+		}
+		logs.Log.Info("生成文件:", path)
+		fs.WriteString(content)
+		fs.Close()
+
+	}
+
 	//生成安装文件
 	if c.Bool(gofile) {
 		content, err := tmpl.Translate(tmpl.InstallTmpl, dbtp, tbs)
@@ -65,6 +84,7 @@ func createScheme(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+		logs.Log.Info("生成文件:", path)
 		fs.WriteString(content)
 		fs.Close()
 	}

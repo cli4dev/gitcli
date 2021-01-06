@@ -21,6 +21,11 @@ func GetInstallPath(outpath string) string {
 	return filepath.Join(outpath, "install.go")
 }
 
+//GetSEQFilePath 获取DB安装文件
+func GetSEQFilePath(outpath string) string {
+	return filepath.Join(outpath, "seq_ids.sql.go")
+}
+
 //Create 创建文件，文件夹 存在时写入则覆盖
 func Create(path string, append bool) (file *os.File, err error) {
 	dir := filepath.Dir(path)
