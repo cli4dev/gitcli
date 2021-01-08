@@ -71,7 +71,7 @@ func getVarName(input string) string {
 			nitems = append(nitems, strings.ToUpper(item[0:1]))
 			continue
 		}
-		if strings.EqualFold(item, "id") {
+		if strings.EqualFold(item, "id") || strings.EqualFold(item, "url") {
 			nitems = append(nitems, strings.ToUpper(item))
 			continue
 		}
