@@ -3,7 +3,7 @@ package tmpl
 const UpdateSingle = `
 {{$count:=.Rows|maxIndex -}}
 {{$rcount:=.|pks|maxIndex -}}
-//Update{{.Name|rmhd|varName}} 查询单条数据{{.Desc}}
+//Update{{.Name|rmhd|varName}} 更新{{.Desc}}
 const Update{{.Name|rmhd|varName}} = {###}
 Update {{.Name}} t
 {{- range $i,$c:=.Rows}}

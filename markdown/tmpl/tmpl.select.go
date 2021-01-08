@@ -3,7 +3,7 @@ package tmpl
 const SelectSingle = `
 {{$count:=.Rows|maxIndex -}}
 {{$rcount:=.|pks|maxIndex -}}
-//Select{{.Name|rmhd|varName}} 查询单条数据{{.Desc}}
+//Select{{.Name|rmhd|varName}} 查询{{.Desc}}
 const Select{{.Name|rmhd|varName}} = {###}
 select 
 {{- range $i,$c:=.Rows}}
