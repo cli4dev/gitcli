@@ -28,7 +28,10 @@ func getfuncs(tp string) map[string]interface{} {
 		"pks":       getPKS,          //获取主键列表
 		"indexs":    getDBIndex(tp),  //获取表的索引串
 		"maxIndex":  getMaxIndex,     //最大索引值
-		"lower":     getLower,        //获取变量的最小写字符
+		"SL":        getKW("sl"),
+		"join":      getJoin,
+		"var":       getVar,
+		"lower":     getLower, //获取变量的最小写字符
 	}
 }
 
@@ -249,6 +252,12 @@ func getIndex(input string, tp string) (bool, string, int) {
 	return false, "", 0
 }
 
+func getKW(tp string) func(input string) bool {
+	return func(input string) bool {
+		return isCons(input, tp)
+	}
+}
+
 //getKWCons 获取关键字约束列
 func getKWCons(input string, keyword string) bool {
 	for _, kw := range keywordMatch {
@@ -258,4 +267,24 @@ func getKWCons(input string, keyword string) bool {
 		}
 	}
 	return false
+}
+
+func getJoin(text ...string) string {
+	return strings.Join(text, "")
+}
+
+var vars = map[string]string{}
+
+func getVar(name string, value ...string) string {
+	if len(value) == 0 {
+		return vars[name]
+	}
+	if t, ok := vars[name]; ok {
+		old := []string{t}
+		old = append(old, value...)
+		vars[name] = strings.Join(old, "")
+	} else {
+		vars[name] = strings.Join(value, "")
+	}
+	return ""
 }

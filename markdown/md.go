@@ -8,11 +8,86 @@ import (
 func init() {
 	cmds.Register(
 		cli.Command{
-			Name:  "md",
-			Usage: "SQL语句",
+			Name:  "ui",
+			Usage: "创建vue前端项目",
 			Subcommands: []cli.Command{
 				{
-					Name:   "db",
+					Name:   "create",
+					Usage:  "创建项目",
+					Action: createUI,
+				},
+				{
+					Name:   "clear",
+					Usage:  "清理项目",
+					Action: clear,
+				}, {
+					Name:   "list",
+					Usage:  "生成列表代码",
+					Action: createList(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						}, cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
+					},
+				}, {
+					Name:   "query",
+					Usage:  "生成查询列表",
+					Action: createQuery(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						}, cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
+					},
+				},
+			},
+		},
+		cli.Command{
+			Name:  "code",
+			Usage: "数据库结构文件",
+			Subcommands: []cli.Command{
+				{
+					Name:   "entify",
+					Usage:  "创建实体类",
+					Action: showEnitfy(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						},
+					},
+				},
+				{
+					Name:   "field",
+					Usage:  "创建表字段列表",
+					Action: showField(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						},
+					},
+				},
+			},
+		},
+
+		cli.Command{
+			Name:  "db",
+			Usage: "数据库结构文件",
+			Subcommands: []cli.Command{
+				{
+					Name:   "create",
 					Usage:  "创建数据库结构文件",
 					Action: createScheme,
 					Flags: []cli.Flag{
@@ -38,9 +113,9 @@ func init() {
 						},
 					},
 				}, {
-					Name:   "sql",
-					Usage:  "sql语句,如：select,update,insert",
-					Action: showSQL,
+					Name:   "select",
+					Usage:  "创建select语句",
+					Action: showSelect(),
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "kw,k",
@@ -54,10 +129,30 @@ func init() {
 					},
 				},
 				{
-					Name:   "code",
-					Usage:  "显示实体信息 ",
-					Action: showCode,
+					Name:   "update",
+					Usage:  "创建update语句",
+					Action: showUpdate(),
 					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						},
+					},
+				},
+				{
+					Name:   "insert",
+					Usage:  "创建insert语句",
+					Action: showInsert(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
 						cli.StringFlag{
 							Name:     "table,t",
 							Required: true,

@@ -17,5 +17,5 @@ const {{.Name}}={###}{{end -}}
 		{{range $i,$c:=.Rows -}}
 		{{$c.Name}} {{$c.Type|dbType}} {{$c|defValue}} {{$c|isNull}} {{$c|seqTag}} comment '{{$c.Desc}}' {{if lt $i $count}},{{end}}
 		{{end -}}{{.|indexs}}
-	) ENGINE=InnoDB {{.|seqValue}} DEFAULT CHARSET=utf8 COMMENT='{{.Desc}}'
+	) ENGINE=InnoDB {{.|seqValue}} DEFAULT CHARSET=utf8mb4 COMMENT='{{.Desc}}'
   {{- if .PKG}}{###}{{end -}} `
