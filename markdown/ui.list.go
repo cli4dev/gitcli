@@ -15,10 +15,7 @@ func createList() func(c *cli.Context) (err error) {
 	uiType = "list"
 	return createDetail
 }
-func createQuery() func(c *cli.Context) (err error) {
-	uiType = "query"
-	return createDetail
-}
+
 func createDetail(c *cli.Context) (err error) {
 	if len(c.Args()) == 0 {
 		return fmt.Errorf("未指定markdown文件")
@@ -54,6 +51,5 @@ func createDetail(c *cli.Context) (err error) {
 }
 
 var uiMap = map[string]string{
-	"list":  ui.TmplList,
-	"query": ui.TmplQueryVue,
+	"list": ui.TmplList,
 }

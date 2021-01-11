@@ -34,20 +34,6 @@ func init() {
 							Usage: `-约束字段`,
 						},
 					},
-				}, {
-					Name:   "query",
-					Usage:  "生成查询列表",
-					Action: createQuery(),
-					Flags: []cli.Flag{
-						cli.StringFlag{
-							Name:     "table,t",
-							Required: true,
-							Usage:    `-表名称`,
-						}, cli.StringFlag{
-							Name:  "kw,k",
-							Usage: `-约束字段`,
-						},
-					},
 				},
 			},
 		},

@@ -28,9 +28,12 @@ func getfuncs(tp string) map[string]interface{} {
 		"pks":       getPKS,          //获取主键列表
 		"indexs":    getDBIndex(tp),  //获取表的索引串
 		"maxIndex":  getMaxIndex,     //最大索引值
-		"SL":        getKW("sl"),
+		"SL":        getKWS("sl"),
+		"query":     getRows("sl", "q"),
+		"list":      getRows("ls"),
 		"join":      getJoin,
 		"var":       getVar,
+		"vars":      joinVars,
 		"lower":     getLower, //获取变量的最小写字符
 	}
 }
@@ -197,11 +200,12 @@ func getMaxIndex(r interface{}) int {
 func isCons(input string, tp string) bool {
 	cks, ok := cons[strings.ToLower(tp)]
 	if !ok {
-		return false
+		cks = cons["*"]
 	}
 	buff := []byte(strings.ToLower(input))
 	for _, ck := range cks {
-		reg := regexp.MustCompile(ck)
+		nck := types.DecodeString(strings.Contains(ck, "%s"), true, fmt.Sprintf(ck, tp), ck)
+		reg := regexp.MustCompile(nck)
 		if reg.Match(buff) {
 			return true
 		}
@@ -252,9 +256,30 @@ func getIndex(input string, tp string) (bool, string, int) {
 	return false, "", 0
 }
 
-func getKW(tp string) func(input string) bool {
+func getRows(tp ...string) func(row []*Row) []*Row {
+	return func(row []*Row) []*Row {
+		list := make([]*Row, 0, 1)
+		for _, r := range row {
+		NEXT:
+			for _, t := range tp {
+				if isCons(r.Con, t) {
+					list = append(list, r)
+					break NEXT
+				}
+			}
+		}
+		return list
+	}
+}
+
+func getKWS(tp ...string) func(input string) bool {
 	return func(input string) bool {
-		return isCons(input, tp)
+		for _, t := range tp {
+			if isCons(input, t) {
+				return true
+			}
+		}
+		return false
 	}
 }
 
@@ -273,18 +298,23 @@ func getJoin(text ...string) string {
 	return strings.Join(text, "")
 }
 
-var vars = map[string]string{}
+var vars = map[string][]string{}
+
+func joinVars(name string) []string {
+	return vars[name]
+}
 
 func getVar(name string, value ...string) string {
 	if len(value) == 0 {
-		return vars[name]
+		return strings.Join(vars[name], "")
 	}
 	if t, ok := vars[name]; ok {
-		old := []string{t}
+		old := make([]string, 0, len(t)+len(value))
+		old = append(old, t...)
 		old = append(old, value...)
-		vars[name] = strings.Join(old, "")
+		vars[name] = old
 	} else {
-		vars[name] = strings.Join(value, "")
+		vars[name] = value
 	}
 	return ""
 }
