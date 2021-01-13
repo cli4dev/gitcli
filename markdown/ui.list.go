@@ -3,6 +3,7 @@ package markdown
 import (
 	"fmt"
 
+	"github.com/atotto/clipboard"
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
 	"github.com/micro-plat/gitcli/markdown/ui"
@@ -45,6 +46,7 @@ func createDetail(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+		clipboard.WriteAll(content)
 		logs.Log.Info(content)
 	}
 	return nil
