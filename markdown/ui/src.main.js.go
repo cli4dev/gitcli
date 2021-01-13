@@ -15,6 +15,16 @@ import {
     fetch,
     put
 } from './utility/http'
+
+//定义全局变量
+Vue.prototype.$http = {get:fetch,post:post,put:put}
+
+
+//导入enum模块
+import{Init} from './utility/enum'
+Init(Vue.prototype)
+
+
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies);
 
@@ -23,8 +33,6 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
 
-//定义全局变量
-Vue.prototype.$http = {get:fetch,post:post,put:put}
 
 Vue.config.productionTip = false;
 

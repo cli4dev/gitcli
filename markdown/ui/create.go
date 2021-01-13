@@ -16,6 +16,7 @@ var tmptls = map[string]string{
 	"src/router/index.js":        srcRouterIndexJS,
 	"src/store/index.js":         srcStoreIndexJS,
 	"src/utility/http.js":        srcUtilityHttpJS,
+	"src/utility/enum.js":        srcUtilityEnumJS,
 	"index.html":                 indexHTML,
 	"package.json":               packageJSON,
 	"babel.config.js":            babelConfigJS,
