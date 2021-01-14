@@ -14,7 +14,7 @@ import http from './utility/http'
 Vue.use(http)
 
 //导入enum模块
-import enums from './utility/enum'
+import enums from './utility/enums'
 Vue.use(enums)
 
 
