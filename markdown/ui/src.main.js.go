@@ -10,19 +10,12 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-import {
-    post,
-    fetch,
-    put
-} from './utility/http'
-
-//定义全局变量
-Vue.prototype.$http = {get:fetch,post:post,put:put}
-
+import http from './utility/http'
+Vue.use(http)
 
 //导入enum模块
-import{Init} from './utility/enum'
-Init(Vue.prototype)
+import enum from './utility/enum'
+Vue.use(enum)
 
 
 import VueCookies from 'vue-cookies'

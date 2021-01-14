@@ -8,6 +8,18 @@ import (
 func init() {
 	cmds.Register(
 		cli.Command{
+			Name:  "app",
+			Usage: "后端应用程序",
+			Subcommands: []cli.Command{
+				{
+					Name:   "create",
+					Usage:  "创建app应用",
+					Action: createApp,
+				},
+			},
+		},
+
+		cli.Command{
 			Name:  "ui",
 			Usage: "创建vue前端项目",
 			Subcommands: []cli.Command{
@@ -24,6 +36,20 @@ func init() {
 					Name:   "list",
 					Usage:  "生成列表代码",
 					Action: createList(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						}, cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
+					},
+				}, {
+					Name:   "detail",
+					Usage:  "生成预览代码",
+					Action: createDetail(),
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:     "table,t",

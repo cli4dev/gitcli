@@ -106,9 +106,11 @@ export default {
      this.paging.pi = 1;
      this.queryData();
    },
-   queryData:function(){
-     Object.assign(this.query, this.paging);   
-     this.$http.post("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.query,this.dataList)
+   queryData:async function(){
+     Object.assign(this.query, this.paging);  
+     let res = this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.query)
+     this.dataList.items = res.items
+     this.dataList.count = res.count
    },
 
   },

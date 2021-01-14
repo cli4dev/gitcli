@@ -18,6 +18,7 @@ func getfuncs(tp string) map[string]interface{} {
 	return map[string]interface{}{
 		"varName":   getVarName, //获取pascal变量名称
 		"names":     getNames,
+		"mod":       getMod,
 		"rmhd":      rmhd,       //去除首段名称
 		"isNull":    isNull(tp), //返回空语句
 		"require":   nil,
@@ -44,6 +45,9 @@ func getfuncs(tp string) map[string]interface{} {
 
 func getLower(s string) string {
 	return strings.ToLower(s)
+}
+func getMod(x int, y int) int {
+	return x % y
 }
 
 //去掉首段名称

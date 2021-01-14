@@ -3,29 +3,27 @@ package ui
 const srcUtilityEnumJS = `
 import vue from "vue";
 
+//所有保存的枚举数据
 window._EnumList_ = {};
+//根据type保存的回调函数
 window._EnumCallbackFunc_ = {
   "*" : function(tp){return [];}
 }
 
-/*
-* 枚举对象使用时须通过引用并进行初始化
-* import { Enum, EnumFilter } from 'qxnw-enum';
-* Vue.prototype.$enum = new Enum(); // 枚举字典初始化
-* 或者
-* import { Init, EnumFilter } from 'qxnw-enum';
-* Init(Vue.prototype)
-*/
-export function Enum() {}
+//初始化注入
+export default {
+  install: function(Vue){
+      Vue.prototype.$enum = new Enum();
+  }
+}
 
 /*
-* 初始化
-* import { Init, EnumFilter } from 'qxnw-enum';
-* Init(Vue.prototype)
+* 枚举对象使用时须通过引用并进行初始化
+* import enums from './enums'
+* Vue.use(enums);
 */
-export function Init(obj) {
-  obj.$enum = new Enum();
-}
+function Enum() {}
+
 
 //当参数为function时回调
 Enum.prototype.callback = function (callback, tp) {
@@ -46,8 +44,8 @@ Enum.prototype.set = function (data, type) {
     window._EnumCallbackFunc_[type] = data
     return
   }
-
-  if (!Array.isArray(data) || data.length == 0) {
+  
+  if (!Array.isArray(data) || data.length == 0) { 
     return
   }
 
@@ -90,7 +88,7 @@ Enum.prototype.getName = function (type, value) {
       return enumMap[i].name
     }
   }
-  return value
+  return value 
 }
 
 //对应type数据刷新
@@ -98,10 +96,12 @@ Enum.prototype.clear = function (type) {
   window._EnumList_[type] = null;
 };
 
-export const EnumFilter = vue.filter('EnumFilter', (value, enumType) => {
+//filter
+export const EnumFilter = vue.filter('fltrEnum', (value, enumType) => {
   return new Enum().getName(enumType, value)
 })
 
+//数据格式检查
 function checkData(data){
   for (var i = 0; i < data.length; i++){
     if(!data[i].hasOwnProperty("name") || !data[i].hasOwnProperty("value")){
@@ -111,14 +111,16 @@ function checkData(data){
   return true
 }
 
+//根据回调函数获取数据
 function getEnumListByCallback(type, pid){
   var handle = window._EnumCallbackFunc_[type] || window._EnumCallbackFunc_["*"]
-
+  
   var data = handle.apply(this, [type])
   Enum.prototype.set(data, type)
   return getEnumList(type, pid)
 }
 
+//根据type从window._EnumList_中获取相应的数据
 function getEnumList(type, pid){
   var result = window._EnumList_[type] || []
   if (!pid){
@@ -131,4 +133,6 @@ function getEnumList(type, pid){
     }
   })
   return list
-}`
+}
+
+`
