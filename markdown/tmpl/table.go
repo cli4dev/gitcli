@@ -3,9 +3,9 @@ package tmpl
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/micro-plat/lib4go/types"
 )

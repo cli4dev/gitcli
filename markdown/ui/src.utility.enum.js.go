@@ -97,7 +97,7 @@ Enum.prototype.clear = function (type) {
 };
 
 //filter
-export const EnumFilter = vue.filter('fltrEnum', (value, enumType) => {
+export const fltrEnum = vue.filter('fltrEnum', (value, enumType) => {
   return new Enum().getName(enumType, value)
 })
 
@@ -134,5 +134,4 @@ function getEnumList(type, pid){
   })
   return list
 }
-
 `

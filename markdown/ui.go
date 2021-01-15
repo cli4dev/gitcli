@@ -48,10 +48,10 @@ func create(tp string) func(c *cli.Context) (err error) {
 
 		//读取文件
 		dbtp := tmpl.MYSQL
-		tpName := uiMap[tp]
+		template := uiMap[tp]
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
-			return err
+			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
 
 		//过滤数据表
@@ -63,14 +63,19 @@ func create(tp string) func(c *cli.Context) (err error) {
 			tb.FilterRowByKW(c.String("kw"))
 
 			//翻译文件
-			content, err := tmpl.Translate(tpName, dbtp, tb)
+			content, err := tmpl.Translate(template, dbtp, tb)
+			if err != nil {
+				return fmt.Errorf("翻译%s模板出错:%+v", tp, err)
+			}
+			path := tb.Name + ".vue"
+			fs, err := tmpl.Create(path, c.Bool("cover"))
 			if err != nil {
 				return err
 			}
-			if err != nil {
-				return err
-			}
-			logs.Log.Info(content)
+			logs.Log.Info("生成文件:", path)
+			fs.WriteString(content)
+			fs.Close()
+			//logs.Log.Info(content)
 		}
 		return nil
 	}

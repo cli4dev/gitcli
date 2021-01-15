@@ -33,10 +33,23 @@ func getfuncs(tp string) map[string]interface{} {
 		"indexs":    getDBIndex(tp),  //获取表的索引串
 		"maxIndex":  getMaxIndex,     //最大索引值
 		"lower":     getLower,        //获取变量的最小写字符
-		"SL":        getKWS("sl"),
+
+		"SL": getKWS("sl"), //表单下拉框
+		"CB": getKWS("cb"), //表单复选框
+		"RB": getKWS("rb"), //表单单选框
+		"TA": getKWS("ta"), //表单文本域
+		"DT": getKWS("dt"), //表单日期选择器
 		// "input":     nil,
-		"query":  getRows("SL", "Q"),
-		"list":   getRows("ls"), //	// "join":      getJoin,
+		"query":  getRows("q"),            //查询字段
+		"list":   getRows("l"),            //列表展示字段
+		"detail": getRows("r"),            //详情展示字段
+		"create": getRows("c"),            //创建字段
+		"delete": getRows("d"),            //删除时判定字段
+		"update": getRows("u"),            //更新字段
+		"gbc":    getBracketContent("sl"), //获取括号里面的内容
+
+		"rpath": getRouterPath,
+
 		"var":    getVar,
 		"vars":   joinVars,
 		"isTime": isTime,
@@ -333,4 +346,25 @@ func getVar(name string, value ...string) string {
 func isTime(input string) bool {
 	tp := codeType(input)
 	return tp == "time.Time"
+}
+
+//getRouterPath .
+func getRouterPath(tabName string) string {
+	fmt.Println("/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1))
+	return "/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1)
+}
+
+func getBracketContent(key string) func(input string) string {
+	return func(input string) string {
+		rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
+		strs := rex.FindAllString(input, -1)
+		if len(strs) < 1 {
+			return ""
+		}
+		str := strs[0]
+		fmt.Println(str)
+		str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
+		str = strings.TrimRight(str, ")")
+		return str
+	}
 }
