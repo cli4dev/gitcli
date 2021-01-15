@@ -44,6 +44,9 @@ func init() {
 						}, cli.StringFlag{
 							Name:  "kw,k",
 							Usage: `-约束字段`,
+						}, cli.BoolFlag{
+							Name:  "w2f,f",
+							Usage: `-生成到文件`,
 						},
 					},
 				}, {

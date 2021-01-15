@@ -189,3 +189,9 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 	}
 	return strings.Replace(strings.Replace(buff.String(), "{###}", "`", -1), "&#39;", "'", -1), nil
 }
+
+//GetPath 获取路径
+func GetPath(name string) string {
+	path, _ := Translate(".{{.|rmhd|rpath}}.vue", "", name)
+	return path
+}
