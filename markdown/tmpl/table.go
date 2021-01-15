@@ -115,8 +115,8 @@ func (t *Table) GetPKS() []string {
 	return nil
 }
 
-//FilteRowByKW	过滤行信息
-func (t *Table) FilteRowByKW(kwc string) {
+//FilterRowByKW	过滤行信息
+func (t *Table) FilterRowByKW(kwc string) {
 	if kwc == "" {
 		return
 	}

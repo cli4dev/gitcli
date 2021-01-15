@@ -42,7 +42,6 @@ func createDetail() func(c *cli.Context) (err error) {
 }
 func create(tp string) func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
-
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
@@ -50,18 +49,18 @@ func create(tp string) func(c *cli.Context) (err error) {
 		//读取文件
 		dbtp := tmpl.MYSQL
 		tpName := uiMap[tp]
-		tb, err := tmpl.Markdown2DB(c.Args().First())
+		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return err
 		}
 
 		//过滤数据表
-		tb.FilteByKW(c.String("table"))
+		tbs.FilterByKW(c.String("table"))
 
-		for _, tb := range tb.Tbs {
+		for _, tb := range tbs.Tbs {
 
 			//根据关键字过滤
-			tb.FilteRowByKW(c.String("kw"))
+			tb.FilterRowByKW(c.String("kw"))
 
 			//翻译文件
 			content, err := tmpl.Translate(tpName, dbtp, tb)

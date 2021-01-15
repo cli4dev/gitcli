@@ -3,8 +3,6 @@ package ui
 const srcRouterIndexJS = `
 import Vue from 'vue';
 import Router from 'vue-router';
-import menus from '@/pages/system/menus';
-import index from '@/pages/system/index';
 
 Vue.use(Router);
 export default new Router({
@@ -13,11 +11,11 @@ export default new Router({
     {
       path: '/',
       name: 'menus',
-      component: menus,
+      component: () => import('../pages/system/menus.vue'),
       children:[{
         path: 'index',
         name: 'index',
-        component: index,
+        component: () => import('../pages/system/index.vue'),
         titile:"首页"
       }]
     }

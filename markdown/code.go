@@ -30,10 +30,9 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		}
 
 		//过滤数据表
-		tb.FilteByKW(c.String("table"))
+		tb.FilterByKW(c.String("table"))
 		script := entityMap[tp]
 		for _, tb := range tb.Tbs {
-
 			//翻译文件
 			content, err := tmpl.Translate(script, dbtp, tb)
 			if err != nil {

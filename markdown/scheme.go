@@ -34,7 +34,7 @@ func createScheme(c *cli.Context) (err error) {
 	tbs.DropTable(c.Bool("drop"))
 
 	//过滤数据表
-	tbs.FilteByKW(c.String("table"))
+	tbs.FilterByKW(c.String("table"))
 
 	tbs.BuildSEQFile(c.Bool("seqfile"))
 

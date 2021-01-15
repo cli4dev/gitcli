@@ -16,13 +16,13 @@ type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
 	return map[string]interface{}{
-		"varName":   getVarName, //获取pascal变量名称
-		"names":     getNames,
-		"mod":       getMod,
-		"rmhd":      rmhd,       //去除首段名称
-		"isNull":    isNull(tp), //返回空语句
-		"require":   nil,
-		"len":       nil,
+		"varName": getVarName, //获取pascal变量名称
+		"names":   getNames,
+		"mod":     getMod,
+		"rmhd":    rmhd,       //去除首段名称
+		"isNull":  isNull(tp), //返回空语句
+		// "require":   nil,
+		// "len":       nil,
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
 		"codeType":  codeType,        //转换为GO代码的数据类型
@@ -34,12 +34,12 @@ func getfuncs(tp string) map[string]interface{} {
 		"maxIndex":  getMaxIndex,     //最大索引值
 		"lower":     getLower,        //获取变量的最小写字符
 		"SL":        getKWS("sl"),
-		"input":     nil,
-		"query":     getRows("sl", "q"),
-		"list":      getRows("ls"), //	// "join":      getJoin,
-		"var":       getVar,
-		"vars":      joinVars,
-		"isTime":    isTime,
+		// "input":     nil,
+		"query":  getRows("SL", "Q"),
+		"list":   getRows("ls"), //	// "join":      getJoin,
+		"var":    getVar,
+		"vars":   joinVars,
+		"isTime": isTime,
 	}
 }
 

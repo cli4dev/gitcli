@@ -36,12 +36,12 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 		}
 
 		//过滤数据表
-		tb.FilteByKW(c.String("table"))
+		tb.FilterByKW(c.String("table"))
 
 		for _, tb := range tb.Tbs {
 
 			//根据关键字过滤
-			tb.FilteRowByKW(c.String("kw"))
+			tb.FilterRowByKW(c.String("kw"))
 
 			//翻译文件
 			content, err := tmpl.Translate(tpName, dbtp, tb)

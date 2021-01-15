@@ -1,5 +1,6 @@
 package ui
 
 const vueConfigJS = `module.exports = {
-    runtimeCompiler: true
-  }`
+  runtimeCompiler: true,
+  lintOnSave: false
+}`

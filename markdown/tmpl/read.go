@@ -18,8 +18,8 @@ type Tables struct {
 	SEQFile   bool
 }
 
-//FilteByKW	过滤行信息
-func (t *Tables) FilteByKW(kwc string) {
+//FilterByKW	过滤行信息
+func (t *Tables) FilterByKW(kwc string) {
 	if kwc == "" {
 		return
 	}
