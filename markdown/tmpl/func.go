@@ -46,7 +46,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"create": getRows("c"),            //创建字段
 		"delete": getRows("d"),            //删除时判定字段
 		"update": getRows("u"),            //更新字段
-		"gbc":    getBracketContent("sl"), //获取括号里面的内容
+		"SLCon":  getBracketContent("sl"), //获取约束的内容
 
 		"rpath": getRouterPath,
 
@@ -350,21 +350,22 @@ func isTime(input string) bool {
 
 //getRouterPath .
 func getRouterPath(tabName string) string {
-	fmt.Println("/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1))
+	if tabName == "" {
+		return ""
+	}
 	return "/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1)
 }
 
-func getBracketContent(key string) func(input string) string {
-	return func(input string) string {
+func getBracketContent(key string) func(con string) []string {
+	return func(con string) []string {
 		rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
-		strs := rex.FindAllString(input, -1)
+		strs := rex.FindAllString(con, -1)
 		if len(strs) < 1 {
-			return ""
+			return []string{""}
 		}
 		str := strs[0]
-		fmt.Println(str)
 		str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
 		str = strings.TrimRight(str, ")")
-		return str
+		return strings.Split(str, ",")
 	}
 }

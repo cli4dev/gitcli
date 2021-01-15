@@ -54,7 +54,7 @@ const TmplDetail = `
     created(){
       {{- range $i,$c:=$rows|detail -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-        this.$enum.callback(function(){this.$http.xget("{{$c.Con|gbc|rpath}}/dictionary/get", {})},"{{$c.Name|varName}}")
+        this.$enum.callback(function(){this.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|varName}}")
       {{- end}} 
       {{- end}}
     },
