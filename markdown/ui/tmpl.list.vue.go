@@ -65,7 +65,7 @@ placeholder="{{- range $i,$c:=vars "tp"}}{{$c}}/{{- end}}"
   :page-size="paging.ps"
   :page-sizes="paging.sizes"
   layout="total, sizes, prev, pager, next, jumper"
-  :total="paging.total"
+  :total="dataList.count"
 ></el-pagination>
 </div>
 
@@ -108,7 +108,7 @@ export default {
    },
    queryData:async function(){
      Object.assign(this.query, this.paging);  
-     let res = this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.query)
+     let res = await this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.query)
      this.dataList.items = res.items
      this.dataList.count = res.count
    },
