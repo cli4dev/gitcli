@@ -42,7 +42,7 @@ func (o *EnumsHandler) QueryHandle(ctx hydra.IContext) interface{} {
 var enumsMap = map[string]string{
 {{- range $j,$t:=.Tbs -}}
 {{if $t|isEnumTB -}}
-"{{$t.Name|rmhd}}":{###}select '{{$t.Name|rmhd}}' type,{{range $i,$c:=.Rows -}}{{if $c.Con|isDI}}t.{{$c.Name}} 'value',{{end}}{{if $c.Con|isDN}}t.{{$c.Name}} 'name' {{end}}{{end}} from {{$t.Name}} t {###},
+"{{$t.Name|rmhd}}":{###}select '{{$t.Name|rmhd}}' type,{{range $i,$c:=.Rows -}}{{if $c.Con|isDI}}t.{{$c.Name}} value,{{end}}{{if $c.Con|isDN}}t.{{$c.Name}} name {{end}}{{end}} from {{$t.Name}} t {###},
 {{end -}}
 {{- end -}}
 }`
