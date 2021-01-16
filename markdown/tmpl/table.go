@@ -3,6 +3,7 @@ package tmpl
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -100,7 +101,12 @@ func (t *Table) AddRow(r *Row) error {
 
 //SetPkg 添加行信息
 func (t *Table) SetPkg(path string) {
-	names := strings.Split(strings.Trim(path, "/"), "/")
+	ext := filepath.Ext(path)
+	dir := path
+	if ext != "" {
+		dir = filepath.Dir(path)
+	}
+	names := filepath.SplitList(dir)
 	t.PKG = names[len(names)-1]
 }
 
@@ -191,7 +197,8 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 }
 
 //GetPath 获取路径
-func GetPath(name string) string {
-	path, _ := Translate(".{{.|rmhd|rpath}}.vue", "", name)
+func GetPath(name string, ext ...string) string {
+	ex := types.GetStringByIndex(ext, 0, "vue")
+	path, _ := Translate(".{{.|rmhd|rpath}}."+ex, "", name)
 	return path
 }
