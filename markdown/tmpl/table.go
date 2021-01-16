@@ -3,7 +3,6 @@ package tmpl
 import (
 	"bytes"
 	"fmt"
-	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -101,13 +100,8 @@ func (t *Table) AddRow(r *Row) error {
 
 //SetPkg 添加行信息
 func (t *Table) SetPkg(path string) {
-	ext := filepath.Ext(path)
-	dir := path
-	if ext != "" {
-		dir = filepath.Dir(path)
-	}
-	names := filepath.SplitList(dir)
-	t.PKG = names[len(names)-1]
+
+	t.PKG = getPKSName(path)
 }
 
 //GetPKS 获取主键列表

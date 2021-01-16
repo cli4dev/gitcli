@@ -21,8 +21,11 @@ func getfuncs(tp string) map[string]interface{} {
 		"mod":     getMod,
 		"rmhd":    rmhd,       //去除首段名称
 		"isNull":  isNull(tp), //返回空语句
-		// "require":   nil,
-		// "len":       nil,
+
+		"isEnumTB": isEnumTB,
+		"isDI":     getKWS("di"),
+		"isDN":     getKWS("dn"),
+
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
 		"codeType":  codeType,        //转换为GO代码的数据类型
@@ -39,7 +42,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"RB": getKWS("rb"), //表单单选框
 		"TA": getKWS("ta"), //表单文本域
 		"DT": getKWS("dt"), //表单日期选择器
-		// "input":     nil,
+
 		"query":  getRows("q"),            //查询字段
 		"list":   getRows("l"),            //列表展示字段
 		"detail": getRows("r"),            //详情展示字段
@@ -368,4 +371,19 @@ func getBracketContent(key string) func(con string) []string {
 		str = strings.TrimRight(str, ")")
 		return strings.Split(str, ",")
 	}
+}
+func isEnumTB(t *Table) bool {
+	var di, dn = false, false
+	for _, r := range t.Rows {
+		if isCons(r.Con, "di") {
+			di = true
+		}
+		if isCons(r.Con, "dn") {
+			dn = true
+		}
+		if di && dn {
+			return true
+		}
+	}
+	return false
 }

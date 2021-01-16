@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -50,8 +51,9 @@ func (t *Tables) DropTable(d bool) {
 
 //SetPkg 添加行信息
 func (t *Tables) SetPkg(path string) {
-	names := strings.Split(strings.Trim(path, "/"), "/")
-	t.PKG = names[len(names)-1]
+
+	t.PKG = getPKSName(path)
+
 	for _, tb := range t.RawTables {
 		tb.SetPkg(t.PKG)
 	}
@@ -210,4 +212,14 @@ func getTableName(line *Line) (string, error) {
 	}
 	s := strings.Split(strings.TrimRight(strings.TrimLeft(names[0], "["), "]"), ",")
 	return s[0], nil
+}
+
+func getPKSName(path string) string {
+	ext := filepath.Ext(path)
+	dir := path
+	if ext != "" {
+		dir = filepath.Dir(path)
+	}
+	names := filepath.SplitList(dir)
+	return names[len(names)-1]
 }
