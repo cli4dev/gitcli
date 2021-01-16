@@ -40,7 +40,7 @@ placeholder="{{- range $i,$c:=vars "tp"}}{{$c}}/{{- end}}"
   <el-table-column align="center" width="100" prop="{{$c.Name}}" label="{{$c.Desc|shortName}}">
   <template slot-scope="scope">
     <i class="el-icon-time"></i>
-    <span style="margin-left: 10px">{{$c.Name}}</span>
+    <span style="margin-left: 10px" v-text="scope.row.{{$c.Name}}"></span>
   </template>
   </el-table-column>
 {{else}}

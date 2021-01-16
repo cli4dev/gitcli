@@ -48,6 +48,9 @@ func init() {
 						}, cli.BoolFlag{
 							Name:  "w2f,f",
 							Usage: `-生成到文件`,
+						}, cli.BoolFlag{
+							Name:  "cover,v",
+							Usage: `-文件已存在时自动覆盖`,
 						},
 					},
 				},
@@ -82,6 +85,9 @@ func init() {
 						}, cli.BoolFlag{
 							Name:  "w2f,f",
 							Usage: `-生成到文件`,
+						}, cli.BoolFlag{
+							Name:  "cover,v",
+							Usage: `-文件已存在时自动覆盖`,
 						},
 					},
 				}, {
@@ -96,6 +102,12 @@ func init() {
 						}, cli.StringFlag{
 							Name:  "kw,k",
 							Usage: `-约束字段`,
+						}, cli.BoolFlag{
+							Name:  "w2f,f",
+							Usage: `-生成到文件`,
+						}, cli.BoolFlag{
+							Name:  "cover,v",
+							Usage: `-文件已存在时自动覆盖`,
 						},
 					},
 				},

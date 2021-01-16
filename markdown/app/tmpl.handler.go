@@ -27,12 +27,12 @@ func (o *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) interfac
 }
 
 const sql{{.Name|rmhd|varName}}Query = {###}
-select t.* from {{.Name}} t 1 = 1 
+select t.* from {{.Name}} t where 1 = 1 
 {{- range $i,$c:=.Rows|query}}
 &t.{{$c.Name}}
 {{- end}}{###}
 const sql{{.Name|rmhd|varName}}Count = {###}
-select count(1) from {{.Name}} t 1 = 1 
+select count(1) from {{.Name}} t where 1 = 1 
 {{- range $i,$c:=.Rows|query}}
 &t.{{$c.Name}}
 {{- end}}{###}

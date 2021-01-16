@@ -45,6 +45,10 @@ func create(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
+		root := ""
+		if c.NArg() > 1 {
+			root = c.Args().Get(1)
+		}
 		//读取文件
 		dbtp := tmpl.MYSQL
 		template := uiMap[tp]
@@ -73,7 +77,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 			}
 
 			//生成文件
-			path := tmpl.GetPath(tb.Name)
+			path := tmpl.GetPath(root, fmt.Sprintf("%s.%s", tb.Name, tp))
 			fs, err := tmpl.Create(path, c.Bool("cover"))
 			if err != nil {
 				return err

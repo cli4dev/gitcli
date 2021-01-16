@@ -3,6 +3,7 @@ package tmpl
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -191,8 +192,8 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 }
 
 //GetPath 获取路径
-func GetPath(name string, ext ...string) string {
+func GetPath(root string, name string, ext ...string) string {
 	ex := types.GetStringByIndex(ext, 0, "vue")
-	path, _ := Translate(".{{.|rmhd|rpath}}."+ex, "", name)
-	return path
+	path, _ := Translate(fmt.Sprintf("{{.|rmhd|rpath}}.%s", ex), "", name)
+	return filepath.Join(types.GetString(root, "."), path)
 }
