@@ -22,6 +22,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"rmhd":    rmhd,       //去除首段名称
 		"isNull":  isNull(tp), //返回空语句
 
+		//枚举处理函数
 		"fIsEnumTB": hasKW("di", "dn"),
 		"fHasDT":    hasKW("dt"),
 		"fIsDI":     getKWS("di"),
