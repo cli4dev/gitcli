@@ -11,5 +11,4 @@ func init() {
 		return nil
 	})
 }
-
 `
