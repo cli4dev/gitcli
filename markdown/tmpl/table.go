@@ -49,6 +49,7 @@ type Field struct {
 	Index int
 }
 
+//List 获取所有字段名的列表
 func (t fields) List() []string {
 	list := make([]string, 0, len(t))
 	for _, fi := range t {
@@ -56,14 +57,15 @@ func (t fields) List() []string {
 	}
 	return list
 }
+
+//Len 字段个数
 func (t fields) Len() int {
 	return len(t)
 }
+
+//Join 指定连接符，将字段名连接为一个长字符串
 func (t fields) Join(s string) string {
-	list := make([]string, 0, len(t))
-	for _, v := range t {
-		list = append(list, v.Name)
-	}
+	list := t.List()
 	return strings.Join(list, s)
 }
 
