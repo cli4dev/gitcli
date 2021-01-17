@@ -34,6 +34,10 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		//读取文件
 		dbtp := tmpl.MYSQL
 		template := appCodeMap[tp]
+		root := ""
+		if c.NArg() > 1 {
+			root = c.Args().Get(1)
+		}
 
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
@@ -46,7 +50,7 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		for _, tb := range tbs.Tbs {
 
 			//根据关键字过滤
-			path := tmpl.GetPath(tb.Name, "go")
+			path := tmpl.GetPath(root, tb.Name, "go")
 			tb.FilterRowByKW(c.String("kw"))
 			tb.SetPkg(path)
 
