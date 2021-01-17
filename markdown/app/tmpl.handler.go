@@ -58,7 +58,7 @@ select count(1) from {{.Name}} t where 1 = 1
 &t.{{$c.Name}}
 {{- end}}{###}
 
-
+//sqlSignle{{.Name|rmhd|varName}} 查询单条数据({{.Desc}})
 const sqlSignle{{.Name|rmhd|varName}} = {###}
 select 
 {{- $count:=.Rows|maxIndex -}}
