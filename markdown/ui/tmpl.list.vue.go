@@ -117,5 +117,8 @@ export default {
 }
 </script>
 <style>
+.form-group{
+  margin-right: 10px;
+}
 </style>
 `
