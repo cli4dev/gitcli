@@ -40,6 +40,17 @@ func createList() func(c *cli.Context) (err error) {
 func createDetail() func(c *cli.Context) (err error) {
 	return create("detail")
 }
+
+//createEdit 创建编辑页面
+func createEdit() func(c *cli.Context) (err error) {
+	return create("edit")
+}
+
+//createAdd 创建编辑页面
+func createAdd() func(c *cli.Context) (err error) {
+	return create("add")
+}
+
 func create(tp string) func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
@@ -94,4 +105,6 @@ func create(tp string) func(c *cli.Context) (err error) {
 var uiMap = map[string]string{
 	"list":   ui.TmplList,
 	"detail": ui.TmplDetail,
+	"edit":   ui.TmplEditVue,
+	"add":    ui.TmplCreateVue,
 }

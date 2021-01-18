@@ -63,9 +63,9 @@ func getfuncs(tp string) map[string]interface{} {
 
 		"aname": fGetAName, //小写开头驼峰命名
 		//"cname": fGetCName, //
-	//	"contains": contains,     //是否包含子串
-		"lname":    fGetLastName, //取最后一个单词
-		"dpath":    GetDetailPath,
+		//	"contains": contains,     //是否包含子串
+		"lname": fGetLastName, //取最后一个单词
+		"dpath": GetDetailPath,
 	}
 }
 
