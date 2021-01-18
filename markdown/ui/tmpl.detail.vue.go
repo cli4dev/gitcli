@@ -15,15 +15,31 @@ const TmplDetail = `
                 <td>
             {{- end}}               
                   <el-col :span="6">
-                    <div class="pull-right" style="margin-right:10px">{{$c.Desc|shortName}}:</div>
+                    <div style="margin-right:10px">{{$c.Desc|shortName}}:</div>
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|RB) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div class="grid-content">{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</div>
+                    <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</div>
+                  </el-col>
+            {{- else if eq ($c.Type|codeType) $string}}
+                  <el-col :span="6">
+                    <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</div>
+                  </el-col>
+          	{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
+                  <el-col :span="6">
+                    <div>{{"{{info."}}{{$c.Name}} | fltrNumberFormat(0)}}</div>
+                  </el-col>
+            {{- else if eq ($c.Type|codeType) $decimal) }}
+                  <el-col :span="6">
+                    <div>{{"{{info."}}{{$c.Name}} | fltrNumberFormat(2)}}</div>
+                  </el-col>
+            {{- else if eq ($c.Type|codeType) $time) }}
+                  <el-col :span="6">
+                    <div>{{"{{info."}}{{$c.Name}} | fltrDate}}</div>
                   </el-col>
             {{- else}}
                   <el-col :span="6">
-                    <div class="grid-content">{{"{{info."}}{{$c.Name}}}}</div>
+                    <div>{{"{{info."}}{{$c.Name}}}}</div>
                   </el-col>
             {{- end}}
             {{- if and (eq (mod $i 2) 1) (ne ($rows|maxIndex) $i) }}
@@ -52,10 +68,13 @@ const TmplDetail = `
       }
     },
     created(){
+      {{- if gt $rows|len 0}}
+      var that=this
+      {{- end}}
       {{- range $i,$c:=$rows|detail -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-        this.$enum.callback(function(){this.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|varName}}")
-      {{- end}} 
+        this.$enum.callback(function(){that.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|varName}}")
+      {{- end}}
       {{- end}}
     },
     methods: {

@@ -30,6 +30,7 @@ type Row struct {
 	IsNull string //为空
 	Con    string //约束
 	Desc   string //描述
+	Len    int //类型长度
 }
 
 //Indexs 索引集

@@ -1,121 +1,277 @@
 package ui
 
 const TmplList = `
+{{- $string := "string" -}}
+{{- $int := "int" -}}
+{{- $int64 := "int64" -}}
+{{- $decimal := "types.Decimal" -}}
+{{- $time := "time.Time" -}}
+{{- $rows := .Rows -}}
 <template>
-  <div ref="main">
-    <div class="panel panel-default">
-    <div class="panel-body">
-    <form class="form-inline" role="form">
-{{var "tp"}}
-{{var "fields"}}
-{{- range $i,$c:=.Rows|query}}
-{{- if $c.Con|SL}} 
-<div class="form-group select">
-	<select
-	v-model="query.{{$c.Name}}"
-	name="{{$c.Name}}"
-	class="form-control visible-md visible-lg">
-	<option value selected="selected">---请选择{{$c.Desc|shortName}}---</option>
-  </select>
-  </div>
-  {{var "fields" $c.Name}}
-{{- else}}{{var "tp" $c.Desc|shortName}}{{end -}}{{- end}} 
-<div class="form-group input">
-<input
-type="text"
-class="form-control"
-v-model="query.input"
-onkeypress="if(event.keyCode == 13) return false;"
-placeholder="{{- range $i,$c:=vars "tp"}}{{$c}}/{{- end}}"
-/>
-</div>
-<a class="btn btn-success" @click="search">查询</a>
-</form>
+	<div class="panel panel-default">
+    	<!-- query start -->
+		<div class="panel-body">
+			<el-form ref="form" :inline="true" class="form-inline pull-left">
+			{{- range $i,$c:=$rows|query}}
+				{{- if $c.Con|TA}}
+				<el-form-item>
+					<el-input type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="queryData.{{$c.Name}}">
+					</el-input>
+				</el-form-item>
+				{{- else if $c.Con|RB}}
+				<el-form-item  label="{{$c.Desc|shortName}}:">
+					<el-radio-group v-model="queryData.{{$c.Name}}" style="margin-left:5px">
+            <el-radio v-for="(item, index) in {{$c.Name|aname}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
+          </el-radio-group>
+				</el-form-item>
+				{{- else if $c.Con|SL }}
+				<el-form-item>
+					<el-select size="medium" v-model="queryData.{{$c.Name}}" class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
+						<el-option value="" label="全部"></el-option>
+						<el-option v-for="(item, index) in {{$c.Name|aname}}" :key="index" :value="item.value" :label="item.name"></el-option>
+						</el-select>
+				</el-form-item>
+        {{- else if $c.Con|DT }}
+					<el-form-item label="{{$c.Desc|shortName}}:">
+						<el-date-picker class="input-cos" v-model="dt{{$c.Name|varName}}" popper-class="datetime-to-date" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
+					</el-form-item>
+				{{- else if $c.Con|CB }}
+				<el-form-item label="{{$c.Desc|shortName}}:">
+          <el-checkbox-group v-model="{{$c.Name}}">
+          	<el-checkbox v-for="(item, index) in {{$c.Name|aname}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+				{{- else}}
+				<el-form-item>
+					<el-input clearable v-model="queryData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
+					</el-input>
+				</el-form-item>
+				{{- end}}
+			{{end}}
+				{{- if gt ($rows|query|len) 0}}
+				<el-form-item>
+					<el-button type="primary" @click="query" size="small">查询</el-button>
+				</el-form-item>
+				{{end}}
+				{{- if gt ($rows|create|len) 0}}
+				<el-form-item>
+					<el-button type="success" size="small" @click="addShow">添加</el-button>
+				</el-form-item>
+				{{end}}
+			</el-form>
+		</div>
+    	<!-- query end -->
 
-<el-scrollbar style="height:100%">
-<el-table :data="dataList.items" stripe style="width: 100%">
+    	<!-- list start-->
+		<el-scrollbar style="height:100%">
+			<el-table :data="tableData" border style="width: 100%">
+				{{- range $i,$c:=$rows|list}}
+				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" >
+				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB)}}
+					<template slot-scope="scope">
+						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</span>
+					</template>
+				{{- else if eq ($c.Type|codeType) $string}}
+					<template slot-scope="scope">
+						<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20)}}</span>
+					</template>
+				{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
+				<template slot-scope="scope">
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat(0)}}</span>
+				</template>
+				{{- else if eq ($c.Type|codeType) $decimal }}
+				<template slot-scope="scope">
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat(2)}}</span>
+				</template>
+				{{end -}}
+				{{- else if eq ($c.Type|codeType) $time }}
+				<template slot-scope="scope">
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrDate}}</span>
+				</template>
+				{{- else}}
+				<template slot-scope="scope">
+					<span>{{"{{scope.row."}}{{$c.Name}}}}</span>
+				</template>
+				{{end -}}
 
-{{- range $i,$c:=.Rows|list}}
-{{ if $c.Type|isTime}}
-  <el-table-column align="center" width="100" prop="{{$c.Name}}" label="{{$c.Desc|shortName}}">
-  <template slot-scope="scope">
-    <i class="el-icon-time"></i>
-    <span style="margin-left: 10px" v-text="scope.row.{{$c.Name}}"></span>
-  </template>
-  </el-table-column>
-{{else}}
-<el-table-column align="center" width="100" prop="{{$c.Name}}" label="{{$c.Desc|shortName}}"></el-table-column>
-{{end}}
 
-{{- end}} 
-  <el-table-column align="center" label="操作">
-	<template slot-scope="scope">
-	  <el-button plain type="primary" size="mini" @click="showModal(2,scope.row)">编辑</el-button>
-	  <el-button plain type="success" size="mini" @click="userChange(0,scope.row.user_id, scope.row.user_name)" v-if="scope.row.status == 2">启用</el-button>
-	</template>
-  </el-table-column>
-</el-table>
-</el-scrollbar>
+				</el-table-column>
+				{{- end}}
+				<el-table-column  label="操作">
+					<template slot-scope="scope">
+						{{- if gt ($rows|update|len) 0}}
+						<el-button type="text" size="small" @click="editShow(scope.row)">编辑</el-button>
+						{{- end}}
+						{{- if gt ($rows|detail|len) 0}}
+						<el-button type="text" size="small" @click="detailShow(scope.row)">详情</el-button>
+						{{- end}}
+						{{- if gt ($rows|delete|len) 0}}
+						<el-button type="text" size="small" @click="del(scope.row)">删除</el-button>
+						{{- end}}
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-scrollbar>
+		<!-- list end-->
 
-<div style="padding: 10px 15px;text-align: right;">
-<el-pagination
-  @size-change="pageSizeChnage"
-  @current-change="pageIndexChange"
-  :current-page="paging.pi"
-  :page-size="paging.ps"
-  :page-sizes="paging.sizes"
-  layout="total, sizes, prev, pager, next, jumper"
-  :total="dataList.count"
-></el-pagination>
-</div>
+		{{if gt ($rows|create|len) 0 -}}
+		<!-- Add Form -->
+		<Add ref="Add" :refresh="query"></Add>
+		<!--Add Form -->
+		{{- end}}
 
-</div>
-</div>
-</div>
+		{{if gt ($rows|update|len) 0 -}}
+		<!-- edit Form start-->
+		<Edit ref="Edit" :refresh="query"></Edit>
+		<!-- edit Form end-->
+		{{- end}}
+
+		<!-- pagination start -->
+		<div class="page-pagination">
+		<el-pagination
+			@size-change="handleSizeChange"
+			@current-change="handleCurrentChange"
+			:current-page="params.pi"
+			:page-size="params.ps"
+			:page-sizes="pageSizes"
+			layout="total, sizes, prev, pager, next, jumper"
+			:total="totalcount">
+		</el-pagination>
+		</div>
+		<!-- pagination end -->
+
+	</div>
 </template>
 
 
 <script>
-{{$count:= vars "fields" |maxIndex -}}
+{{- if gt ($rows|create|len) 0}}
+import Add from "./{{.Name|lname}}.add"
+{{- end}}
+{{- if gt ($rows|update|len) 0}}
+import Edit from "./{{.Name|lname}}.edit"
+{{- end}}
 export default {
+  name: "{{.Name|varName}}",
   components: {
-   // "bootstrap-modal": require("vue2-bootstrap-modal"),
-   // pager: require("vue-simple-pager"),
+		{{- if gt ($rows|create|len) 0}}
+		Add,
+		{{- end}}
+		{{- if gt ($rows|update|len) 0}}
+		Edit
+		{{- end}}
   },
-  data() {
-    return {
-      paging: {ps: 10, pi: 1,total:0,sizes:[5, 10, 20, 50]},
-      query:{ {{- range $i,$c:=vars "fields"}}{{$c}}:""{{if lt $i $count}},{{end}} {{- end}} },
-      dataList: {count: 0,items: []},
-    };
+  data () {
+		return {
+			pageSizes: [10, 20, 50, 100], 
+			params:{pi:1,ps:10},        //页码，页容量控制
+			totalcount: 0,              //数据总条数
+			editData:{},                //编辑数据对象
+			addData:{},                 //添加数据对象 
+      queryData:{},
+			{{- range $i,$c:=$rows|query -}}
+			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
+			{{$c.Name|aname}}:[],
+			{{- end}}
+			{{- if $c.Con|DT }}
+			dt{{$c.Name|varName}}:this.DateConvert("yyyy-MM-dd 00:00:00", new Date()),{{end}}
+      {{- end}}
+			tableData: [],
+		}
   },
-  created() {
-    this.queryData()
+  created(){
+    var that=this
+    {{- range $i,$c:=$rows|list -}}
+    {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
+    this.$enum.callback(function(){that.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|varName}}")
+		{{- end}}
+		{{- end}}
+		{{- range $i,$c:=$rows|query -}}
+		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
+		this.{{$c.Name|aname}}=this.$enum.get("{{$c.Name|varName}}")
+		{{- end}}
+    {{- end}}
   },
- mounted() {},
- methods: {
-   pageIndexChange:function(val) {
-     this.paging.pi = val;
-     this.queryData();
-   },
-   pageSizeChnage:function(val) {
-     this.paging.ps = val;
-     this.queryData();
-   },
-   search: function() {
-     this.paging.pi = 1;
-     this.queryData();
-   },
-   queryData:async function(){
-     Object.assign(this.query, this.paging);  
-     let res = await this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.query)
-     this.dataList.items = res.items
-     this.dataList.count = res.count
-   },
-
+  mounted(){
+    this.init()
   },
+	methods:{
+    /**初始化操作**/
+    init(){
+      this.query()
+		},
+    /**查询数据并赋值*/
+    query:async function(){
+      this.queryData.pi = this.params.pi
+			this.queryData.ps = this.params.ps
+			{{- range $i,$c:=$rows|query -}}
+			{{- if $c.Con|DT}}
+			this.queryData.{{$c.Name}} = this.DateConvert("yyyy-MM-dd hh:mm:ss", this.dt{{$c.Name|varName}})
+			{{- end -}}
+      {{- end}}
+      let res = await this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.queryData)
+      this.tableData = res.items
+      this.totalcount = res.count
+    },
+    /**改变页容量*/
+		handleSizeChange(val) {
+      this.params.ps = val
+      this.query()
+    },
+    /**改变当前页码*/
+    handleCurrentChange(val) {
+      this.params.pi = val
+      this.query()
+    },
+    /**重置添加表单*/
+    resetForm(formName) {
+      this.dialogAddVisible = false
+      this.$refs[formName].resetFields();
+		},
+		{{- if gt ($rows|detail|len) 0}}
+		detailShow(val){
+			var data = {
+        getpath: "{{.Name|rpath}}",
+        {{range $i,$c:=.pks}}{{$c.Name}}: val.{{$c.Name}},{{end}}
+      }
+      this.$emit("addTab","详情"+val.{{range $i,$c:=.pks}}{{$c.Name}}{{end}},"{{.Name|dpath}}.view/"+val.{{range $i,$c:=.pks}}{{$c.Name}}{{end}},data);
+		},
+		{{- end}}
+		{{- if gt ($rows|create|len) 0}}
+    addShow(){
+      this.$refs.Add.show();
+		},
+		{{- end}}
+		{{- if gt ($rows|update|len) 0}}
+    editShow(val) {
+      this.$refs.Edit.editData = val
+      this.$refs.Edit.show();
+		},
+		{{- end}}
+		{{- if gt ($rows|delete|len) 0}}
+    del(val){
+      console.log(val)
+      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        console.log(val);
+        this.$http.del("{{.Name|rpath}}", {data:val},{},"删除成功","删除失败")
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });          
+      });
+		}
+		{{- end}}
+  }
 }
 </script>
-<style>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  .page-pagination{padding: 10px 15px;text-align: right;}
 </style>
 `

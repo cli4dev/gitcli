@@ -2,6 +2,7 @@ package tmpl
 
 import (
 	"fmt"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -59,6 +60,12 @@ func getfuncs(tp string) map[string]interface{} {
 		"var":    getVar,
 		"vars":   joinVars,
 		"isTime": isTime,
+
+		"aname": fGetAName, //小写开头驼峰命名
+		//"cname": fGetCName, //
+	//	"contains": contains,     //是否包含子串
+		"lname":    fGetLastName, //取最后一个单词
+		"dpath":    GetDetailPath,
 	}
 }
 
@@ -115,6 +122,50 @@ func getVarName(input string) string {
 func getNames(input string) []string {
 	items := strings.Split(strings.Trim(input, "_"), "_")
 	return items
+}
+
+func fGetAName(n string) string {
+	items := strings.Split(n, "_")
+	nitems := make([]string, 0, len(items))
+	for k, i := range items {
+		if k == 0 {
+			nitems = append(nitems, i)
+		}
+		if k > 0 {
+			nitems = append(nitems, strings.ToUpper(i[0:1])+i[1:])
+		}
+
+	}
+	return strings.Join(nitems, "")
+}
+
+func fGetCName(n string) string {
+	_, f := filepath.Split(n)
+	f = strings.ReplaceAll(f, ".", "_")
+	items := strings.Split(f, "_")
+	nitems := make([]string, 0, len(items))
+	for _, i := range items {
+		nitems = append(nitems, strings.ToUpper(i[0:1])+i[1:])
+	}
+	return strings.Join(nitems, "")
+}
+
+func fGetLastName(n string) string {
+	sp := "/"
+	if strings.Contains(n, "_") {
+		sp = "_"
+	}
+
+	names := strings.Split(strings.Trim(n, sp), sp)
+
+	if len(names) > 2 {
+		return strings.Join(names[2:len(names)], sp)
+	}
+	return names[len(names)-1]
+}
+
+func contains(s, substr string) bool {
+	return strings.Contains(s, substr)
 }
 
 //通过正则表达式，转换正确的数据库类型
@@ -360,6 +411,12 @@ func getRouterPath(tabName string) string {
 		return ""
 	}
 	return "/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1)
+}
+
+//GetDetailPath .
+func GetDetailPath(tabName string) string {
+	dir, f := filepath.Split(strings.Replace(tabName, "_", "/", -1))
+	return "/" + dir + f
 }
 
 func getBracketContent(key string) func(con string) []string {

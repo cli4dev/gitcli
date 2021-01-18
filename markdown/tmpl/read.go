@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -180,9 +181,15 @@ func line2TableRow(line *Line) (*Row, error) {
 	if colums[0] == "" {
 		return nil, fmt.Errorf("字段名称不能为空 %s(行:%d)", line.Text, line.LineID)
 	}
+
+	tp, l, err := getType(line)
+	if err != nil {
+		return nil, err
+	}
 	c := &Row{
 		Name:   strings.TrimSpace(strings.Replace(colums[0], "&#124;", "|", -1)),
-		Type:   strings.TrimSpace(colums[1]),
+		Type:   tp,
+		Len:    l,
 		Def:    strings.TrimSpace(strings.Replace(colums[2], "&#124;", "|", -1)),
 		IsNull: strings.TrimSpace(colums[3]),
 		Con:    strings.Replace(strings.TrimSpace(colums[4]), " ", "", -1),
@@ -222,4 +229,22 @@ func getPKSName(path string) string {
 	}
 	names := filepath.SplitList(dir)
 	return names[len(names)-1]
+}
+
+func getType(line *Line) (string, int, error) {
+	colums := strings.Split(strings.Trim(line.Text, "|"), "|")
+	if colums[0] == "" {
+		return "", 0, fmt.Errorf("字段名称不能为空 %s(行:%d)", line.Text, line.LineID)
+	}
+	t := strings.TrimSpace(colums[1])
+	reg := regexp.MustCompile(`[\w]+`)
+	names := reg.FindAllString(t, -1)
+	if len(names) == 0 || len(names) > 3 {
+		return "", 0, fmt.Errorf("未设置字段类型:%v(行:%d)", names, line.LineID)
+	}
+	if len(names) == 1 {
+		return t, 0, nil
+	}
+	l, _ := strconv.Atoi(strings.Join(names[1:], ","))
+	return t, l, nil
 }
