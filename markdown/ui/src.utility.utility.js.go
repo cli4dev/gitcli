@@ -4,7 +4,8 @@ const srcUtilityUtilityJS = `
 import enums from './enum'
 import http from './http'
 import conf from './env'
-import './filter'
+import { trim, isPhoneNumber, isEmailNumber, cardNumberFormat, phoneFormat} from './filter'
+
 /*
 * 初始化注入
 * import utility from './utility'
@@ -16,7 +17,14 @@ export default {
     install: function(Vue, path){
         Vue.use(enums);
         Vue.use(http);
-        Vue.use(conf, path)
+        Vue.use(conf, path);
+        Vue.prototype.$utility = {
+            trim :trim,
+            isPhoneNumber:isPhoneNumber,
+            isEmailNumber:isEmailNumber,
+            phoneFormat:phoneFormat,
+            cardNumberFormat:cardNumberFormat
+            } 
     }
 }
 `
