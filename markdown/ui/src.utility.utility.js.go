@@ -4,7 +4,7 @@ const srcUtilityUtilityJS = `
 import enums from './enum'
 import http from './http'
 import conf from './env'
-
+import './filter'
 /*
 * 初始化注入
 * import utility from './utility'
