@@ -23,11 +23,11 @@ func getfuncs(tp string) map[string]interface{} {
 		"isNull":  isNull(tp), //返回空语句
 
 		//枚举处理函数
-		"fIsEnumTB": hasKW("di", "dn"),
-		"fHasDT":    hasKW("dt"),
-		"fIsDI":     getKWS("di"),
-		"fIsDN":     getKWS("dn"),
-		"fIsDT":     getKWS("dt"),
+		"fIsEnumTB": hasKW("di", "dn"), //数据表的字段是否包含字典数据配置
+		"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
+		"fIsDI":     getKWS("di"),      //字段是否为字典ID
+		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
+		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
 
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
