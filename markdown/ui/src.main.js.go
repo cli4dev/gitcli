@@ -10,13 +10,8 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-import http from './utility/http'
-Vue.use(http)
-
-//导入enum模块
-import enums from './utility/enums'
-Vue.use(enums)
-
+import utility from './utility'
+Vue.use(utility);
 
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies);
