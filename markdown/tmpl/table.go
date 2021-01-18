@@ -3,6 +3,7 @@ package tmpl
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -48,6 +49,7 @@ type Field struct {
 	Index int
 }
 
+//List 获取所有字段名的列表
 func (t fields) List() []string {
 	list := make([]string, 0, len(t))
 	for _, fi := range t {
@@ -55,14 +57,15 @@ func (t fields) List() []string {
 	}
 	return list
 }
+
+//Len 字段个数
 func (t fields) Len() int {
 	return len(t)
 }
+
+//Join 指定连接符，将字段名连接为一个长字符串
 func (t fields) Join(s string) string {
-	list := make([]string, 0, len(t))
-	for _, v := range t {
-		list = append(list, v.Name)
-	}
+	list := t.List()
 	return strings.Join(list, s)
 }
 
@@ -100,8 +103,8 @@ func (t *Table) AddRow(r *Row) error {
 
 //SetPkg 添加行信息
 func (t *Table) SetPkg(path string) {
-	names := strings.Split(strings.Trim(path, "/"), "/")
-	t.PKG = names[len(names)-1]
+
+	t.PKG = getPKSName(path)
 }
 
 //GetPKS 获取主键列表
@@ -188,4 +191,11 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 		return "", err
 	}
 	return strings.Replace(strings.Replace(buff.String(), "{###}", "`", -1), "&#39;", "'", -1), nil
+}
+
+//GetPath 获取路径
+func GetPath(root string, name string, ext ...string) string {
+	ex := types.GetStringByIndex(ext, 0, "vue")
+	path, _ := Translate(fmt.Sprintf("{{.|rmhd|rpath}}.%s", ex), "", name)
+	return filepath.Join(types.GetString(root, "."), path)
 }

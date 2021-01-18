@@ -21,8 +21,14 @@ func getfuncs(tp string) map[string]interface{} {
 		"mod":     getMod,
 		"rmhd":    rmhd,       //去除首段名称
 		"isNull":  isNull(tp), //返回空语句
-		// "require":   nil,
-		// "len":       nil,
+
+		//枚举处理函数
+		"fIsEnumTB": hasKW("di", "dn"), //数据表的字段是否包含字典数据配置
+		"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
+		"fIsDI":     getKWS("di"),      //字段是否为字典ID
+		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
+		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
+
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
 		"codeType":  codeType,        //转换为GO代码的数据类型
@@ -39,7 +45,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"RB": getKWS("rb"), //表单单选框
 		"TA": getKWS("ta"), //表单文本域
 		"DT": getKWS("dt"), //表单日期选择器
-		// "input":     nil,
+
 		"query":  getRows("q"),            //查询字段
 		"list":   getRows("l"),            //列表展示字段
 		"detail": getRows("r"),            //详情展示字段
@@ -367,5 +373,23 @@ func getBracketContent(key string) func(con string) []string {
 		str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
 		str = strings.TrimRight(str, ")")
 		return strings.Split(str, ",")
+	}
+}
+func hasKW(tp ...string) func(t *Table) bool {
+	return func(t *Table) bool {
+		ext := map[string]bool{}
+		for _, r := range t.Rows {
+			for _, t := range tp {
+				if isCons(r.Con, t) {
+					ext[t] = true
+				}
+			}
+		}
+		for _, t := range tp {
+			if _, ok := ext[t]; !ok {
+				return false
+			}
+		}
+		return true
 	}
 }
