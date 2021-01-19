@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/micro-plat/lib4go/types"
@@ -40,12 +41,15 @@ func getfuncs(tp string) map[string]interface{} {
 		"indexs":    getDBIndex(tp),  //获取表的索引串
 		"maxIndex":  getMaxIndex,     //最大索引值
 		"lower":     getLower,        //获取变量的最小写字符
+		"order":     getOrderBy,
 
-		"SL": getKWS("sl"), //表单下拉框
-		"CB": getKWS("cb"), //表单复选框
-		"RB": getKWS("rb"), //表单单选框
-		"TA": getKWS("ta"), //表单文本域
-		"DT": getKWS("dt"), //表单日期选择器
+		"ismysql":  stringsEqual("mysql"),
+		"isoracle": stringsEqual("oracle"),
+		"SL":       getKWS("sl"), //表单下拉框
+		"CB":       getKWS("cb"), //表单复选框
+		"RB":       getKWS("rb"), //表单单选框
+		"TA":       getKWS("ta"), //表单文本域
+		"DT":       getKWS("dt"), //表单日期选择器
 
 		"query":  getRows("q"),            //查询字段
 		"list":   getRows("l"),            //列表展示字段
@@ -278,6 +282,75 @@ func getMaxIndex(r interface{}) int {
 	return 0
 }
 
+func getOrderBy(tb *Table) []map[string]interface{} {
+	columns := make([]map[string]interface{}, 0, len(tb.Rows))
+	fileds := []string{}
+	orders := []string{}
+	ob := map[string]string{}
+
+	for _, v := range tb.Rows {
+		if strings.Contains(v.Con, "OB") {
+			if !strings.Contains(v.Con, "OB(") {
+				fileds = append(fileds, v.Name)
+				continue
+			}
+			for _, v1 := range strings.Split(v.Con, ",") {
+				if !strings.Contains(v1, "OB(") {
+					continue
+				}
+				s := strings.Index(v1, "OB(")
+				e := strings.Index(v1, ")")
+				orders = append(orders, v1[s+1:e])
+				ob[v1[s+1:e]] = v.Name
+			}
+		}
+	}
+
+	if len(orders) > 0 {
+		sort.Sort(sort.StringSlice(orders))
+	}
+
+	for _, v := range orders {
+		fileds = append(fileds, ob[v])
+	}
+
+	for _, v := range fileds {
+		row := map[string]interface{}{
+			"name":  v,
+			"comma": true,
+		}
+		columns = append(columns, row)
+	}
+
+	if len(columns) > 0 {
+		columns[len(columns)-1]["comma"] = false
+	}
+	return columns
+}
+
+func getSeqs() func(tb *Table) []map[string]interface{} {
+	return func(tb *Table) []map[string]interface{} {
+		columns := make([]map[string]interface{}, 0, len(tb.Rows))
+
+		for _, v := range tb.Rows {
+			if strings.Contains(v.Con, "SEQ") {
+				descsimple := strings.Join(getBracketContent("SEQ")(v.Desc), ",")
+				row := map[string]interface{}{
+					"name":       v.Name,
+					"descsimple": descsimple,
+					"seqname":    "seqname", //  fmt.Sprintf("seq_%s_%s", fGetNName(tb.Name), getFilterName(tb.Name, v.Cname)),
+					"desc":       v.Desc,
+					"type":       v.Type,
+					"len":        v.Len,
+					"comma":      true,
+				}
+				columns = append(columns, row)
+			}
+		}
+		return columns
+	}
+}
+
 //去掉首段名称
 func isCons(input string, tp string) bool {
 	cks, ok := cons[strings.ToLower(tp)]
@@ -403,6 +476,12 @@ func getVar(name string, value ...string) string {
 func isTime(input string) bool {
 	tp := codeType(input)
 	return tp == "time.Time"
+}
+
+func stringsEqual(s string) func(s1 string) bool {
+	return func(s1 string) bool {
+		return strings.EqualFold(s, s1)
+	}
 }
 
 //getRouterPath .

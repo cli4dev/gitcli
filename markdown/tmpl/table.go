@@ -17,6 +17,8 @@ type Table struct {
 	Desc    string //表描述
 	PKG     string //包名称
 	Drop    bool   //创建表前是否先删除
+	DBType  string //数据库类型
+	DBLink  string //
 	Rows    []*Row
 	RawRows []*Row
 	Indexs  Indexs
@@ -30,7 +32,7 @@ type Row struct {
 	IsNull string //为空
 	Con    string //约束
 	Desc   string //描述
-	Len    int //类型长度
+	Len    int    //类型长度
 }
 
 //Indexs 索引集

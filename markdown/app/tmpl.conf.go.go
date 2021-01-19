@@ -6,7 +6,7 @@ import (
 	"github.com/micro-plat/hydra"
 )
 
-func init() {
+func install() {
 	hydra.OnReady(func() error {		
 		return nil
 	})
