@@ -95,20 +95,10 @@ export default {
 			this.editData.{{$c.Name}} = this.DateConvert("yyyy-MM-dd hh:mm:ss", this.editData.{{$c.Name}})
 			{{- end -}}
 			{{- end}}
-			this.$http.put("{{.Name|rpath}}", this.editData,{})
-			.then(res => {
-				this.$message({
-					type: "success",
-					message: "修改成功!"
-				});
+			this.$http.xput("{{.Name|rpath}}", this.editData,{})
+			.then(res => {			
 				this.dialogFormVisible = false;
 				this.refresh()
-			})
-			.catch(err => {
-				this.$message({
-					type: "error",
-					message: err.response.data
-				});
 			})
 		},
 	}

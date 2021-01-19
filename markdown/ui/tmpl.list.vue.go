@@ -64,7 +64,7 @@ const TmplList = `
 
     	<!-- list start-->
 		<el-scrollbar style="height:100%">
-			<el-table :data="tableData" border style="width: 100%">
+			<el-table :data="dataList.items" border style="width: 100%">
 				{{- range $i,$c:=$rows|list}}
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" >
 				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB)}}
@@ -129,13 +129,13 @@ const TmplList = `
 		<!-- pagination start -->
 		<div class="page-pagination">
 		<el-pagination
-			@size-change="handleSizeChange"
-			@current-change="handleCurrentChange"
-			:current-page="params.pi"
-			:page-size="params.ps"
-			:page-sizes="pageSizes"
+			@size-change="pageSizeChnage"
+			@current-change="pageIndexChange"
+			:current-page="paging.pi"
+			:page-size="paging.ps"
+			:page-sizes="paging.sizes"
 			layout="total, sizes, prev, pager, next, jumper"
-			:total="totalcount">
+			:total="dataList.count">
 		</el-pagination>
 		</div>
 		<!-- pagination end -->
@@ -163,9 +163,8 @@ export default {
   },
   data () {
 		return {
-			pageSizes: [10, 20, 50, 100], 
+			paging: {ps: 10, pi: 1,total:0,sizes:[5, 10, 20, 50]},
 			params:{pi:1,ps:10},        //页码，页容量控制
-			totalcount: 0,              //数据总条数
 			editData:{},                //编辑数据对象
 			addData:{},                 //添加数据对象 
       queryData:{},
@@ -176,7 +175,7 @@ export default {
 			{{- if $c.Con|DT }}
 			dt{{$c.Name|varName}}:this.DateConvert("yyyy-MM-dd 00:00:00", new Date()),{{end}}
       {{- end}}
-			tableData: [],
+			dataList: {count: 0,items: []},
 		}
   },
   created(){
@@ -202,25 +201,25 @@ export default {
 		},
     /**查询数据并赋值*/
     query:async function(){
-      this.queryData.pi = this.params.pi
-			this.queryData.ps = this.params.ps
+      this.queryData.pi = this.paging.pi
+			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
 			{{- if $c.Con|DT}}
 			this.queryData.{{$c.Name}} = this.DateConvert("yyyy-MM-dd hh:mm:ss", this.dt{{$c.Name|varName}})
 			{{- end -}}
       {{- end}}
       let res = await this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.queryData)
-      this.tableData = res.items
-      this.totalcount = res.count
+			this.dataList.items = res.items
+			this.dataList.count = res.count
     },
     /**改变页容量*/
-		handleSizeChange(val) {
-      this.params.ps = val
+		pageSizeChnage(val) {
+      this.paging.ps = val
       this.query()
     },
     /**改变当前页码*/
-    handleCurrentChange(val) {
-      this.params.pi = val
+    pageIndexChange(val) {
+      this.paging.pi = val
       this.query()
     },
     /**重置添加表单*/
@@ -251,13 +250,13 @@ export default {
 		{{- if gt ($rows|delete|len) 0}}
     del(val){
       console.log(val)
-      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
-        console.log(val);
-        this.$http.del("{{.Name|rpath}}", {data:val},{},"删除成功","删除失败")
+			this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {confirmButtonText: "确定",  cancelButtonText: "取消", type: "warning"})
+			.then(() => {
+				this.$http.del("{{.Name|rpath}}", {data:val})
+				.then(res => {			
+					this.dialogFormVisible = false;
+					this.refresh()
+				})
       }).catch(() => {
         this.$message({
           type: "info",
