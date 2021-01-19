@@ -70,7 +70,29 @@ func init() {
 					Name:   "clear",
 					Usage:  "清理项目",
 					Action: clear,
-				}, {
+				},
+				{
+					Name:   "page",
+					Usage:  "创建项目页面",
+					Action: createPage,
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						}, cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						}, cli.BoolFlag{
+							Name:  "w2f,f",
+							Usage: `-生成到文件`,
+						}, cli.BoolFlag{
+							Name:  "cover,v",
+							Usage: `-文件已存在时自动覆盖`,
+						},
+					},
+				},
+				{
 					Name:   "list",
 					Usage:  "生成列表代码",
 					Action: createList(),

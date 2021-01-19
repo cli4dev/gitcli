@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-//createUI 创建web界面
+//createUI 创建web项目基础文件
 func createUI(c *cli.Context) (err error) {
 	if len(c.Args()) == 0 {
 		return fmt.Errorf("未指定项目名称")
@@ -20,6 +20,16 @@ func createUI(c *cli.Context) (err error) {
 
 	return ui.CreateWeb(c.Args().First())
 
+}
+
+//createUI 创建web项目页面
+func createPage(c *cli.Context) (err error) {
+	for k := range uiMap {
+		if err := create(k)(c); err != nil {
+			return err
+		}
+	}
+	return
 }
 
 //createUI 创建web界面

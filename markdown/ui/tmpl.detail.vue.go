@@ -1,6 +1,11 @@
 package ui
 
 const TmplDetail = `
+{{- $string := "string" -}}
+{{- $int := "int" -}}
+{{- $int64 := "int64" -}}
+{{- $decimal := "types.Decimal" -}}
+{{- $time := "time.Time" -}}
 {{- $rows := .Rows -}}
 <template>
   <div>
@@ -29,11 +34,11 @@ const TmplDetail = `
                   <el-col :span="6">
                     <div>{{"{{info."}}{{$c.Name}} | fltrNumberFormat(0)}}</div>
                   </el-col>
-            {{- else if eq ($c.Type|codeType) $decimal) }}
+            {{- else if eq ($c.Type|codeType) $decimal }}
                   <el-col :span="6">
                     <div>{{"{{info."}}{{$c.Name}} | fltrNumberFormat(2)}}</div>
                   </el-col>
-            {{- else if eq ($c.Type|codeType) $time) }}
+            {{- else if eq ($c.Type|codeType) $time }}
                   <el-col :span="6">
                     <div>{{"{{info."}}{{$c.Name}} | fltrDate}}</div>
                   </el-col>
@@ -68,7 +73,7 @@ const TmplDetail = `
       }
     },
     created(){
-      {{- if gt $rows|len 0}}
+      {{- if gt ($rows|len) 0}}
       var that=this
       {{- end}}
       {{- range $i,$c:=$rows|detail -}}

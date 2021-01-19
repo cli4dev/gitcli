@@ -83,7 +83,6 @@ const TmplList = `
 				<template slot-scope="scope">
 					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat(2)}}</span>
 				</template>
-				{{end -}}
 				{{- else if eq ($c.Type|codeType) $time }}
 				<template slot-scope="scope">
 					<span>{{"{{scope.row."}}{{$c.Name}} | fltrDate}}</span>
@@ -164,18 +163,17 @@ export default {
   data () {
 		return {
 			paging: {ps: 10, pi: 1,total:0,sizes:[5, 10, 20, 50]},
-			params:{pi:1,ps:10},        //页码，页容量控制
 			editData:{},                //编辑数据对象
 			addData:{},                 //添加数据对象 
-      queryData:{},
+      queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-			{{$c.Name|aname}}:[],
+			{{$c.Name|aname}}:[],      //枚举对象
 			{{- end}}
 			{{- if $c.Con|DT }}
 			dt{{$c.Name|varName}}:this.DateConvert("yyyy-MM-dd 00:00:00", new Date()),{{end}}
       {{- end}}
-			dataList: {count: 0,items: []},
+			dataList: {count: 0,items: []}, //表单数据对象
 		}
   },
   created(){
