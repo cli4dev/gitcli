@@ -6,7 +6,9 @@ const TmplList = `
 {{- $int64 := "int64" -}}
 {{- $decimal := "types.Decimal" -}}
 {{- $time := "time.Time" -}}
+{{- $len := 32 -}}
 {{- $rows := .Rows -}}
+{{- $pks := .|pks -}}
 <template>
 	<div class="panel panel-default">
     	<!-- query start -->
@@ -55,7 +57,7 @@ const TmplList = `
 				{{end}}
 				{{- if gt ($rows|create|len) 0}}
 				<el-form-item>
-					<el-button type="success" size="small" @click="addShow">添加</el-button>
+					<el-button type="success" size="small" @click="showAdd">添加</el-button>
 				</el-form-item>
 				{{end}}
 			</el-form>
@@ -71,7 +73,7 @@ const TmplList = `
 					<template slot-scope="scope">
 						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</span>
 					</template>
-				{{- else if eq ($c.Type|codeType) $string}}
+				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
 						<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20)}}</span>
 					</template>
@@ -99,10 +101,10 @@ const TmplList = `
 				<el-table-column  label="操作">
 					<template slot-scope="scope">
 						{{- if gt ($rows|update|len) 0}}
-						<el-button type="text" size="small" @click="editShow(scope.row)">编辑</el-button>
+						<el-button type="text" size="small" @click="showEdit(scope.row)">编辑</el-button>
 						{{- end}}
 						{{- if gt ($rows|detail|len) 0}}
-						<el-button type="text" size="small" @click="detailShow(scope.row)">详情</el-button>
+						<el-button type="text" size="small" @click="showDetail(scope.row)">详情</el-button>
 						{{- end}}
 						{{- if gt ($rows|delete|len) 0}}
 						<el-button type="text" size="small" @click="del(scope.row)">删除</el-button>
@@ -226,21 +228,21 @@ export default {
       this.$refs[formName].resetFields();
 		},
 		{{- if gt ($rows|detail|len) 0}}
-		detailShow(val){
+		showDetail(val){
 			var data = {
         getpath: "{{.Name|rpath}}",
-        {{range $i,$c:=.pks}}{{$c.Name}}: val.{{$c.Name}},{{end}}
+        {{range $i,$c:=$pks}}{{$c}}: val.{{$c}},{{end}}
       }
-      this.$emit("addTab","详情"+val.{{range $i,$c:=.pks}}{{$c.Name}}{{end}},"{{.Name|dpath}}.view/"+val.{{range $i,$c:=.pks}}{{$c.Name}}{{end}},data);
+      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|dpath}}.view/"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},data);
 		},
 		{{- end}}
 		{{- if gt ($rows|create|len) 0}}
-    addShow(){
+    showAdd(){
       this.$refs.Add.show();
 		},
 		{{- end}}
 		{{- if gt ($rows|update|len) 0}}
-    editShow(val) {
+    showEdit(val) {
       this.$refs.Edit.editData = val
       this.$refs.Edit.show();
 		},

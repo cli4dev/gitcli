@@ -6,6 +6,7 @@ const TmplDetail = `
 {{- $int64 := "int64" -}}
 {{- $decimal := "types.Decimal" -}}
 {{- $time := "time.Time" -}}
+{{- $len := 32 -}}
 {{- $rows := .Rows -}}
 <template>
   <div>
@@ -26,7 +27,7 @@ const TmplDetail = `
                   <el-col :span="6">
                     <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</div>
                   </el-col>
-            {{- else if eq ($c.Type|codeType) $string}}
+            {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
                   <el-col :span="6">
                     <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</div>
                   </el-col>
@@ -87,7 +88,7 @@ const TmplDetail = `
         this.queryData()
       },
       queryData:async function() {
-        this.info = await this.$http.xget("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}single",,this.$route.query)
+        this.info = await this.$http.xget("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}single",this.$route.query)
       },
       handleClick(tab) {}
     },
