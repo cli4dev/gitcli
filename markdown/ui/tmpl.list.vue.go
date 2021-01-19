@@ -173,7 +173,7 @@ export default {
 			{{$c.Name|lowerName}}:[],      //枚举对象
 			{{- end}}
 			{{- if $c.Con|DT }}
-			dt{{$c.Name|upperName}}:this.DateConvert("yyyy-MM-dd 00:00:00", new Date()),{{end}}
+			dt{{$c.Name|upperName}}:this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
@@ -205,7 +205,7 @@ export default {
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
 			{{- if $c.Con|DT}}
-			this.queryData.{{$c.Name}} = this.DateConvert("yyyy-MM-dd hh:mm:ss", this.dt{{$c.Name|varName}})
+			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.dt{{$c.Name|varName}},"yyyy-MM-dd hh:mm:ss")
 			{{- end -}}
       {{- end}}
       let res = await this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.queryData)

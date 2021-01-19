@@ -98,7 +98,7 @@ export default {
 		add(formName) {
 			{{- range $i,$c:=$rows|create -}}
 			{{- if $c.Con|DT }}
-			this.addData.{{$c.Name}} = this.DateConvert("yyyy-MM-dd hh:mm:ss", this.addData.{{$c.Name}})
+			this.addData.{{$c.Name}} = this.$utility.dateFormat(this.addData.{{$c.Name}},"yyyy-MM-dd hh:mm:ss")
 			{{- end -}}
 			{{- end}}
 			this.$refs[formName].validate((valid) => {

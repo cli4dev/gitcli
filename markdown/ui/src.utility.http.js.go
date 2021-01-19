@@ -1,6 +1,7 @@
 package ui
 
-const srcUtilityHttpJS = `import axios from 'axios';
+const srcUtilityHttpJS = `import Vue from "vue"
+import axios from 'axios';
 
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = true;
@@ -35,20 +36,13 @@ var tmplFailed = { title: "错误", message: "网络错误,请稍后再试", typ
 //根据状态码回调
 var statusCodeHandles = { "403":function(response){} } 
 
-//注入初始化
-export default {
-    install: function(Vue){
-        __vue__ = Vue.prototype
-        Vue.prototype.$http = new Http();
-    }
-}
-
 /*
 * http对象使用时须通过引用并进行初始化
 * import http from './http'
 * Vue.use(http);
 */
-function Http() {
+export function Http() {
+    __vue__ = Vue.prototype
 }
 
 //http request 拦截器
@@ -325,7 +319,7 @@ function showSuccessNotify(msg){
     }
 
     if(typeof __vue__.$notify != "function"){
-        console.info("还未安装element-ui组件，请先安装相关组件");
+        console.error("未找到提示组件'this.$notify'方法，可能未安装element-ui组件，请先安装相关组件");
         return
     }
     __vue__.$notify(tmpl);
@@ -346,7 +340,7 @@ function showFailedNotify(msg, err){
         return
     }
     if(typeof __vue__.$notify != "function"){
-        console.info("还未安装element-ui组件，请先安装相关组件");
+        console.info("未找到提示组件'this.$notify'方法，可能未安装element-ui组件，请先安装相关组件");
         return
     }
     __vue__.$notify(tmpl);
@@ -390,7 +384,7 @@ function saveHeader(header) {
             delete header.item
         }
     })
-    window.localStorage.setItem(headerKey, header);
+    window.localStorage.setItem(headerKey, JSON.stringify(header));
 }
 
 //获取response返回的header  
@@ -398,7 +392,7 @@ function getHeader(cheader){
     var header = {}    
     //是否使用保存的header头
     if (enableHeader) {
-        header = window.localStorage.getItem(headerKey) || {}
+        header = window.localStorage.getItem(headerKey) ? JSON.parse(window.localStorage.getItem(headerKey)) : {}
     }   
 
     //配置自定义header头，会覆盖已有的数据

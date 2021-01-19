@@ -92,7 +92,7 @@ export default {
 		edit() {
 			{{- range $i,$c:=$rows|update -}}
 			{{- if $c.Con|DT}}
-			this.editData.{{$c.Name}} = this.DateConvert("yyyy-MM-dd hh:mm:ss", this.editData.{{$c.Name}})
+			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"yyyy-MM-dd hh:mm:ss")
 			{{- end -}}
 			{{- end}}
 			this.$http.xput("{{.Name|rpath}}", this.editData,{})
