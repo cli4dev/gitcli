@@ -61,8 +61,8 @@ func getfuncs(tp string) map[string]interface{} {
 		"vars":   joinVars,
 		"isTime": isTime,
 
-		"aname": fGetAName, //小写开头驼峰命名
-		//"cname": fGetCName, //
+		"lowerName": fGetLowerCase, //小驼峰式命名
+		"upperName": fGetUpperCase, //大驼峰式命名
 		//	"contains": contains,     //是否包含子串
 		"lname": fGetLastName, //取最后一个单词
 		"dpath": GetDetailPath,
@@ -124,7 +124,7 @@ func getNames(input string) []string {
 	return items
 }
 
-func fGetAName(n string) string {
+func fGetLowerCase(n string) string {
 	items := strings.Split(n, "_")
 	nitems := make([]string, 0, len(items))
 	for k, i := range items {
@@ -139,7 +139,7 @@ func fGetAName(n string) string {
 	return strings.Join(nitems, "")
 }
 
-func fGetCName(n string) string {
+func fGetUpperCase(n string) string {
 	_, f := filepath.Split(n)
 	f = strings.ReplaceAll(f, ".", "_")
 	items := strings.Split(f, "_")

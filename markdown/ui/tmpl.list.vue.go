@@ -23,14 +23,14 @@ const TmplList = `
 				{{- else if $c.Con|RB}}
 				<el-form-item  label="{{$c.Desc|shortName}}:">
 					<el-radio-group v-model="queryData.{{$c.Name}}" style="margin-left:5px">
-            <el-radio v-for="(item, index) in {{$c.Name|aname}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
+            <el-radio v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
           </el-radio-group>
 				</el-form-item>
 				{{- else if $c.Con|SL }}
 				<el-form-item>
 					<el-select size="medium" v-model="queryData.{{$c.Name}}" class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
 						<el-option value="" label="全部"></el-option>
-						<el-option v-for="(item, index) in {{$c.Name|aname}}" :key="index" :value="item.value" :label="item.name"></el-option>
+						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 						</el-select>
 				</el-form-item>
         {{- else if $c.Con|DT }}
@@ -40,7 +40,7 @@ const TmplList = `
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
           <el-checkbox-group v-model="{{$c.Name}}">
-          	<el-checkbox v-for="(item, index) in {{$c.Name|aname}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
+          	<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
 				{{- else}}
@@ -71,7 +71,7 @@ const TmplList = `
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" >
 				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB)}}
 					<template slot-scope="scope">
-						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{$c.Name|varName}}")}}</span>
+						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{$c.Name|upperName}}")}}</span>
 					</template>
 				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
@@ -170,10 +170,10 @@ export default {
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-			{{$c.Name|aname}}:[],      //枚举对象
+			{{$c.Name|lowerName}}:[],      //枚举对象
 			{{- end}}
 			{{- if $c.Con|DT }}
-			dt{{$c.Name|varName}}:this.DateConvert("yyyy-MM-dd 00:00:00", new Date()),{{end}}
+			dt{{$c.Name|upperName}}:this.DateConvert("yyyy-MM-dd 00:00:00", new Date()),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
@@ -182,12 +182,12 @@ export default {
     var that=this
     {{- range $i,$c:=$rows|list -}}
     {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-    this.$enum.callback(function(){that.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|varName}}")
+    this.$enum.callback(function(){that.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|upperName}}")
 		{{- end}}
 		{{- end}}
 		{{- range $i,$c:=$rows|query -}}
 		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-		this.{{$c.Name|aname}}=this.$enum.get("{{$c.Name|varName}}")
+		this.{{$c.Name|lowerName}}=this.$enum.get("{{$c.Name|upperName}}")
 		{{- end}}
     {{- end}}
   },
@@ -233,7 +233,7 @@ export default {
         getpath: "{{.Name|rpath}}",
         {{range $i,$c:=$pks}}{{$c}}: val.{{$c}},{{end}}
       }
-      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|dpath}}.view/"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},data);
+      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|dpath}}.detail/"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},data);
 		},
 		{{- end}}
 		{{- if gt ($rows|create|len) 0}}

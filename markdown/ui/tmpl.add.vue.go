@@ -17,19 +17,19 @@ const TmplCreateVue = `
 			{{- else if $c.Con|RB }}
 			<el-form-item  label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
 				<el-radio-group v-model="addData.{{$c.Name}}" style="margin-left:5px">
-        	<el-radio v-for="(item, index) in {{$c.Name|aname}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
+        	<el-radio v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
 				</el-radio-group>
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
 				<el-select  placeholder="---请选择---" clearable v-model="addData.{{$c.Name}}" style="width: 100%;">
-					<el-option v-for="(item, index) in {{$c.Name|aname}}" :key="index" :value="item.value" :label="item.name" ></el-option>
+					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
 				</el-select>
 			</el-form-item>
 			{{- else if $c.Con|CB }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}"> 
 				<el-checkbox-group v-model="addData.{{$c.Name}}">
-					<el-checkbox v-for="(item, index) in {{$c.Name|aname}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
+					<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
 				</el-checkbox-group>
 			</el-form-item>
 			{{- else if $c.Con|DT }}
@@ -61,7 +61,7 @@ export default {
 			dialogAddVisible:false,
 			{{- range $i,$c:=$rows|create -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-      {{$c.Name|aname}}:this.$enum.get("{{$c.Name|varName}}"),
+      {{$c.Name|lowerName}}:this.$enum.get("{{$c.Name|upperName}}"),
       {{- end}}
 			{{- end}}
 			rules: {                    //数据验证规则
