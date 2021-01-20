@@ -5,11 +5,10 @@ const UpdateSingle = `
 {{$rcount:=.|pks|maxIndex -}}
 //Update{{.Name|rmhd|varName}} 更新{{.Desc}}
 const Update{{.Name|rmhd|varName}} = {###}
-Update {{.Name}} t
+update {{.Name}} t set
 {{- range $i,$c:=.Rows}}
 t.{{$c.Name}} = @{{$c.Name}}{{if lt $i $count}},{{end}}
 {{- end}} 
-from {{.Name}} t
 where
 {{- range $i,$c:=.|pks}}
 t.{{$c}} = @{{$c}}{{if lt $i $rcount}} and {{end}}
