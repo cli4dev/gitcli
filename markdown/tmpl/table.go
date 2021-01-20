@@ -30,7 +30,7 @@ type Row struct {
 	IsNull string //为空
 	Con    string //约束
 	Desc   string //描述
-	Len    int //类型长度
+	Len    int    //类型长度
 }
 
 //Indexs 索引集
@@ -104,7 +104,6 @@ func (t *Table) AddRow(r *Row) error {
 
 //SetPkg 添加行信息
 func (t *Table) SetPkg(path string) {
-
 	t.PKG = getPKSName(path)
 }
 

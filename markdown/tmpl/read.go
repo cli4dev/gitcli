@@ -227,8 +227,8 @@ func getPKSName(path string) string {
 	if ext != "" {
 		dir = filepath.Dir(path)
 	}
-	names := filepath.SplitList(dir)
-	return names[len(names)-1]
+	_, name := filepath.Split(dir)
+	return name
 }
 
 func getType(line *Line) (string, int, error) {

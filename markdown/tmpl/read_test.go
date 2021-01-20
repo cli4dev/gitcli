@@ -44,3 +44,20 @@ func TestRead(t *testing.T) {
 	assert.Equal(t, "RL,DT", tb.Tbs[0].Rows[6].Con)
 	assert.Equal(t, "创建时间", tb.Tbs[0].Rows[6].Desc)
 }
+func TestPKG(t *testing.T) {
+	var cases = []struct {
+		path string
+		name string
+	}{
+		{path: "./modules/const/db/scheme", name: "scheme"},
+		{path: "scheme", name: "scheme"},
+		{path: "/", name: ""},
+		{path: "/scheme", name: "scheme"},
+		{path: "/modules/const/db", name: "db"},
+	}
+	for _, c := range cases {
+		name := getPKSName(c.path)
+		assert.Equal(t, c.name, name, c.path)
+	}
+
+}
