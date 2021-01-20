@@ -10,7 +10,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-import utility from './utility'
+import utility from './utility/utility'
 Vue.use(utility);
 
 import VueCookies from 'vue-cookies'

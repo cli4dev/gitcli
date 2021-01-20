@@ -19,6 +19,7 @@ var tmptls = map[string]string{
 	"src/utility/enum.js":        srcUtilityEnumJS,
 	"src/utility/filter.js":      srcUtilityFilter,
 	"src/utility/utility.js":     srcUtilityUtilityJS,
+	"src/utility/env.js":         srcUitlityEnvJS,
 	"src/utility/date.js":        srcUtilityDateJS,
 	"index.html":                 indexHTML,
 	"package.json":               packageJSON,
