@@ -25,11 +25,11 @@ const TmplDetail = `
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|RB) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|upperName}}")}}</div>
+                    <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}")}}</div>
                   </el-col>
             {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
                   <el-col :span="6">
-                    <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{$c.Name|upperName}}")}}</div>
+                    <div>{{"{{info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}")}}</div>
                   </el-col>
           	{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
                   <el-col :span="6">
@@ -79,7 +79,7 @@ const TmplDetail = `
       {{- end}}
       {{- range $i,$c:=$rows|detail -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-        this.$enum.callback(function(){that.$http.xget("{{or ((index ($c.Con|SLCon) 0)|rpath) "/dds"}}/dictionary/get", {})},"{{$c.Name|upperName}}")
+        this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}")
       {{- end}}
       {{- end}}
     },

@@ -20,10 +20,16 @@ func (o *EnumsHandler) QueryHandle(ctx hydra.IContext) interface{} {
 	//根据传入的枚举类型获取数据
 	tp := ctx.Request().GetString("type")
 	if tp != "" {
-		items, err := hydra.C.DB().GetRegularDB().Query(enumsMap[tp], ctx.Request().GetMap())
+		key := tp
+		if _, ok := enumsMap[key]; !ok {
+			key = "*"
+		}
+
+		items, err := hydra.C.DB().GetRegularDB().Query(enumsMap[key], ctx.Request().GetMap())
 		if err != nil {
 			return err
 		}
+	
 		return items
 	}
 
@@ -43,13 +49,15 @@ var enumsMap = map[string]string{
 {{ range $j,$t:=.Tbs -}}
 {{if $t|fIsEnumTB -}}
 {{$count:= 0 -}}
-"{{$t.Name|rmhd}}":{###}select 
-{{- if not ($t|fHasDT) -}} '{{$t.Name|rmhd}}' type {{$count = 1}}{{end -}}
-{{range $i,$c:=.Rows -}}
+"{{$t.Name|rmhd|upperName}}":{###}select '{{$t.Name|rmhd|upperName}}' type {{$count = 1}}
+{{- range $i,$c:=.Rows -}}
 {{if $c.Con|fIsDI -}}{{if gt $count 0}},{{end}}{{$count = 1}} t.{{$c.Name}} value {{end -}}
 {{if $c.Con|fIsDN -}}{{if gt $count 0}},{{end}}{{$count = 1}} t.{{$c.Name}} name {{end -}}
-{{if $c.Con|fIsDT -}}{{if gt $count 0}},{{end}}{{$count = 1}} t.{{$c.Name}} type {{end -}}
 {{end}} from {{$t.Name}} t {###},
 {{end -}}
 {{- end -}}
+"Province":{###}select 'Province' type , canton_code value, chinese_name name from dds_area_info where parent_code = '*' or parent_code='QG' order by canton_code{###},
+"City": {###}select 'City' type , canton_code value, chinese_name name from dds_area_info where grade='2' order by canton_code {###},
+"Region":{###}select 'Region' type ,canton_code value, chinese_name name from dds_area_info order by canton_code {###},
+"*":  {###}select 	type, name,	value from dds_dictionary_info where type = @type and status = 0 order by sort_no,id {###},
 }`

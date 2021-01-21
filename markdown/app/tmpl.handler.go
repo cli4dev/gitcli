@@ -84,17 +84,19 @@ func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r inter
 	}
 
 	ctx.Log().Info("2.执行操作")
-	items, err := hydra.C.DB().GetRegularDB().Query(sql.Query{{.Name|upperName}}, ctx.Request().GetMap())
+	in["currentPage"] = (types.GetInt(in["pi"]) - 1) * types.GetInt(in["ps"])
+	in["pageSize"] = in["ps"]
+	items, err := hydra.C.DB().GetRegularDB().Query(sql.Query{{.Name|upperName}}, in)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
 	}
-	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Query{{.Name|upperName}}Count, ctx.Request().GetMap())
+	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Query{{.Name|upperName}}Count, in)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据数量出错:%+v", err)
 	}
 	return map[string]interface{}{
 		"items": items,
-		"count": count,
+		"count": types.GetInt(count),
 	}
 }
 {{- end}}

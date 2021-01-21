@@ -61,7 +61,7 @@ export default {
 			dialogAddVisible:false,
 			{{- range $i,$c:=$rows|create -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-      {{$c.Name|lowerName}}:this.$enum.get("{{$c.Name|upperName}}"),
+      {{$c.Name|lowerName}}:this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}"),
       {{- end}}
 			{{- end}}
 			rules: {                    //数据验证规则

@@ -26,10 +26,10 @@ func getfuncs(tp string) map[string]interface{} {
 
 		//枚举处理函数
 		"fIsEnumTB": hasKW("di", "dn"), //数据表的字段是否包含字典数据配置
-		"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
-		"fIsDI":     getKWS("di"),      //字段是否为字典ID
-		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
-		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
+		//	"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
+		"fIsDI": getKWS("di"), //字段是否为字典ID
+		"fIsDN": getKWS("dn"), //字段是否为字典Name
+		//"fIsDT":     getKWS("dt"),      //字段是否为字典Type
 
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
@@ -51,13 +51,14 @@ func getfuncs(tp string) map[string]interface{} {
 		"TA":       getKWS("ta"), //表单文本域
 		"DT":       getKWS("dt"), //表单日期选择器
 
-		"query":  getRows("q"),            //查询字段
-		"list":   getRows("l"),            //列表展示字段
-		"detail": getRows("r"),            //详情展示字段
-		"create": getRows("c"),            //创建字段
-		"delete": getRows("d"),            //删除时判定字段
-		"update": getRows("u"),            //更新字段
-		"SLCon":  getBracketContent("sl"), //获取约束的内容
+		"query":     getRows("q"),                        //查询字段
+		"list":      getRows("l"),                        //列表展示字段
+		"detail":    getRows("r"),                        //详情展示字段
+		"create":    getRows("c"),                        //创建字段
+		"delete":    getRows("d"),                        //删除时判定字段
+		"update":    getRows("u"),                        //更新字段
+		"moduleCon": getBracketContent("sl", "cb", "rb"), //获取组件约束的内容
+		"firstStr":  getStringByIndex(0),                 //获取约束的内容
 
 		"rpath": getRouterPath,
 
@@ -498,17 +499,31 @@ func GetDetailPath(tabName string) string {
 	return "/" + dir + f
 }
 
-func getBracketContent(key string) func(con string) []string {
+func getStringByIndex(index int) func(s []string) string {
+	return func(s []string) string {
+		return types.GetStringByIndex(s, index)
+	}
+}
+
+func getBracketContent(keys ...string) func(con string) []string {
 	return func(con string) []string {
-		rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
-		strs := rex.FindAllString(con, -1)
-		if len(strs) < 1 {
-			return []string{""}
+		s := ""
+		for _, key := range keys {
+			rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
+			strs := rex.FindAllString(con, -1)
+			if len(strs) < 1 {
+				continue
+			}
+			str := strs[0]
+			str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
+			str = strings.TrimRight(str, ")")
+			s = fmt.Sprintf("%s,%s", s, str)
 		}
-		str := strs[0]
-		str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
-		str = strings.TrimRight(str, ")")
-		return strings.Split(str, ",")
+		if s == "" {
+			return []string{}
+		}
+		s = strings.TrimLeft(s, ",")
+		return strings.Split(s, ",")
 	}
 }
 func hasKW(tp ...string) func(t *Table) bool {

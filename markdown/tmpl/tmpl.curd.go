@@ -101,10 +101,10 @@ t.{{$c.Name}}{{if lt $i ($listrows|maxIndex)}},{{end}}
 {{- end}} 
 from {{.Name}} t
 where
-{{- if eq ($listrows|len) 0}}
+{{- if eq ($queryrows|len) 0}}
 1=1
 {{- else -}}
-{{- range $i,$c:=$listrows -}}
+{{- range $i,$c:=$queryrows -}}
 {{if eq ($c.Type|codeType) $time}}
 and t.{{$c.Name}}>=@{{$c.Name}} and t.{{$c.Name}}<date_add(@{{$c.Name}}, interval 1 day)
 {{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
@@ -174,7 +174,7 @@ from (select L.*
 			{{- if eq ($listrows|len) 0}}
 				1=1
 			{{- else -}}
-			{{- range $i,$c:=$listrows -}} 
+			{{- range $i,$c:=$queryrows -}} 
 			{{if eq ($c.Type|codeType) $time}}
 				and t.{{$c.Name}}>=to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
 				and t.{{$c.Name}}<to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
