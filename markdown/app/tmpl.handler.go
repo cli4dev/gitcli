@@ -56,7 +56,7 @@ func (u *{{.Name|rmhd|varName}}Handler) GetHandle(ctx hydra.IContext) (r interfa
 	}
 
 	ctx.Log().Info("2.执行操作")
-	items, err :=  hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|upperName}},ctx.Request().GetMap())
+	items, err :=  hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
 	}
@@ -86,11 +86,11 @@ func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r inter
 	ctx.Log().Info("2.执行操作")
 	in["currentPage"] = (types.GetInt(in["pi"]) - 1) * types.GetInt(in["ps"])
 	in["pageSize"] = in["ps"]
-	items, err := hydra.C.DB().GetRegularDB().Query(sql.Query{{.Name|upperName}}, in)
+	items, err := hydra.C.DB().GetRegularDB().Query(sql.Query{{.Name|upperName}}List, in)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
 	}
-	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Query{{.Name|upperName}}Count, in)
+	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Query{{.Name|upperName}}ListCount, in)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据数量出错:%+v", err)
 	}
@@ -118,7 +118,7 @@ func (u *{{.Name|rmhd|varName}}Handler) PutHandle(ctx hydra.IContext) (r interfa
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Update{{.Name|upperName}},in)
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Update{{.Name|upperName}}By{{$pks|firstStr|upperName}},in)
 	if err != nil||count<1 {
 		return errs.NewErrorf(http.StatusNotExtended,"更新数据出错:%+v", err)
 	}
@@ -140,7 +140,7 @@ func (u *{{.Name|rmhd|varName}}Handler) DeleteHandle(ctx hydra.IContext) (r inte
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Delete{{.Name|upperName}}, ctx.Request().GetMap())
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Delete{{.Name|upperName}}By{{$pks|firstStr|upperName}}, ctx.Request().GetMap())
 	if err != nil||count<1 {
 		return errs.NewErrorf(http.StatusNotExtended,"删除数据出错:%+v", err)
 	}

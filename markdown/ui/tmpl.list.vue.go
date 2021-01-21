@@ -71,7 +71,7 @@ const TmplList = `
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" >
 				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB)}}
 					<template slot-scope="scope">
-						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}")}}</span>
+						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")}}</span>
 					</template>
 				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
@@ -93,9 +93,7 @@ const TmplList = `
 				<template slot-scope="scope">
 					<span>{{"{{scope.row."}}{{$c.Name}}}}</span>
 				</template>
-				{{end -}}
-
-
+				{{end}}
 				</el-table-column>
 				{{- end}}
 				<el-table-column  label="操作">
@@ -181,12 +179,12 @@ export default {
   created(){
     {{- range $i,$c:=$rows|list -}}
     {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-		this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}")
+		this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
 		{{- end}}
 		{{- end}}
 		{{- range $i,$c:=$rows|query -}}
 		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-		this.{{$c.Name|lowerName}}=this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}")
+		this.{{$c.Name|lowerName}}=this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
 		{{- end}}
     {{- end}}
   },

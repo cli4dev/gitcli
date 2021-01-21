@@ -59,7 +59,7 @@ export default {
 			editData: {},                //编辑数据对象
       {{- range $i,$c:=$rows|update -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-      {{$c.Name|lowerName}}:this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|upperName}}"),
+      {{$c.Name|lowerName}}:this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}"),
       {{- end}}
       {{- end}}
 			rules: {                    //数据验证规则
