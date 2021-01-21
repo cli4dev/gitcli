@@ -30,6 +30,9 @@ func createServiceBlock() func(c *cli.Context) (err error) {
 		if err := showSQL("curd")(c); err != nil {
 			return err
 		}
+		if !c.Bool("field") {
+			return nil
+		}
 		if err := showCode("field")(c); err != nil {
 			return err
 		}

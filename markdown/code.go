@@ -39,6 +39,8 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		for _, tb := range tb.Tbs {
 			//翻译文件
 			path := tmpl.GetPath(root, tb.Name, "field.go")
+			tb.SetPkg(path)
+
 			content, err := tmpl.Translate(script, dbtp, tb)
 			if err != nil {
 				return err

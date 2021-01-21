@@ -51,6 +51,8 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 			//根据关键字过滤
 			tb.FilterRowByKW(c.String("kw"))
 			tb.DBType = dbtp
+			tb.SetPkg(path)
+
 			//翻译文件
 			content, err := tmpl.Translate(tpName, dbtp, tb)
 			if err != nil {

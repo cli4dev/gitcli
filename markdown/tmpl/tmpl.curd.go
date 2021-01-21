@@ -17,7 +17,7 @@ const MarkdownCurdSql = `
 {{- $isoracle := .DBType|isoracle -}}
 {{- $pks := .|pks -}}
 {{- $order:=.|order -}}
-package sql
+package {{.PKG}}
 
 {{- if and $ismysql (gt ($createrows|len) 0)}}
 //Insert{{.Name|rmhd|upperName}} 添加{{.Desc}}
