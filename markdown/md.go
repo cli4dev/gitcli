@@ -200,6 +200,12 @@ func init() {
 							Name:     "table,t",
 							Required: true,
 							Usage:    `-表名称`,
+						}, cli.BoolFlag{
+							Name:  "w2f,f",
+							Usage: `-生成到文件`,
+						}, cli.BoolFlag{
+							Name:  "cover,v",
+							Usage: `-文件已存在时自动覆盖`,
 						},
 					},
 				},

@@ -23,7 +23,18 @@ func createApp(c *cli.Context) (err error) {
 }
 
 func createServiceBlock() func(c *cli.Context) (err error) {
-	return createBlockCode("service")
+	return func(c *cli.Context) (err error) {
+		if err := createBlockCode("service")(c); err != nil {
+			return err
+		}
+		if err := showSQL("curd")(c); err != nil {
+			return err
+		}
+		if err := showCode("field")(c); err != nil {
+			return err
+		}
+		return nil
+	}
 }
 
 func createBlockCode(tp string) func(c *cli.Context) (err error) {

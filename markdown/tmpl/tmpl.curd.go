@@ -20,8 +20,8 @@ const MarkdownCurdSql = `
 package sql
 
 {{- if and $ismysql (gt ($createrows|len) 0)}}
-//Insert{{.Name|upperName}} 添加{{.Desc}}
-const Insert{{.Name|upperName}} = {###}
+//Insert{{.Name|rmhd|upperName}} 添加{{.Desc}}
+const Insert{{.Name|rmhd|upperName}} = {###}
 insert into {{.Name}}{{.DBLink}}
 (
 	{{- range $i,$c:=$createrows}}
@@ -37,8 +37,8 @@ values
 {{end -}}
 
 {{- if and $isoracle (gt ($createrows|len) 0)}}
-//Insert{{.Name|upperName}} 添加{{.Desc}}
-const Insert{{.Name|upperName}} = {###}
+//Insert{{.Name|rmhd|upperName}} 添加{{.Desc}}
+const Insert{{.Name|rmhd|upperName}} = {###}
 insert into {{.Name}}{{.DBLink}}
 (
 	{{- range $i,$c:=.seqs}}
@@ -59,9 +59,8 @@ values(
 
 {{- if $ismysql}}
 {{if gt ($detailrows|len) 0 -}}
-//Get{{.Name|upperName}} 查询单条数据{{.Desc}}
-{{$tbname := .Name -}}
-const Get{{.Name|upperName}} = {###}
+//Get{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}}查询单条数据{{.Desc}}
+const Get{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 select 
 {{- range $i,$c:=$detailrows}}
 t.{{$c.Name}}{{if lt $i ($detailrows|maxIndex)}},{{end}}
@@ -76,8 +75,8 @@ where
 {{- end}}{{end}}{###}
 {{- end}}
 
-//Query{{.Name|upperName}}Count 获取{{.Desc}}列表条数
-const Query{{.Name|upperName}}Count = {###}
+//Get{{.Name|rmhd|upperName}}ListCount 获取{{.Desc}}列表条数
+const Get{{.Name|rmhd|upperName}}ListCount = {###}
 select count(1)
 from {{.Name}} t
 where 
@@ -90,11 +89,11 @@ and t.{{$c.Name}}>=@{{$c.Name}} and t.{{$c.Name}}<date_add(@{{$c.Name}}, interva
 {{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
 and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}} like CONCAT('%',@{{$c.Name}},'%'))
 {{- else}}
-and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}}=@{{$c.Name}}){{end}}
+&t.{{$c.Name}}{{end}}
 {{- end}}{{end}}{###}
 
-//Query{{.Name|upperName}} 查询{{.Desc}}列表数据
-const Query{{.Name|upperName}} = {###}
+//Get{{.Name|rmhd|upperName}}List 查询{{.Desc}}列表数据
+const Get{{.Name|rmhd|upperName}}List = {###}
 select 
 {{- range $i,$c:=$listrows}}
 t.{{$c.Name}}{{if lt $i ($listrows|maxIndex)}},{{end}}
@@ -110,20 +109,20 @@ and t.{{$c.Name}}>=@{{$c.Name}} and t.{{$c.Name}}<date_add(@{{$c.Name}}, interva
 {{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
 and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}} like CONCAT('%',@{{$c.Name}},'%'))
 {{- else}}
-and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}}=@{{$c.Name}}){{end}}
+&t.{{$c.Name}}{{end}}
 {{- end}} 
 {{- if gt ($order|len) 0}}
 order by {{range $i,$c:=$order}}t.{{$c.Name}}{{if $c.comma}},{{else}} desc{{end}}{{end}}
 {{- else}}
 order by {{range $i,$c:=$pks}}t.{{$c}} desc{{end}}
 {{- end}}
-limit #pageSize offset #currentPage
+limit @ps offset @offset
 {{end -}}{###}{{end}}
 
 {{- if and $isoracle }}
 {{if  (gt ($detailrows|len) 0) -}}
-//Get{{.Name|upperName}} 查询单条数据{{.Desc}}
-const Get{{.Name|upperName}} = {###}
+//Get{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} 查询单条数据{{.Desc}}
+const Get{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 select 
 {{- range $i,$c:=$detailrows}}
 t.{{$c.Name}}{{if lt $i ($detailrows|maxIndex)}},{{end}}
@@ -138,8 +137,8 @@ where
 {{- end}}{{- end}}{###}
 {{- end}}
 
-//Query{{.Name|upperName}}Count 获取{{.Desc}}列表条数
-const Query{{.Name|upperName}}Count = {###}
+//Get{{.Name|rmhd|upperName}}ListCount 获取{{.Desc}}列表条数
+const Get{{.Name|rmhd|upperName}}ListCount = {###}
 select count(1)
 from {{.Name}}{{.DBLink}} t
 where
@@ -157,8 +156,8 @@ and t.{{$c.Name}} like '%' || @{{$c.Name}} || '%'
 {{- end}}{{end}}
 {###}
 
-//Query{{.Name|upperName}} 查询{{.Desc}}列表数据
-const Query{{.Name|upperName}} = {###}
+//Get{{.Name|rmhd|upperName}}List 查询{{.Desc}}列表数据
+const Get{{.Name|rmhd|upperName}}List = {###}
 select 
 	TAB1.*
 from (select L.*  
@@ -194,8 +193,8 @@ where L.rn > (@pi - 1) * @ps) TAB1{###}
 {{end}}
 
 {{- if  and $ismysql (gt ($updaterows|len) 0)}}
-//Update{{.Name|upperName}} 更新{{.Desc}}
-const Update{{.Name|upperName}} = {###}
+//Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} 更新{{.Desc}}
+const Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 update 
 {{.Name}}{{.DBLink}} 
 set
@@ -212,8 +211,8 @@ where
 {{end -}}
 
 {{- if and $isoracle (gt ($updaterows|len) 0)}}
-//Update{{.Name|upperName}} 更新{{.Desc}}
-const Update{{.Name|upperName}} = {###}
+//Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} 更新{{.Desc}}
+const Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 update 
 {{.Name}}{{.DBLink}} 
 set
@@ -231,8 +230,8 @@ where
 {{end -}}
 
 {{- if gt ($deleterows|len) 0}}
-//Delete{{.Name|upperName}} 删除{{.Desc}}
-const Delete{{.Name|upperName}} = {###}
+//Delete{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} 删除{{.Desc}}
+const Delete{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 delete from {{.Name}}{{.DBLink}} 
 where
 {{- if eq ($pks|len) 0}}
