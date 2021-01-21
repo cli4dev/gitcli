@@ -60,9 +60,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 				logs.Log.Info(content)
 				return nil
 			}
-
 			//生成文件
-
 			fs, err := tmpl.Create(path, c.Bool("cover"))
 			if err != nil {
 				return err

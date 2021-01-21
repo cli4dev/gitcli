@@ -28,20 +28,33 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+		root := ""
+		if c.NArg() > 1 {
+			root = c.Args().Get(1)
+		}
 
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
 		script := entityMap[tp]
 		for _, tb := range tb.Tbs {
 			//翻译文件
+			path := tmpl.GetPath(root, tb.Name, "field.go")
 			content, err := tmpl.Translate(script, dbtp, tb)
 			if err != nil {
 				return err
 			}
+			if !c.Bool("w2f") {
+				logs.Log.Info(content)
+				return nil
+			}
+			//生成文件
+			fs, err := tmpl.Create(path, c.Bool("cover"))
 			if err != nil {
 				return err
 			}
-			logs.Log.Info(content)
+			logs.Log.Info("生成文件:", path)
+			fs.WriteString(content)
+			fs.Close()
 		}
 		return nil
 	}

@@ -116,7 +116,7 @@ order by {{range $i,$c:=$order}}t.{{$c.Name}}{{if $c.comma}},{{else}} desc{{end}
 {{- else}}
 order by {{range $i,$c:=$pks}}t.{{$c}} desc{{end}}
 {{- end}}
-limit #pageSize offset #currentPage
+limit @ps offset @offset
 {{end -}}{###}{{end}}
 
 {{- if and $isoracle }}

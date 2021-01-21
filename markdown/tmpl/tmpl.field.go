@@ -1,7 +1,7 @@
 package tmpl
 
 const FieldsTmpl = `
-	
+package {{.PKG}}
 	//{{.Name}} {{.Desc}}的字段信息------------------------------------ 
 
 	{{range $j,$r:=.Rows}}
