@@ -284,6 +284,28 @@ func init() {
 						},
 					},
 				},
+				{
+					Name:   "crud",
+					Usage:  "创建crud语句",
+					Action: createCurd(),
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "kw,k",
+							Usage: `-约束字段`,
+						},
+						cli.StringFlag{
+							Name:     "table,t",
+							Required: true,
+							Usage:    `-表名称`,
+						}, cli.BoolFlag{
+							Name:  "w2f,f",
+							Usage: `-生成到文件`,
+						}, cli.BoolFlag{
+							Name:  "cover,v",
+							Usage: `-文件已存在时自动覆盖`,
+						},
+					},
+				},
 			},
 		})
 }

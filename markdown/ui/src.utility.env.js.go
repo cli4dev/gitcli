@@ -1,13 +1,7 @@
 package ui
 
-const srcUitlityEnvJS = `
+const srcUtilityEnvJS = `
 import $ from 'jquery';
-//注入初始化
-export default {
-    install: function(Vue, path = "../public/env.conf.json"){
-        Vue.prototype.$env = new Env(path)
-    }
-}
 
 /*
 * Env对象使用时须通过引用并进行初始化
@@ -16,7 +10,7 @@ export default {
 * 或 可配置加载文件地址(需json格式的文件)
 * Vue.use(evn,"../static/env.conf.json")
 */
-function Env(path) {
+export function Env(path = "../public/env.conf.json") {
     Env.prototype.Conf = {}
     $.ajaxSettings.async = false; //同步
     $.getJSON (path, function (data){        
@@ -42,5 +36,4 @@ Env.prototype.load = async function (f) {
     
     return Object.assign(Env.prototype.Conf, conf)   
 }
-
 `

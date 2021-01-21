@@ -2,12 +2,14 @@ package app
 
 //TmplServiceHandler 服务处理函数
 const TmplServiceHandler = `
+{{- $empty := "" -}}
+{{- $rows := .Rows -}}
+{{- $pks := .|pks -}}
 package {{.PKG}}
 
 import (
 	"net/http"
 	"github.com/micro-plat/hydra"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/micro-plat/lib4go/errs"
 )
 
@@ -15,59 +17,136 @@ import (
 type {{.Name|rmhd|varName}}Handler struct {
 }
 
-//QueryHandle {{.Desc}}查询服务
-func (o *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) interface{} {
-	items, err := hydra.C.DB().GetRegularDB().Query(sql{{.Name|rmhd|varName}}Query, ctx.Request().GetMap())
-	if err != nil {
-		return err
+{{- if gt (.Rows|create|len) 0}}
+//PostHandle 添加{{.Desc}}数据
+func (u *{{.Name|rmhd|varName}}Handler) PostHandle(ctx hydra.IContext) (r interface{}) {
+
+	ctx.Log().Info("--------添加{{.Desc}}数据--------")
+	ctx.Log().Info("1.参数校验")
+
+	in := ctx.Request().GetMap()
+	ck := map[string]interface{}{
+		{{range $i,$c:=.Rows|create}}"{{$c.Name|lower}}":"required",
+		{{end -}}	
 	}
-	count, err := hydra.C.DB().GetRegularDB().Scalar(sql{{.Name|rmhd|varName}}Count, ctx.Request().GetMap())
-	return map[string]interface{}{
-		"items": items,
-		"count": count,
+	if ok, err := govalidator.ValidateMap(in, ck); !ok {
+		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
+
+	ctx.Log().Info("2.执行操作")
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Insert{{.Name|upperName}},in)
+	if err != nil||count<1 {
+		return errs.NewErrorf(http.StatusNotExtended,"添加数据出错:%+v", err)
+	}
+
+	ctx.Log().Info("3.返回结果")
+	return "success"
 }
-//SingleHandle 查询单条数据
-func (o *{{.Name|rmhd|varName}}Handler) SingleHandle(ctx hydra.IContext) interface{} {
-	items, err := hydra.C.DB().GetRegularDB().Query(sqlSignle{{.Name|rmhd|varName}}, ctx.Request().GetMap())
+{{- end}}
+
+
+{{if gt ($rows|detail|len) 0 -}}
+//GetHandle 获取{{.Desc}}单条数据
+func (u *{{.Name|rmhd|varName}}Handler) GetHandle(ctx hydra.IContext) (r interface{}) {
+
+	ctx.Log().Info("--------获取{{.Desc}}单条数据--------")
+	ctx.Log().Info("1.参数校验")
+	if err := ctx.Request().Check({{range $i,$c:=$pks}}"{{$c}}"{{end -}}); err != nil {
+		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
+	}
+
+	ctx.Log().Info("2.执行操作")
+	items, err :=  hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|upperName}},ctx.Request().GetMap())
 	if err != nil {
-		return err
+		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
 	}
 	if items.Len() == 0 {
 		return errs.NewError(http.StatusNoContent, "未查询到数据")
 	}
 	return items.Get(0)
 }
+{{- end}}
 
-//sql{{.Name|rmhd|varName}}Query 查询数据({{.Desc}})
-const sql{{.Name|rmhd|varName}}Query = {###}
-select 
-{{- $count:=.Rows|maxIndex -}}
-{{- range $i,$c:=.Rows}}
-t.{{$c.Name}}{{if lt $i $count}},{{end}}
-{{- end}} 
-from {{.Name}} t where 1 = 1
-{{- range $i,$c:=.Rows|query}}
-&t.{{$c.Name}}
-{{- end}}{###}
+{{if gt ($rows|query|len) 0 -}}
+//QueryHandle  获取{{.Desc}}数据列表
+func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r interface{}) {
 
-//sql{{.Name|rmhd|varName}}Count 查询条数({{.Desc}})
-const sql{{.Name|rmhd|varName}}Count = {###}
-select count(1) from {{.Name}} t where 1 = 1 
-{{- range $i,$c:=.Rows|query}}
-&t.{{$c.Name}}
-{{- end}}{###}
+	ctx.Log().Info("--------获取{{.Desc}}数据列表--------")
+	ctx.Log().Info("1.参数校验")
 
-//sqlSignle{{.Name|rmhd|varName}} 查询单条数据({{.Desc}})
-const sqlSignle{{.Name|rmhd|varName}} = {###}
-select 
-{{- $count:=.Rows|maxIndex -}}
-{{- $rcount:=.|pks|maxIndex -}}
-{{- range $i,$c:=.Rows}}
-t.{{$c.Name}}{{if lt $i $count}},{{end}}
-{{- end}} 
-from {{.Name}} t where 
-{{- range $i,$c:=.|pks}}
-t.{{$c}} = @{{$c}}{{if lt $i $rcount}} and {{end}}
-{{- end}} {###}
+	in := ctx.Request().GetMap()
+	ck := map[string]interface{}{
+		{{range $i,$c:=.Rows|query}}"{{$c.Name|lower}}":"required",
+		{{end -}}	
+	}
+	if ok, err := govalidator.ValidateMap(in, ck); !ok {
+		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
+	}
+
+	ctx.Log().Info("2.执行操作")
+	in["currentPage"] = (types.GetInt(in["pi"]) - 1) * types.GetInt(in["ps"])
+	in["pageSize"] = in["ps"]
+	items, err := hydra.C.DB().GetRegularDB().Query(sql.Query{{.Name|upperName}}, in)
+	if err != nil {
+		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
+	}
+	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Query{{.Name|upperName}}Count, in)
+	if err != nil {
+		return errs.NewErrorf(http.StatusNotExtended,"查询数据数量出错:%+v", err)
+	}
+	return map[string]interface{}{
+		"items": items,
+		"count": types.GetInt(count),
+	}
+}
+{{- end}}
+
+{{- if gt ($rows|update|len) 0}}
+//PutHandle 更新{{.Desc}}数据
+func (u *{{.Name|rmhd|varName}}Handler) PutHandle(ctx hydra.IContext) (r interface{}) {
+
+	ctx.Log().Info("--------更新{{.Desc}}数据--------")
+	ctx.Log().Info("1.参数校验")
+
+	in := ctx.Request().GetMap()
+	ck := map[string]interface{}{
+		{{range $i,$c:=.Rows|update}}"{{$c.Name|lower}}":"required",
+		{{end -}}	
+	}
+	if ok, err := govalidator.ValidateMap(in, ck); !ok {
+		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
+	}
+
+	ctx.Log().Info("2.执行操作")
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Update{{.Name|upperName}},in)
+	if err != nil||count<1 {
+		return errs.NewErrorf(http.StatusNotExtended,"更新数据出错:%+v", err)
+	}
+
+	ctx.Log().Info("3.返回结果")
+	return "success"
+}
+{{- end}}
+
+{{- if gt ($rows|delete|len) 0}}
+//DeleteHandle 删除{{.Desc}}数据
+func (u *{{.Name|rmhd|varName}}Handler) DeleteHandle(ctx hydra.IContext) (r interface{}) {
+
+	ctx.Log().Info("--------删除{{.Desc}}数据--------")
+	ctx.Log().Info("1.参数校验")
+
+  if err := ctx.Request().Check({{range $i,$c:=$pks}}"{{$c}}"{{end -}}); err != nil {
+		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
+	}
+
+	ctx.Log().Info("2.执行操作")
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Delete{{.Name|upperName}}, ctx.Request().GetMap())
+	if err != nil||count<1 {
+		return errs.NewErrorf(http.StatusNotExtended,"删除数据出错:%+v", err)
+	}
+
+	ctx.Log().Info("3.返回结果")
+	return "success"
+}
+{{- end}}
 `

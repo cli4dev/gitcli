@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/micro-plat/lib4go/types"
@@ -25,10 +26,10 @@ func getfuncs(tp string) map[string]interface{} {
 
 		//枚举处理函数
 		"fIsEnumTB": hasKW("di", "dn"), //数据表的字段是否包含字典数据配置
-		"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
-		"fIsDI":     getKWS("di"),      //字段是否为字典ID
-		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
-		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
+		//	"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
+		"fIsDI": getKWS("di"), //字段是否为字典ID
+		"fIsDN": getKWS("dn"), //字段是否为字典Name
+		//"fIsDT":     getKWS("dt"),      //字段是否为字典Type
 
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
@@ -40,20 +41,24 @@ func getfuncs(tp string) map[string]interface{} {
 		"indexs":    getDBIndex(tp),  //获取表的索引串
 		"maxIndex":  getMaxIndex,     //最大索引值
 		"lower":     getLower,        //获取变量的最小写字符
+		"order":     getOrderBy,
 
-		"SL": getKWS("sl"), //表单下拉框
-		"CB": getKWS("cb"), //表单复选框
-		"RB": getKWS("rb"), //表单单选框
-		"TA": getKWS("ta"), //表单文本域
-		"DT": getKWS("dt"), //表单日期选择器
+		"ismysql":  stringsEqual("mysql"),
+		"isoracle": stringsEqual("oracle"),
+		"SL":       getKWS("sl"), //表单下拉框
+		"CB":       getKWS("cb"), //表单复选框
+		"RB":       getKWS("rb"), //表单单选框
+		"TA":       getKWS("ta"), //表单文本域
+		"DT":       getKWS("dt"), //表单日期选择器
 
-		"query":  getRows("q"),            //查询字段
-		"list":   getRows("l"),            //列表展示字段
-		"detail": getRows("r"),            //详情展示字段
-		"create": getRows("c"),            //创建字段
-		"delete": getRows("d"),            //删除时判定字段
-		"update": getRows("u"),            //更新字段
-		"SLCon":  getBracketContent("sl"), //获取约束的内容
+		"query":     getRows("q"),                        //查询字段
+		"list":      getRows("l"),                        //列表展示字段
+		"detail":    getRows("r"),                        //详情展示字段
+		"create":    getRows("c"),                        //创建字段
+		"delete":    getRows("d"),                        //删除时判定字段
+		"update":    getRows("u"),                        //更新字段
+		"moduleCon": getBracketContent("sl", "cb", "rb"), //获取组件约束的内容
+		"firstStr":  getStringByIndex(0),                 //获取约束的内容
 
 		"rpath": getRouterPath,
 
@@ -61,8 +66,8 @@ func getfuncs(tp string) map[string]interface{} {
 		"vars":   joinVars,
 		"isTime": isTime,
 
-		"aname": fGetAName, //小写开头驼峰命名
-		//"cname": fGetCName, //
+		"lowerName": fGetLowerCase, //小驼峰式命名
+		"upperName": fGetUpperCase, //大驼峰式命名
 		//	"contains": contains,     //是否包含子串
 		"lname": fGetLastName, //取最后一个单词
 		"dpath": GetDetailPath,
@@ -124,7 +129,7 @@ func getNames(input string) []string {
 	return items
 }
 
-func fGetAName(n string) string {
+func fGetLowerCase(n string) string {
 	items := strings.Split(n, "_")
 	nitems := make([]string, 0, len(items))
 	for k, i := range items {
@@ -139,7 +144,7 @@ func fGetAName(n string) string {
 	return strings.Join(nitems, "")
 }
 
-func fGetCName(n string) string {
+func fGetUpperCase(n string) string {
 	_, f := filepath.Split(n)
 	f = strings.ReplaceAll(f, ".", "_")
 	items := strings.Split(f, "_")
@@ -278,6 +283,75 @@ func getMaxIndex(r interface{}) int {
 	return 0
 }
 
+func getOrderBy(tb *Table) []map[string]interface{} {
+	columns := make([]map[string]interface{}, 0, len(tb.Rows))
+	fileds := []string{}
+	orders := []string{}
+	ob := map[string]string{}
+
+	for _, v := range tb.Rows {
+		if strings.Contains(v.Con, "OB") {
+			if !strings.Contains(v.Con, "OB(") {
+				fileds = append(fileds, v.Name)
+				continue
+			}
+			for _, v1 := range strings.Split(v.Con, ",") {
+				if !strings.Contains(v1, "OB(") {
+					continue
+				}
+				s := strings.Index(v1, "OB(")
+				e := strings.Index(v1, ")")
+				orders = append(orders, v1[s+1:e])
+				ob[v1[s+1:e]] = v.Name
+			}
+		}
+	}
+
+	if len(orders) > 0 {
+		sort.Sort(sort.StringSlice(orders))
+	}
+
+	for _, v := range orders {
+		fileds = append(fileds, ob[v])
+	}
+
+	for _, v := range fileds {
+		row := map[string]interface{}{
+			"name":  v,
+			"comma": true,
+		}
+		columns = append(columns, row)
+	}
+
+	if len(columns) > 0 {
+		columns[len(columns)-1]["comma"] = false
+	}
+	return columns
+}
+
+func getSeqs() func(tb *Table) []map[string]interface{} {
+	return func(tb *Table) []map[string]interface{} {
+		columns := make([]map[string]interface{}, 0, len(tb.Rows))
+
+		for _, v := range tb.Rows {
+			if strings.Contains(v.Con, "SEQ") {
+				descsimple := strings.Join(getBracketContent("SEQ")(v.Desc), ",")
+				row := map[string]interface{}{
+					"name":       v.Name,
+					"descsimple": descsimple,
+					"seqname":    "seqname", //  fmt.Sprintf("seq_%s_%s", fGetNName(tb.Name), getFilterName(tb.Name, v.Cname)),
+					"desc":       v.Desc,
+					"type":       v.Type,
+					"len":        v.Len,
+					"comma":      true,
+				}
+				columns = append(columns, row)
+			}
+		}
+		return columns
+	}
+}
+
 //去掉首段名称
 func isCons(input string, tp string) bool {
 	cks, ok := cons[strings.ToLower(tp)]
@@ -405,6 +479,12 @@ func isTime(input string) bool {
 	return tp == "time.Time"
 }
 
+func stringsEqual(s string) func(s1 string) bool {
+	return func(s1 string) bool {
+		return strings.EqualFold(s, s1)
+	}
+}
+
 //getRouterPath .
 func getRouterPath(tabName string) string {
 	if tabName == "" {
@@ -419,17 +499,31 @@ func GetDetailPath(tabName string) string {
 	return "/" + dir + f
 }
 
-func getBracketContent(key string) func(con string) []string {
+func getStringByIndex(index int) func(s []string) string {
+	return func(s []string) string {
+		return types.GetStringByIndex(s, index)
+	}
+}
+
+func getBracketContent(keys ...string) func(con string) []string {
 	return func(con string) []string {
-		rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
-		strs := rex.FindAllString(con, -1)
-		if len(strs) < 1 {
-			return []string{""}
+		s := ""
+		for _, key := range keys {
+			rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
+			strs := rex.FindAllString(con, -1)
+			if len(strs) < 1 {
+				continue
+			}
+			str := strs[0]
+			str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
+			str = strings.TrimRight(str, ")")
+			s = fmt.Sprintf("%s,%s", s, str)
 		}
-		str := strs[0]
-		str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
-		str = strings.TrimRight(str, ")")
-		return strings.Split(str, ",")
+		if s == "" {
+			return []string{}
+		}
+		s = strings.TrimLeft(s, ",")
+		return strings.Split(s, ",")
 	}
 }
 func hasKW(tp ...string) func(t *Table) bool {
