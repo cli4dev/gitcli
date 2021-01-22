@@ -2,6 +2,7 @@ package tmpl
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -57,11 +58,13 @@ func getfuncs(tp string) map[string]interface{} {
 		"create":    getRows("c"),                        //创建字段
 		"delete":    getRows("d"),                        //删除时判定字段
 		"update":    getRows("u"),                        //更新字段
+		"delCon":    getBracketContent("d"),              //删除字段约束
 		"moduleCon": getBracketContent("sl", "cb", "rb"), //获取组件约束的内容
 		"firstStr":  getStringByIndex(0),                 //获取约束的内容
 
-		"rpath": getRouterPath,
-		"fpath": getFilePath,
+		"rpath": getRouterPath,         //获取路由地址
+		"fpath": getFilePath,           //获取文件地址
+		"l2d":   replaceUnderline("."), //下划线替换为.
 
 		"var":    getVar,
 		"vars":   joinVars,
@@ -69,9 +72,7 @@ func getfuncs(tp string) map[string]interface{} {
 
 		"lowerName": fGetLowerCase, //小驼峰式命名
 		"upperName": fGetUpperCase, //大驼峰式命名
-		//	"contains": contains,     //是否包含子串
-		"lname": fGetLastName, //取最后一个单词
-		"dpath": GetDetailPath,
+		//	"lname":     fGetLastName,  //取最后一个单词
 	}
 }
 
@@ -168,10 +169,6 @@ func fGetLastName(n string) string {
 		return strings.Join(names[2:len(names)], sp)
 	}
 	return names[len(names)-1]
-}
-
-func contains(s, substr string) bool {
-	return strings.Contains(s, substr)
 }
 
 //通过正则表达式，转换正确的数据库类型
@@ -486,25 +483,24 @@ func stringsEqual(s string) func(s1 string) bool {
 	}
 }
 
-//getRouterPath .
-func getRouterPath(tabName string) string {
-	if tabName == "" {
-		return ""
+func replaceUnderline(new string) func(s string) string {
+	return func(s string) string {
+		if s == "" {
+			return ""
+		}
+		return strings.Replace(strings.ToLower(s), "_", new, -1)
 	}
-	return "/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1)
 }
 
-//getFilePath .
+//getFilePath 获取文件地址
 func getFilePath(tabName string) string {
-	if tabName == "" {
-		return ""
-	}
-	return "/" + strings.Replace(strings.ToLower(tabName), "_", ".", -1)
+	dir, _ := filepath.Split(replaceUnderline("/")(tabName))
+	return path.Join(dir, replaceUnderline(".")(tabName))
 }
 
-//GetDetailPath .
-func GetDetailPath(tabName string) string {
-	dir, f := filepath.Split(strings.Replace(tabName, "_", "/", -1))
+//getRouterPath 获取路由地址
+func getRouterPath(tabName string) string {
+	dir, f := filepath.Split(replaceUnderline("/")(tabName))
 	return "/" + dir + f
 }
 

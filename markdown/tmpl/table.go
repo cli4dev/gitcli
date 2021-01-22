@@ -201,13 +201,16 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 	return strings.Replace(strings.Replace(buff.String(), "{###}", "`", -1), "&#39;", "'", -1), nil
 }
 
-//GetPath 获取路径
-func GetPath(root string, name string, ext ...string) string {
+//GetFilePath 获取文件路径
+func GetFilePath(root string, name string, ext ...string) string {
 	ex := types.GetStringByIndex(ext, 0, "vue")
-	f := "fpath"
-	if ex == "vue" {
-		f = "rpath"
-	}
-	path, _ := Translate(fmt.Sprintf("{{.|rmhd|%s}}.%s", f, ex), "", name)
+	path, _ := Translate(fmt.Sprintf("{{.|rmhd|fpath}}.%s", ex), "", name)
+	return filepath.Join(types.GetString(root, "."), path)
+}
+
+//GetFileName 获取文件名称
+func GetFileName(root string, name string, ext ...string) string {
+	ex := types.GetStringByIndex(ext, 0, "vue")
+	path, _ := Translate(fmt.Sprintf("{{.|rmhd|l2d}}.%s", ex), "", name)
 	return filepath.Join(types.GetString(root, "."), path)
 }

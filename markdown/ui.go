@@ -98,7 +98,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 			}
 
 			//生成文件
-			path := tmpl.GetPath(root, fmt.Sprintf("%s.%s", tb.Name, tp))
+			path := tmpl.GetFilePath(root, fmt.Sprintf("%s.%s", tb.Name, tp))
 			fs, err := tmpl.Create(path, c.Bool("cover"))
 			if err != nil {
 				return err

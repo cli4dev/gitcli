@@ -54,7 +54,6 @@ const TmplCreateVue = `
 
 <script>
 export default {
-  name: "{{.Name|lname}}.add",
 	data() {
 		return {
 			addData: {},

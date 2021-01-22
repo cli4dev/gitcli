@@ -52,7 +52,6 @@ const TmplEditVue = `
 
 <script>
 export default {
-	name: "{{.Name|lname}}.edit",
 	data() {
 		return {
 			dialogFormVisible: false,    //编辑表单显示隐藏

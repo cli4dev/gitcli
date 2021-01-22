@@ -128,7 +128,7 @@ const TmplList = `
 		<!-- pagination start -->
 		<div class="page-pagination">
 		<el-pagination
-			@size-change="pageSizeChnage"
+			@size-change="pageSizeChange"
 			@current-change="pageIndexChange"
 			:current-page="paging.pi"
 			:page-size="paging.ps"
@@ -145,10 +145,10 @@ const TmplList = `
 
 <script>
 {{- if gt ($rows|create|len) 0}}
-import Add from "./{{.Name|lname}}.add"
+import Add from "./{{.Name|rmhd|l2d}}.add"
 {{- end}}
 {{- if gt ($rows|update|len) 0}}
-import Edit from "./{{.Name|lname}}.edit"
+import Edit from "./{{.Name|rmhd|l2d}}.edit"
 {{- end}}
 export default {
   name: "{{.Name|varName}}",
@@ -177,11 +177,6 @@ export default {
 		}
   },
   created(){
-    {{- range $i,$c:=$rows|list -}}
-    {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-		this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
-		{{- end}}
-		{{- end}}
 		{{- range $i,$c:=$rows|query -}}
 		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
 		this.{{$c.Name|lowerName}}=this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
@@ -210,7 +205,7 @@ export default {
 			this.dataList.count = res.count
     },
     /**改变页容量*/
-		pageSizeChnage(val) {
+		pageSizeChange(val) {
       this.paging.ps = val
       this.query()
     },
@@ -227,10 +222,9 @@ export default {
 		{{- if gt ($rows|detail|len) 0}}
 		showDetail(val){
 			var data = {
-        getpath: "{{.Name|rpath}}",
         {{range $i,$c:=$pks}}{{$c}}: val.{{$c}},{{end}}
       }
-      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|dpath}}.detail",data);
+      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|rmhd|rpath}}.detail",data);
 		},
 		{{- end}}
 		{{- if gt ($rows|create|len) 0}}
@@ -246,10 +240,9 @@ export default {
 		{{- end}}
 		{{- if gt ($rows|delete|len) 0}}
     del(val){
-      console.log(val)
 			this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {confirmButtonText: "确定",  cancelButtonText: "取消", type: "warning"})
 			.then(() => {
-				this.$http.del("{{.Name|rpath}}", {data:val})
+				this.$http.del("{{.Name|rmhd|rpath}}", {data:val})
 				.then(res => {			
 					this.dialogFormVisible = false;
 					this.refresh()

@@ -53,7 +53,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 		tb.FilterByKW(c.String("table"))
 
 		for _, tb := range tb.Tbs {
-			path := tmpl.GetPath(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, "go")
+			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, "go")
 			//根据关键字过滤
 			tb.FilterRowByKW(c.String("kw"))
 			tb.DBType = dbtp

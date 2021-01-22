@@ -117,16 +117,21 @@ func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r inter
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
-	ctx.Log().Info("2.执行操作")	
+	ctx.Log().Info("2.执行操作")
 	m := ctx.Request().GetMap()
 	m["offset"] = (ctx.Request().GetInt("pi") - 1) * ctx.Request().GetInt("ps")
-	items, err := hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|rmhd|upperName}}List, m)
+
+	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.GetOrderInfoListCount, m)
 	if err != nil {
-		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
+		return errs.NewErrorf(http.StatusNotExtended, "查询数据数量出错:%+v", err)
 	}
-	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Get{{.Name|rmhd|upperName}}ListCount, m)
-	if err != nil {
-		return errs.NewErrorf(http.StatusNotExtended,"查询数据数量出错:%+v", err)
+	
+	var items types.XMaps
+	if types.GetInt(count) > 0 {
+		items, err = hydra.C.DB().GetRegularDB().Query(sql.GetOrderInfoList, m)
+		if err != nil {
+			return errs.NewErrorf(http.StatusNotExtended, "查询数据出错:%+v", err)
+		}
 	}
 
 	ctx.Log().Info("3.返回结果")

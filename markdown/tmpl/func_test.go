@@ -199,6 +199,7 @@ func TestIsCon(t *testing.T) {
 		{input: "idx(a_b_c,2),pk", tp: "idx", result: true},
 		{input: "seq,idx(a_b_c),pk", tp: "idx", result: true},
 		{input: "lcruq,idx(idx_dictionary_info_type,1)", tp: "idx", result: true},
+		{input: "d(1)", tp: "d", result: true},
 	}
 	for _, c := range cases {
 		r := isCons(c.input, c.tp)
@@ -270,5 +271,49 @@ func TestGetUIC(t *testing.T) {
 	for _, c := range cases {
 		r := getKWCons(c.input, c.keyword)
 		assert.Equalf(t, c.result, r, "%s--%s", c.input, c.keyword)
+	}
+}
+
+func Test_getFilePath(t *testing.T) {
+	type args struct {
+		tabName string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// TODO: Add test cases.
+		{name: "1", args: args{tabName: "order_info_detail"}, want: "order/info/order.info.detail"},
+		{name: "2", args: args{tabName: "order_info"}, want: "order/order.info"},
+		{name: "3", args: args{tabName: "order"}, want: "order"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getFilePath(tt.args.tabName); got != tt.want {
+				t.Errorf("getFilePath() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_isCons(t *testing.T) {
+	type args struct {
+		input string
+		tp    string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isCons(tt.args.input, tt.args.tp); got != tt.want {
+				t.Errorf("isCons() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

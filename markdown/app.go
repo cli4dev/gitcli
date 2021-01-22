@@ -74,7 +74,7 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		for _, tb := range tbs.Tbs {
 
 			//根据关键字过滤
-			path := tmpl.GetPath(fmt.Sprintf("%s/services", projectPath), tb.Name, "go")
+			path := tmpl.GetFilePath(fmt.Sprintf("%s/services", projectPath), tb.Name, "go")
 			tb.FilterRowByKW(c.String("kw"))
 			tb.SetPkg(path)
 			tb.SetBasePath(basePath)

@@ -44,7 +44,7 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		for _, tb := range tb.Tbs {
 			//翻译文件
 
-			path := tmpl.GetPath(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), tb.Name, "go")
+			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), tb.Name, "go")
 			tb.SetPkg(path)
 
 			content, err := tmpl.Translate(script, dbtp, tb)
