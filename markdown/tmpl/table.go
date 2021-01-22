@@ -204,6 +204,10 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 //GetPath 获取路径
 func GetPath(root string, name string, ext ...string) string {
 	ex := types.GetStringByIndex(ext, 0, "vue")
-	path, _ := Translate(fmt.Sprintf("{{.|rmhd|fpath}}.%s", ex), "", name)
+	f := "fpath"
+	if ex == "vue" {
+		f = "rpath"
+	}
+	path, _ := Translate(fmt.Sprintf("{{.|rmhd|%s}}.%s", f, ex), "", name)
 	return filepath.Join(types.GetString(root, "."), path)
 }

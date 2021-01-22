@@ -205,7 +205,7 @@ export default {
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.dt{{$c.Name|varName}},"yyyy-MM-dd hh:mm:ss")
 			{{- end -}}
       {{- end}}
-      let res = await this.$http.xpost("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}query",this.queryData)
+      let res = await this.$http.xpost("{{.Name|rmhd|rpath}}/query",this.queryData)
 			this.dataList.items = res.items
 			this.dataList.count = res.count
     },

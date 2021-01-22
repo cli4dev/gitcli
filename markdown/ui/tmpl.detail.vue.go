@@ -88,7 +88,7 @@ const TmplDetail = `
         this.queryData()
       },
       queryData:async function() {
-        this.info = await this.$http.xget("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}{{- end}}",this.$route.query)
+        this.info = await this.$http.xget("{{.Name|rmhd|rpath}}",this.$route.query)
       },
       handleClick(tab) {}
     },
