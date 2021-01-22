@@ -51,7 +51,7 @@ func GetProjectBasePath(projectPath string) (string, error) {
 
 		}
 	}
-	fmt.Println(gopath, gomod, projectPath)
+	
 	if gomod != "" && strings.Contains(gomod, projectPath) {
 		f, err := os.Open(gomod)
 		if err != nil {

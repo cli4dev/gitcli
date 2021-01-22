@@ -13,15 +13,16 @@ import (
 
 //Table 表名称
 type Table struct {
-	Name    string //表名
-	Desc    string //表描述
-	PKG     string //包名称
-	Drop    bool   //创建表前是否先删除
-	DBType  string //数据库类型
-	DBLink  string //
-	Rows    []*Row
-	RawRows []*Row
-	Indexs  Indexs
+	Name     string //表名
+	Desc     string //表描述
+	PKG      string //包名称
+	Drop     bool   //创建表前是否先删除
+	DBType   string //数据库类型
+	DBLink   string //
+	Rows     []*Row
+	RawRows  []*Row
+	Indexs   Indexs
+	BasePath string //生成项目基本路径
 }
 
 //Row 行信息
@@ -107,6 +108,11 @@ func (t *Table) AddRow(r *Row) error {
 //SetPkg 添加行信息
 func (t *Table) SetPkg(path string) {
 	t.PKG = getPKSName(path)
+}
+
+//SetBasePath 添加行信息
+func (t *Table) SetBasePath(BasePath string) {
+	t.BasePath = BasePath
 }
 
 //GetPKS 获取主键列表
@@ -198,6 +204,6 @@ func Translate(c string, tp string, input interface{}) (string, error) {
 //GetPath 获取路径
 func GetPath(root string, name string, ext ...string) string {
 	ex := types.GetStringByIndex(ext, 0, "vue")
-	path, _ := Translate(fmt.Sprintf("{{.|rmhd|rpath}}.%s", ex), "", name)
+	path, _ := Translate(fmt.Sprintf("{{.|rmhd|fpath}}.%s", ex), "", name)
 	return filepath.Join(types.GetString(root, "."), path)
 }

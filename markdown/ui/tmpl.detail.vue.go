@@ -7,7 +7,7 @@ const TmplDetail = `
 {{- $decimal := "types.Decimal" -}}
 {{- $time := "time.Time" -}}
 {{- $len := 32 -}}
-{{- $rows := .Rows -}}
+{{- $rows := .Rows|detail -}}
 <template>
   <div>
     <el-tabs v-model="tabName" type="border-card" @tab-click="handleClick">
@@ -15,7 +15,7 @@ const TmplDetail = `
         <div class="table-responsive">
           <table :date="info" class="table table-striped m-b-none">
             <tbody class="table-border">
-            {{range $i,$c:=$rows|detail -}}
+            {{range $i,$c:=$rows -}}
             {{if eq 0 (mod $i 2)}}
               <tr>
                 <td>
@@ -73,10 +73,10 @@ const TmplDetail = `
         info:{},
       }
     },
+    mounted() {
+      this.init();
+    },
     created(){
-      {{- if gt ($rows|len) 0}}
-      var that=this
-      {{- end}}
       {{- range $i,$c:=$rows|detail -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
         this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
@@ -88,7 +88,7 @@ const TmplDetail = `
         this.queryData()
       },
       queryData:async function() {
-        this.info = await this.$http.xget("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}/{{- end}}single",this.$route.query)
+        this.info = await this.$http.xget("/{{- range $i,$c:=.Name|rmhd|lower|names}}{{$c}}{{- end}}",this.$route.query)
       },
       handleClick(tab) {}
     },

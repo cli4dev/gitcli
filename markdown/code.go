@@ -5,6 +5,7 @@ import (
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
+	"github.com/micro-plat/gitcli/markdown/utils"
 	"github.com/urfave/cli"
 )
 
@@ -32,13 +33,18 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		if c.NArg() > 1 {
 			root = c.Args().Get(1)
 		}
+		_, projectPath, err := utils.GetProjectPath(root)
+		if err != nil {
+			return err
+		}
 
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
 		script := entityMap[tp]
 		for _, tb := range tb.Tbs {
 			//翻译文件
-			path := tmpl.GetPath(root, tb.Name, "field.go")
+
+			path := tmpl.GetPath(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), tb.Name, "go")
 			tb.SetPkg(path)
 
 			content, err := tmpl.Translate(script, dbtp, tb)

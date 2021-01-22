@@ -29,7 +29,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"fHasDT":    hasKW("dt"),       //数据表是否包含字典类型字段
 		"fIsDI":     getKWS("di"),      //字段是否为字典ID
 		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
-		"fIsDT":     getKWS("dtp"),      //字段是否为字典Type
+		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
 
 		"shortName": shortName,       //获取特殊字段前的字符串
 		"dbType":    dbType(tp),      //转换为SQL的数据类型
@@ -61,6 +61,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"firstStr":  getStringByIndex(0),                 //获取约束的内容
 
 		"rpath": getRouterPath,
+		"fpath": getFilePath,
 
 		"var":    getVar,
 		"vars":   joinVars,
@@ -491,6 +492,14 @@ func getRouterPath(tabName string) string {
 		return ""
 	}
 	return "/" + strings.Replace(strings.ToLower(tabName), "_", "/", -1)
+}
+
+//getFilePath .
+func getFilePath(tabName string) string {
+	if tabName == "" {
+		return ""
+	}
+	return "/" + strings.Replace(strings.ToLower(tabName), "_", ".", -1)
 }
 
 //GetDetailPath .

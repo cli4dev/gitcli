@@ -7,6 +7,7 @@ import (
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/app"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
+	"github.com/micro-plat/gitcli/markdown/utils"
 	"github.com/urfave/cli"
 )
 
@@ -53,6 +54,15 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 			root = c.Args().Get(1)
 		}
 
+		_, projectPath, err := utils.GetProjectPath(root)
+		if err != nil {
+			return err
+		}
+		basePath, err := utils.GetProjectBasePath(projectPath)
+		if err != nil {
+			return err
+		}
+
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
@@ -64,9 +74,10 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		for _, tb := range tbs.Tbs {
 
 			//根据关键字过滤
-			path := tmpl.GetPath(root, tb.Name, "go")
+			path := tmpl.GetPath(fmt.Sprintf("%s/services", projectPath), tb.Name, "go")
 			tb.FilterRowByKW(c.String("kw"))
 			tb.SetPkg(path)
+			tb.SetBasePath(basePath)
 
 			//翻译文件
 			content, err := tmpl.Translate(template, dbtp, tb)

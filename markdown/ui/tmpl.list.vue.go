@@ -230,7 +230,7 @@ export default {
         getpath: "{{.Name|rpath}}",
         {{range $i,$c:=$pks}}{{$c}}: val.{{$c}},{{end}}
       }
-      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|dpath}}.detail/"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},data);
+      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|dpath}}.detail",data);
 		},
 		{{- end}}
 		{{- if gt ($rows|create|len) 0}}

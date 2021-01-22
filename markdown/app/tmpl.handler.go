@@ -12,45 +12,47 @@ import (
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
 	"github.com/micro-plat/lib4go/types"
+	"{{.BasePath}}/modules/const/sql"
+	"{{.BasePath}}/modules/const/field"
 )
 
 //{{.Name|rmhd|varName}}Handler {{.Desc}}处理服务
 type {{.Name|rmhd|varName}}Handler struct {
-	{{if gt (.Rows|create|len) 0}}postCheckFileds   map[string]interface{} {{end}}
-	{{if gt (.Rows|detail|len) 0}}getCheckFileds    map[string]interface{} {{end}}
-	{{if gt (.Rows|list|len) 0}}queryCheckFileds  map[string]interface{} {{end}}
-	{{if gt (.Rows|update|len) 0}}updateCheckFileds map[string]interface{} {{end}}
-	{{if gt (.Rows|delete|len) 0}}deleteCheckFileds map[string]interface{} {{end}}
+	{{if gt (.Rows|create|len) 0}}postCheckFields   map[string]interface{} {{end}}
+	{{if gt (.Rows|detail|len) 0}}getCheckFields    map[string]interface{} {{end}}
+	{{if gt (.Rows|list|len) 0}}queryCheckFields  map[string]interface{} {{end}}
+	{{if gt (.Rows|update|len) 0}}updateCheckFields map[string]interface{} {{end}}
+	{{if gt (.Rows|delete|len) 0}}deleteCheckFields map[string]interface{} {{end}}
 }
 
 func New{{.Name|rmhd|varName}}Handler() *{{.Name|rmhd|varName}}Handler {
 	return &{{.Name|rmhd|varName}}Handler{
 		{{if gt (.Rows|create|len) 0 -}}
-		postCheckFileds: map[string]interface{}{
-			{{range $i,$c:=.Rows|create}}Field{{$c.Name|varName}}:"required",
+		postCheckFields: map[string]interface{}{
+			{{range $i,$c:=.Rows|create}}field.Field{{$c.Name|varName}}:"required",
 			{{end -}}
 		},
 		{{- end}}
 		{{if gt (.Rows|detail|len) 0 -}}
-		getCheckFileds: map[string]interface{}{
-			{{range $i,$c:=$pks}}Field{{$c|varName}}:"required",{{end}}
+		getCheckFields: map[string]interface{}{
+			{{range $i,$c:=$pks}}field.Field{{$c|varName}}:"required",{{end}}
 		},
 		{{- end}}
 		{{if gt (.Rows|list|len) 0 -}}
-		queryCheckFileds: map[string]interface{}{
-			{{range $i,$c:=.Rows|query}}Field{{$c.Name|varName}}:"required",
+		queryCheckFields: map[string]interface{}{
+			{{range $i,$c:=.Rows|query}}field.Field{{$c.Name|varName}}:"required",
 			{{end -}}
 		},
 		{{- end}}
 		{{if gt (.Rows|update|len) 0 -}}
-		updateCheckFileds: map[string]interface{}{
-			{{range $i,$c:=.Rows|update}}Field{{$c.Name|varName}}:"required",
+		updateCheckFields: map[string]interface{}{
+			{{range $i,$c:=.Rows|update}}field.Field{{$c.Name|varName}}:"required",
 			{{end -}}
 		},
 		{{- end}}
 		{{if gt (.Rows|delete|len) 0 -}}
-		deleteCheckFileds: map[string]interface{}{
-			{{range $i,$c:=$pks}}Field{{$c|varName}}:"required",{{end}}
+		deleteCheckFields: map[string]interface{}{
+			{{range $i,$c:=$pks}}field.Field{{$c|varName}}:"required",{{end}}
 		},
 		{{- end}}
  }
@@ -63,12 +65,12 @@ func (u *{{.Name|rmhd|varName}}Handler) PostHandle(ctx hydra.IContext) (r interf
 	ctx.Log().Info("--------添加{{.Desc}}数据--------")
 	
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(u.postCheckFileds); err != nil {
+	if err := ctx.Request().CheckMap(u.postCheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(Insert{{.Name|rmhd|upperName}},ctx.Request().GetMap())
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Insert{{.Name|rmhd|upperName}},ctx.Request().GetMap())
 	if err != nil||count<1 {
 		return errs.NewErrorf(http.StatusNotExtended,"添加数据出错:%+v", err)
 	}
@@ -86,12 +88,12 @@ func (u *{{.Name|rmhd|varName}}Handler) GetHandle(ctx hydra.IContext) (r interfa
 	ctx.Log().Info("--------获取{{.Desc}}单条数据--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(u.getCheckFileds); err != nil {
+	if err := ctx.Request().CheckMap(u.getCheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
 	ctx.Log().Info("2.执行操作")
-	items, err :=  hydra.C.DB().GetRegularDB().Query(Get{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
+	items, err :=  hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
 	}
@@ -111,18 +113,18 @@ func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r inter
 	ctx.Log().Info("--------获取{{.Desc}}数据列表--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(u.queryCheckFileds); err != nil {
+	if err := ctx.Request().CheckMap(u.queryCheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
 	ctx.Log().Info("2.执行操作")	
 	m := ctx.Request().GetMap()
 	m["offset"] = (ctx.Request().GetInt("pi") - 1) * ctx.Request().GetInt("ps")
-	items, err := hydra.C.DB().GetRegularDB().Query(Get{{.Name|rmhd|upperName}}List, m)
+	items, err := hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|rmhd|upperName}}List, m)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据出错:%+v", err)
 	}
-	count, err := hydra.C.DB().GetRegularDB().Scalar(Get{{.Name|rmhd|upperName}}ListCount, m)
+	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Get{{.Name|rmhd|upperName}}ListCount, m)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"查询数据数量出错:%+v", err)
 	}
@@ -142,12 +144,12 @@ func (u *{{.Name|rmhd|varName}}Handler) PutHandle(ctx hydra.IContext) (r interfa
 	ctx.Log().Info("--------更新{{.Desc}}数据--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(u.updateCheckFileds); err != nil {
+	if err := ctx.Request().CheckMap(u.updateCheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
 	if err != nil||count<1 {
 		return errs.NewErrorf(http.StatusNotExtended,"更新数据出错:%+v", err)
 	}
@@ -164,12 +166,12 @@ func (u *{{.Name|rmhd|varName}}Handler) DeleteHandle(ctx hydra.IContext) (r inte
 	ctx.Log().Info("--------删除{{.Desc}}数据--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(u.deleteCheckFileds); err != nil {
+	if err := ctx.Request().CheckMap(u.deleteCheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(Delete{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}}, ctx.Request().GetMap())
+	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Delete{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}}, ctx.Request().GetMap())
 	if err != nil||count<1 {
 		return errs.NewErrorf(http.StatusNotExtended,"删除数据出错:%+v", err)
 	}

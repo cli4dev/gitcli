@@ -12,12 +12,14 @@ export default new Router({
       path: '/',
       name: 'menus',
       component: () => import('../pages/system/menus.vue'),
-      children:[{
+      children:[
+        {
         path: 'index',
         name: 'index',
         component: () => import('../pages/system/index.vue'),
         titile:"首页"
-      }]
+        }
+      ]
     }
   ]
 })

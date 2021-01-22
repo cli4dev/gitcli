@@ -5,6 +5,7 @@ import (
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
+	"github.com/micro-plat/gitcli/markdown/utils"
 	"github.com/urfave/cli"
 )
 
@@ -43,11 +44,16 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 			root = c.Args().Get(1)
 		}
 
+		_, projectPath, err := utils.GetProjectPath(root)
+		if err != nil {
+			return err
+		}
+
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
 
 		for _, tb := range tb.Tbs {
-			path := tmpl.GetPath(root, tb.Name, "sql.go")
+			path := tmpl.GetPath(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, "go")
 			//根据关键字过滤
 			tb.FilterRowByKW(c.String("kw"))
 			tb.DBType = dbtp
