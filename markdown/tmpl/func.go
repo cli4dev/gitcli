@@ -15,6 +15,8 @@ import (
 //MYSQL mysql数据库
 const MYSQL = "mysql"
 
+var fieldMap = map[string]bool{}
+
 type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
@@ -72,7 +74,9 @@ func getfuncs(tp string) map[string]interface{} {
 
 		"lowerName": fGetLowerCase, //小驼峰式命名
 		"upperName": fGetUpperCase, //大驼峰式命名
-		//	"lname":     fGetLastName,  //取最后一个单词
+
+		"fieldExist": fieldExist,
+		"fieldSet":   fieldSet,
 	}
 }
 
@@ -155,20 +159,6 @@ func fGetUpperCase(n string) string {
 		nitems = append(nitems, strings.ToUpper(i[0:1])+i[1:])
 	}
 	return strings.Join(nitems, "")
-}
-
-func fGetLastName(n string) string {
-	sp := "/"
-	if strings.Contains(n, "_") {
-		sp = "_"
-	}
-
-	names := strings.Split(strings.Trim(n, sp), sp)
-
-	if len(names) > 2 {
-		return strings.Join(names[2:len(names)], sp)
-	}
-	return names[len(names)-1]
 }
 
 //通过正则表达式，转换正确的数据库类型
@@ -548,4 +538,14 @@ func hasKW(tp ...string) func(t *Table) bool {
 		}
 		return true
 	}
+}
+
+func fieldExist(key string) bool {
+	_, ok := fieldMap[key]
+	return ok
+}
+
+func fieldSet(key string) string {
+	fieldMap[key] = true
+	return ""
 }

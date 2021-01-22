@@ -18,39 +18,44 @@ import (
 
 //{{.Name|rmhd|varName}}Handler {{.Desc}}处理服务
 type {{.Name|rmhd|varName}}Handler struct {
-	{{if gt (.Rows|create|len) 0}}postCheckFields   map[string]interface{} {{end}}
-	{{if gt (.Rows|detail|len) 0}}getCheckFields    map[string]interface{} {{end}}
-	{{if gt (.Rows|list|len) 0}}queryCheckFields  map[string]interface{} {{end}}
-	{{if gt (.Rows|update|len) 0}}updateCheckFields map[string]interface{} {{end}}
-	{{if gt (.Rows|delete|len) 0}}deleteCheckFields map[string]interface{} {{end}}
+	{{- if gt (.Rows|create|len) 0}}
+	postCheckFields   map[string]interface{} {{end}}
+	{{- if gt (.Rows|detail|len) 0}}
+	getCheckFields    map[string]interface{} {{end}}
+	{{- if gt (.Rows|list|len) 0}}
+	queryCheckFields  map[string]interface{} {{end}}
+	{{- if gt (.Rows|update|len) 0}}
+	updateCheckFields map[string]interface{} {{end}}
+	{{- if gt (.Rows|delete|len) 0}}
+	deleteCheckFields map[string]interface{} {{end}}
 }
 
 func New{{.Name|rmhd|varName}}Handler() *{{.Name|rmhd|varName}}Handler {
 	return &{{.Name|rmhd|varName}}Handler{
-		{{if gt (.Rows|create|len) 0 -}}
+		{{- if gt (.Rows|create|len) 0}}
 		postCheckFields: map[string]interface{}{
 			{{range $i,$c:=.Rows|create}}field.Field{{$c.Name|varName}}:"required",
 			{{end -}}
 		},
 		{{- end}}
-		{{if gt (.Rows|detail|len) 0 -}}
+		{{- if gt (.Rows|detail|len) 0}}
 		getCheckFields: map[string]interface{}{
 			{{range $i,$c:=$pks}}field.Field{{$c|varName}}:"required",{{end}}
 		},
 		{{- end}}
-		{{if gt (.Rows|list|len) 0 -}}
+		{{- if gt (.Rows|list|len) 0}}
 		queryCheckFields: map[string]interface{}{
 			{{range $i,$c:=.Rows|query}}field.Field{{$c.Name|varName}}:"required",
 			{{end -}}
 		},
 		{{- end}}
-		{{if gt (.Rows|update|len) 0 -}}
+		{{- if gt (.Rows|update|len) 0}}
 		updateCheckFields: map[string]interface{}{
 			{{range $i,$c:=.Rows|update}}field.Field{{$c.Name|varName}}:"required",
 			{{end -}}
 		},
 		{{- end}}
-		{{if gt (.Rows|delete|len) 0 -}}
+		{{- if gt (.Rows|delete|len) 0}}
 		deleteCheckFields: map[string]interface{}{
 			{{range $i,$c:=$pks}}field.Field{{$c|varName}}:"required",{{end}}
 		},
