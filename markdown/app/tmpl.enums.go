@@ -49,10 +49,11 @@ var enumsMap = map[string]string{
 {{ range $j,$t:=.Tbs -}}
 {{if $t|fIsEnumTB -}}
 {{$count:= 0 -}}
-"{{$t.Name|rmhd|lower}}":{###}select '{{$t.Name|rmhd|lower}}' type {{$count = 1}}
+"{{$t.Name|rmhd|lower}}":{###}select {{if not ($t|fHasDT) -}} '{{$t.Name|rmhd}}' type {{$count = 1}}{{end -}}
 {{- range $i,$c:=.Rows -}}
 {{if $c.Con|fIsDI -}}{{if gt $count 0}},{{end}}{{$count = 1}} t.{{$c.Name}} value {{end -}}
 {{if $c.Con|fIsDN -}}{{if gt $count 0}},{{end}}{{$count = 1}} t.{{$c.Name}} name {{end -}}
+{{if $c.Con|fIsDT -}}{{if gt $count 0}},{{end}}{{$count = 1}} t.{{$c.Name}} type {{end -}}
 {{end}} from {{$t.Name}} t {###},
 {{end -}}
 {{- end -}}
