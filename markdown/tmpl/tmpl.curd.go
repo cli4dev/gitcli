@@ -106,8 +106,8 @@ where
 {{- else -}}
 {{- range $i,$c:=$queryrows -}}
 {{if eq ($c.Type|codeType) $time}}
-	and t.{{$c.Name}}>=@{{$c.Name}} 
-	and t.{{$c.Name}}<date_add(@{{$c.Name}}, interval 1 day)
+	and t.{{$c.Name}} >= @{{$c.Name}} 
+	and t.{{$c.Name}} < date_add(@{{$c.Name}}, interval 1 day)
 {{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
 	and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}} like CONCAT('%',@{{$c.Name}},'%'))
 {{- else}}
@@ -150,7 +150,7 @@ where
 {{- range $i,$c:=$queryrows -}}
 {{if eq ($c.Type|codeType) $time}}
 	and t.{{$c.Name}} >= to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
-  and t.{{$c.Name}}<to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
+  and t.{{$c.Name}} < to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
 {{- else if  and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
   and t.{{$c.Name}} like '%' || @{{$c.Name}} || '%'
 {{- else}}
@@ -177,8 +177,8 @@ from (select L.*
 			{{- else -}}
 			{{- range $i,$c:=$queryrows -}} 
 			{{if eq ($c.Type|codeType) $time}}
-				and t.{{$c.Name}}>=to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
-				and t.{{$c.Name}}<to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
+				and t.{{$c.Name}} >= to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
+				and t.{{$c.Name}} < to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
 			{{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
 				and t.{{$c.Name}} like '%' || @{{$c.Name}} || '%'
 			{{- else}}
@@ -200,7 +200,7 @@ const Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 update {{.Name}}{{.DBLink}} 
 set
 {{- range $i,$c:=$updaterows}}
-	{{$c.Name}}=@{{$c.Name}}{{if lt $i ($updaterows|maxIndex)}},{{end}}
+	{{$c.Name}} = @{{$c.Name}}{{if lt $i ($updaterows|maxIndex)}},{{end}}
 {{- end}}
 where
 {{- if eq ($pks|len) 0}}
@@ -218,7 +218,7 @@ update {{.Name}}{{.DBLink}}
 set
 {{- range $i,$c:=$updaterows}}
 	{{if eq ($c.Type|codeType) $time}}{{$c.Name}}=to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss'){{else -}}
-	{{$c.Name}}=@{{$c.Name}}{{end}}{{if lt $i ($updaterows|maxIndex)}},{{end}}
+	{{$c.Name}} = @{{$c.Name}}{{end}}{{if lt $i ($updaterows|maxIndex)}},{{end}}
 {{- end}}
 where
 {{- if eq ($pks|len) 0}}

@@ -69,8 +69,8 @@ const TmplDetail = `
 	export default {
     data(){
       return {
-        tabName:"{{.Name|varName}}",
-        info:{},
+        tabName: "{{.Name|varName}}",
+        info: {},
       }
     },
     mounted() {

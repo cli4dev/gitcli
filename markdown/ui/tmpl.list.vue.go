@@ -35,7 +35,7 @@ const TmplList = `
 				</el-form-item>
         {{- else if $c.Con|DT }}
 					<el-form-item label="{{$c.Desc|shortName}}:">
-						<el-date-picker class="input-cos" v-model="dt{{$c.Name|varName}}" popper-class="datetime-to-date" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
+						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" popper-class="datetime-to-date" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
 					</el-form-item>
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
@@ -171,7 +171,7 @@ export default {
 			{{$c.Name|lowerName}}:[],      //枚举对象
 			{{- end}}
 			{{- if $c.Con|DT }}
-			dt{{$c.Name|upperName}}:this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),{{end}}
+			{{$c.Name|lowerName}}:this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
@@ -179,7 +179,7 @@ export default {
   created(){
 		{{- range $i,$c:=$rows|query -}}
 		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-		this.{{$c.Name|lowerName}}=this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
+		this.{{$c.Name|lowerName}} = this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
 		{{- end}}
     {{- end}}
   },
