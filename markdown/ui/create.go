@@ -28,8 +28,6 @@ var tmptls = map[string]string{
 	"package.json":               packageJSON,
 	"babel.config.js":            babelConfigJS,
 	".gitignore":                 gitignore,
-	".env.development":           srcEnvDev,
-	".env.production":            srcEnvProd,
 	"vue.config.js":              vueConfigJS,
 }
 

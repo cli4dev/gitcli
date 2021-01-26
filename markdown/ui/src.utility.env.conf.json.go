@@ -11,8 +11,8 @@ const srcPublicEnvConfJson = `
     "api": {
         "host": "http://localhost:8089",
         "verifyURL": "/sso/login/verify",
-        "confURL": "/system/webconfig",
-        "enumURL": "/dictionary/query",
+        "confURL": "",
+        "enumURL": "",
         "logoutURL": "/sso/logout"
     },
     "sso": {

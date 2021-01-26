@@ -12,8 +12,8 @@ import (
 var tmptls = map[string]string{
 	"main.go": tmplMainGo,
 	"conf.go": tmplConfGo,
-	"app.go":  tmplAppGo,
-	"go.mod":  tmplGoMod,
+	//"app.go":  tmplAppGo,
+	"go.mod": tmplGoMod,
 }
 
 //CreateApp 创建web项目

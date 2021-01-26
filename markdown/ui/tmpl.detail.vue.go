@@ -21,27 +21,27 @@ const TmplDetail = `
                 <td>
             {{- end}}                 
                   <el-col :span="6">
-                    <div style="margin-right: 10px">{{$c.Desc|shortName}}:</div>
+                    <div class="pull-right" style="margin-right: 10px">{{$c.Desc|shortName}}:</div>
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|RB) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}") }}</div>
                   </el-col>
             {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}") }}</div>
                   </el-col>
           	{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(0)}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(0) }}</div>
                   </el-col>
             {{- else if eq ($c.Type|codeType) $decimal }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(2)}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(2) }}</div>
                   </el-col>
             {{- else if eq ($c.Type|codeType) $time }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrDate}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrDate }}</div>
                   </el-col>
             {{- else}}
                   <el-col :span="6">
