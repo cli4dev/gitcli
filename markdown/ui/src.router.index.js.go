@@ -13,13 +13,12 @@ export default new Router({
       name: 'menus',
       component: () => import('../pages/system/menus.vue'),
       children:[
-        {
-        path: 'index',
-        name: 'index',
-        component: () => import('../pages/system/index.vue'),
-        meta:{
-          title:"首页",
-        }
+        // {
+        // path: 'index',
+        // name: 'index',
+        // component: () => import('../pages/system/index.vue'),
+        // meta: { title: "首页" }
+        // },
         }
       ]
     }

@@ -12,7 +12,6 @@ var tmptls = map[string]string{
 	"src/App.vue":                srcAppVUE,
 	"src/main.js":                srcMainJS,
 	"src/pages/system/menus.vue": srcPagesSystemMenus,
-	"src/pages/system/index.vue": srcPagesSystemIndex,
 	"src/router/index.js":        srcRouterIndexJS,
 	"src/utility/auth.js":        srcUtilityAuthJS,
 	"src/utility/http.js":        srcUtilityHTTPJS,

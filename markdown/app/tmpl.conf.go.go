@@ -4,7 +4,6 @@ const tmplConfGo = `package main
 
 import (
 	"fmt"
-	//"testp/webserver/services/system"
 
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/hydra/conf/app"
@@ -28,8 +27,6 @@ func init() {
 
 		return nil
 	})
-
-	//App.Web("/dictionary", system.NewEnumsHandler())
 }
 
 `
