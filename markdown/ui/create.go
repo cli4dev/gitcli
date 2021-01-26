@@ -14,7 +14,6 @@ var tmptls = map[string]string{
 	"src/pages/system/menus.vue": srcPagesSystemMenus,
 	"src/pages/system/index.vue": srcPagesSystemIndex,
 	"src/router/index.js":        srcRouterIndexJS,
-	"src/store/index.js":         srcStoreIndexJS,
 	"src/utility/auth.js":        srcUtilityAuthJS,
 	"src/utility/http.js":        srcUtilityHTTPJS,
 	"src/utility/enum.js":        srcUtilityEnumJS,
@@ -31,7 +30,9 @@ var tmptls = map[string]string{
 	"vue.config.js":              vueConfigJS,
 }
 
-var ssoTmptls = map[string]string{}
+var ssoTmptls = map[string]string{
+	"public/env.conf.json": srcSSOPublicEnvConfJson,
+}
 
 //CreateWeb 创建web项目
 func CreateWeb(name string, sso bool) error {
