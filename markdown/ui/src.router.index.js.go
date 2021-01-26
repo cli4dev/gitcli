@@ -17,7 +17,9 @@ export default new Router({
         path: 'index',
         name: 'index',
         component: () => import('../pages/system/index.vue'),
-        title:"首页"
+        meta:{
+          title:"首页",
+        }
         }
       ]
     }
