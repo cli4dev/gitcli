@@ -68,6 +68,12 @@ func init() {
 					Name:   "create",
 					Usage:  "创建项目",
 					Action: createUI,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  "sso",
+							Usage: `-生成sso相关内容`,
+						},
+					},
 				},
 				{
 					Name:   "clear",

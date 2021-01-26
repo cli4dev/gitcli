@@ -87,14 +87,14 @@ func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r inter
 	m := ctx.Request().GetMap()
 	m["offset"] = (ctx.Request().GetInt("pi") - 1) * ctx.Request().GetInt("ps")
 
-	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Get{{.Name|rmhd|upperName}}List, m)
+	count, err := hydra.C.DB().GetRegularDB().Scalar(sql.Get{{.Name|rmhd|upperName}}ListCount, m)
 	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended, "查询数据数量出错:%+v", err)
 	}
 	
 	var items types.XMaps
 	if types.GetInt(count) > 0 {
-		items, err = hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|rmhd|upperName}}ListCount, m)
+		items, err = hydra.C.DB().GetRegularDB().Query(sql.Get{{.Name|rmhd|upperName}}List, m)
 		if err != nil {
 			return errs.NewErrorf(http.StatusNotExtended, "查询数据出错:%+v", err)
 		}

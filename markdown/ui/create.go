@@ -35,19 +35,13 @@ var ssoTmptls = map[string]string{
 
 //CreateWeb 创建web项目
 func CreateWeb(name string, sso bool) error {
-
 	if sso {
 		for k, v := range ssoTmptls {
 			tmptls[k] = v
 		}
 	}
 
-	err := createFiles(name)
-	if err != nil {
-		return err
-	}
-	return Clear(name)
-
+	return createFiles(name)
 }
 
 //Clear 清理缓存

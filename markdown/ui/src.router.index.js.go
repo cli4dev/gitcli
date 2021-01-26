@@ -19,7 +19,6 @@ export default new Router({
         // component: () => import('../pages/system/index.vue'),
         // meta: { title: "首页" }
         // },
-        }
       ]
     }
   ]
