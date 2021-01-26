@@ -14,11 +14,16 @@ import (
 type EnumsHandler struct {
 }
 
+//NewEnumsHandler 枚举数据查询服务
+func NewEnumsHandler() *EnumsHandler {
+	return &EnumsHandler{}
+}
+
 //QueryHandle 枚举数据查询服务
 func (o *EnumsHandler) QueryHandle(ctx hydra.IContext) interface{} {
 
 	//根据传入的枚举类型获取数据
-	tp := ctx.Request().GetString("type")
+	tp := ctx.Request().GetString("dic_type")
 	if tp != "" {
 		var items types.XMaps
 		var err error

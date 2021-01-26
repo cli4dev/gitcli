@@ -2,7 +2,6 @@ package markdown
 
 import (
 	"fmt"
-	"path/filepath"
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/app"
@@ -115,12 +114,21 @@ func createEnums() func(c *cli.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
-
+		root := ""
+		if c.NArg() > 1 {
+			root = c.Args().Get(1)
+		}
+		_, projectPath, err := utils.GetProjectPath(root)
+		if err != nil {
+			return err
+		}
 		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 
 		//根据关键字过滤
-		path := filepath.Join(".", "system", "enums.go")
+
+		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "enums", "go")
+		//path := filepath.Join(".", "system", "enums.go")
 		tbs.SetPkg(path)
 
 		//翻译文件

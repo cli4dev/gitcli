@@ -1,7 +1,6 @@
 package ui
 
-const srcUtilityUtilityJS = `
-import Vue from "vue"
+const srcUtilityUtilityJS = `import Vue from "vue"
 
 /*
 * 枚举对象使用时须通过引用并进行初始化
@@ -11,7 +10,7 @@ import Vue from "vue"
  export function Utility() {}
 
 //字符串去空格
-Utility.prototype.trim =  function(str) {
+Utility.prototype.trim = function(str) {
     if (!str)
         return "";
     return str.toString().replace(/[ |-]/g, "");

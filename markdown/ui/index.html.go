@@ -1,6 +1,6 @@
 package ui
 
-const indexHTML = `
+const publicIndexHTML = `
 <!DOCTYPE html>
 <html lang="">
   <head>

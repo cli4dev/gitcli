@@ -18,7 +18,7 @@ func createUI(c *cli.Context) (err error) {
 		return ui.Clear(c.Args().First())
 	}
 
-	return ui.CreateWeb(c.Args().First())
+	return ui.CreateWeb(c.Args().First(), c.Bool("sso"))
 
 }
 

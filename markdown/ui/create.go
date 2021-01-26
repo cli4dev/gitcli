@@ -15,14 +15,16 @@ var tmptls = map[string]string{
 	"src/pages/system/index.vue": srcPagesSystemIndex,
 	"src/router/index.js":        srcRouterIndexJS,
 	"src/store/index.js":         srcStoreIndexJS,
-	"src/utility/http.js":        srcUtilityHttpJS,
+	"src/utility/auth.js":        srcUtilityAuthJS,
+	"src/utility/http.js":        srcUtilityHTTPJS,
 	"src/utility/enum.js":        srcUtilityEnumJS,
 	"src/utility/filter.js":      srcUtilityFilter,
 	"src/utility/utility.js":     srcUtilityUtilityJS,
-	"src/utility/package.json":   srcUtilityPackageJson,
 	"src/utility/main.js":        srcUtilityMainJS,
 	"src/utility/env.js":         srcUtilityEnvJS,
-	"index.html":                 indexHTML,
+	"src/utility/package.json":   srcUtilityPackageJson,
+	"public/env.conf.json":       srcPublicEnvConfJson,
+	"public/index.html":          publicIndexHTML,
 	"package.json":               packageJSON,
 	"babel.config.js":            babelConfigJS,
 	".gitignore":                 gitignore,
@@ -31,8 +33,17 @@ var tmptls = map[string]string{
 	"vue.config.js":              vueConfigJS,
 }
 
+var ssoTmptls = map[string]string{}
+
 //CreateWeb 创建web项目
-func CreateWeb(name string) error {
+func CreateWeb(name string, sso bool) error {
+
+	if sso {
+		for k, v := range ssoTmptls {
+			tmptls[k] = v
+		}
+	}
+
 	err := createFiles(name)
 	if err != nil {
 		return err

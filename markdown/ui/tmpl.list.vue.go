@@ -151,7 +151,6 @@ import Add from "./{{.Name|rmhd|l2d}}.add"
 import Edit from "./{{.Name|rmhd|l2d}}.edit"
 {{- end}}
 export default {
-  name: "{{.Name|varName}}",
   components: {
 		{{- if gt ($rows|create|len) 0}}
 		Add,
@@ -197,7 +196,7 @@ export default {
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
 			{{- if $c.Con|DT}}
-			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.dt{{$c.Name|varName}},"yyyy-MM-dd hh:mm:ss")
+			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd hh:mm:ss")
 			{{- end -}}
       {{- end}}
       let res = await this.$http.xpost("{{.Name|rmhd|rpath}}/query",this.queryData)

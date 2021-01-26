@@ -18,7 +18,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
 import utility from './utility'
-Vue.use(utility);
+Vue.use(utility,true);
 
 Vue.config.productionTip = false;
 
