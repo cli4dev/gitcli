@@ -44,7 +44,7 @@ const TmplList = `
 					</el-form-item>
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
-          <el-checkbox-group v-model="{{$c.Name}}">
+          <el-checkbox-group v-model="queryData.{{$c.Name}}">
           	<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
@@ -172,22 +172,17 @@ export default {
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}:[],      //枚举对象
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
 			{{- end}}
 			{{- if $c.Con|DTP }}
-			{{$c.Name|lowerName}}:this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),{{end}}
+			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),{{end}}
 			{{- if $c.Con|DP }}
-			{{$c.Name|lowerName}}:this.$utility.dateFormat(new Date(),"yyyy-MM-dd"),{{end}}
+			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"yyyy-MM-dd"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
   },
   created(){
-		{{- range $i,$c:=$rows|query -}}
-		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-		this.{{$c.Name|lowerName}} = this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")
-		{{- end}}
-    {{- end}}
   },
   mounted(){
     this.init()

@@ -46,7 +46,7 @@ const TmplDetail = `
                   </el-col>
             {{- else}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}}}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrEmpty }}</div>
                   </el-col>
             {{- end}}
             {{- if and (eq (mod $i 2) 1) (ne ($rows|maxIndex) $i) }}
@@ -78,11 +78,6 @@ const TmplDetail = `
       this.init();
     },
     created(){
-      {{- range $i,$c:=$rows|detail -}}
-      {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-        this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")
-      {{- end}}
-      {{- end}}
     },
     methods: {
       init(){
