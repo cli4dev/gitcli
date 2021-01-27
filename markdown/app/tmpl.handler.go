@@ -31,7 +31,7 @@ func (u *{{.Name|rmhd|varName}}Handler) PostHandle(ctx hydra.IContext) (r interf
 	ctx.Log().Info("--------添加{{.Desc}}数据--------")
 	
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(postCheckFields); err != nil {
+	if err := ctx.Request().CheckMap(post{{.Name|rmhd|varName}}CheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
@@ -54,7 +54,7 @@ func (u *{{.Name|rmhd|varName}}Handler) GetHandle(ctx hydra.IContext) (r interfa
 	ctx.Log().Info("--------获取{{.Desc}}单条数据--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(getCheckFields); err != nil {
+	if err := ctx.Request().CheckMap(get{{.Name|rmhd|varName}}CheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
@@ -79,7 +79,7 @@ func (u *{{.Name|rmhd|varName}}Handler) QueryHandle(ctx hydra.IContext) (r inter
 	ctx.Log().Info("--------获取{{.Desc}}数据列表--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(queryCheckFields); err != nil {
+	if err := ctx.Request().CheckMap(query{{.Name|rmhd|varName}}CheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
@@ -115,7 +115,7 @@ func (u *{{.Name|rmhd|varName}}Handler) PutHandle(ctx hydra.IContext) (r interfa
 	ctx.Log().Info("--------更新{{.Desc}}数据--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(updateCheckFields); err != nil {
+	if err := ctx.Request().CheckMap(update{{.Name|rmhd|varName}}CheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
@@ -137,7 +137,7 @@ func (u *{{.Name|rmhd|varName}}Handler) DeleteHandle(ctx hydra.IContext) (r inte
 	ctx.Log().Info("--------删除{{.Desc}}数据--------")
 
 	ctx.Log().Info("1.参数校验")
-	if err := ctx.Request().CheckMap(deleteCheckFields); err != nil {
+	if err := ctx.Request().CheckMap(delete{{.Name|rmhd|varName}}CheckFields); err != nil {
 		return errs.NewErrorf(http.StatusNotAcceptable, "参数校验错误:%+v", err)
 	}
 
@@ -153,34 +153,34 @@ func (u *{{.Name|rmhd|varName}}Handler) DeleteHandle(ctx hydra.IContext) (r inte
 {{- end}}
 
 {{if gt (.Rows|create|len) 0 -}}
-var postCheckFields = map[string]interface{}{
+var post{{.Name|rmhd|varName}}CheckFields = map[string]interface{}{
 	{{range $i,$c:=.Rows|create}}field.Field{{$c.Name|varName}}:"required",
 	{{end -}}
 }
 {{- end}}
 
 {{if gt (.Rows|detail|len) 0 -}}
-var getCheckFields = map[string]interface{}{
+var get{{.Name|rmhd|varName}}CheckFields = map[string]interface{}{
 	{{range $i,$c:=$pks}}field.Field{{$c|varName}}:"required",{{end}}
 }
 {{- end}}
 
 {{if gt (.Rows|list|len) 0 -}}
-var queryCheckFields = map[string]interface{}{
+var query{{.Name|rmhd|varName}}CheckFields = map[string]interface{}{
 	{{range $i,$c:=.Rows|query}}field.Field{{$c.Name|varName}}:"required",
 	{{end -}}
 }
 {{- end}}
 
 {{if gt (.Rows|update|len) 0 -}}
-var updateCheckFields = map[string]interface{}{
+var update{{.Name|rmhd|varName}}CheckFields = map[string]interface{}{
 	{{range $i,$c:=.Rows|update}}field.Field{{$c.Name|varName}}:"required",
 	{{end -}}
 }
 {{- end}}
 
 {{if gt (.Rows|delete|len) 0 -}}
-var deleteCheckFields = map[string]interface{}{
+var delete{{.Name|rmhd|varName}}CheckFields = map[string]interface{}{
 	{{range $i,$c:=$pks}}field.Field{{$c|varName}}:"required",{{end}}
 }
 {{- end}}
