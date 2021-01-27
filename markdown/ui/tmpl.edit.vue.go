@@ -14,7 +14,7 @@ const TmplEditVue = `
 				<el-input type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="editData.{{$c.Name}}">
         </el-input>
 			</el-form-item>
-			{{- else if $c.Con|RB }}
+			{{- else if $c.Con|RD }}
 			<el-form-item  label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
 				<el-radio-group v-model="editData.{{$c.Name}}" style="margin-left:5px">
         	<el-radio v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
@@ -32,9 +32,13 @@ const TmplEditVue = `
 					<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
 				</el-checkbox-group>
 			</el-form-item>
-			{{- else if $c.Con|DT  }}
+			{{- else if $c.Con|DTP  }}
 			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
-      	<el-date-picker class="input-cos" v-model="editData.{{$c.Name}}" popper-class="datetime-to-date" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
+      	<el-date-picker class="input-cos" v-model="editData.{{$c.Name}}" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
+			</el-form-item>
+			{{- else if $c.Con|DP  }}
+			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
+      	<el-date-picker class="input-cos" v-model="editData.{{$c.Name}}" type="date" value-format="yyyy-MM-dd"  placeholder="选择日期"></el-date-picker>
       </el-form-item>
       {{- else -}}
       <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
@@ -58,7 +62,7 @@ export default {
 			dialogFormVisible: false,    //编辑表单显示隐藏
 			editData: {},                //编辑数据对象
       {{- range $i,$c:=$rows|update -}}
-      {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
+      {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
       {{$c.Name|lowerName}}:this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
       {{- end}}
       {{- end}}
@@ -91,8 +95,11 @@ export default {
 		},
 		edit() {
 			{{- range $i,$c:=$rows|update -}}
-			{{- if $c.Con|DT}}
+			{{- if $c.Con|DTP}}
 			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"yyyy-MM-dd hh:mm:ss")
+			{{- end -}}
+			{{- if $c.Con|DP}}
+			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"yyyy-MM-dd")
 			{{- end -}}
 			{{- end}}
 			this.$http.put("{{.Name|rmhd|rpath}}", this.editData, {}, true, true)

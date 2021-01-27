@@ -27,7 +27,7 @@ func createServiceBlock() func(c *cli.Context) (err error) {
 		if err := createBlockCode("service")(c); err != nil {
 			return err
 		}
-		if err := showSQL("curd")(c); err != nil {
+		if err := createCurd()(c); err != nil {
 			return err
 		}
 		if !c.Bool("field") {
@@ -142,7 +142,6 @@ func createEnums() func(c *cli.Context) (err error) {
 		}
 
 		//生成文件
-
 		fs, err := tmpl.Create(path, c.Bool("cover"))
 		if err != nil {
 			return err

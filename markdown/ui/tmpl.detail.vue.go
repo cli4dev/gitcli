@@ -24,7 +24,7 @@ const TmplDetail = `
                   <el-col :span="6">
                     <div class="pull-right" style="margin-right: 10px">{{$c.Desc|shortName}}:</div>
                   </el-col>
-            {{- if or ($c.Con|SL) ($c.Con|RB) ($c.Con|CB)}}
+            {{- if or ($c.Con|SL) ($c.Con|RD) ($c.Con|CB)}}
                   <el-col :span="6">
                     <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
@@ -42,7 +42,7 @@ const TmplDetail = `
                   </el-col>
             {{- else if eq ($c.Type|codeType) $time }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrDate }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | {{if $c.Con|DTP}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</div>
                   </el-col>
             {{- else}}
                   <el-col :span="6">
@@ -79,7 +79,7 @@ const TmplDetail = `
     },
     created(){
       {{- range $i,$c:=$rows|detail -}}
-      {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
+      {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
         this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")
       {{- end}}
       {{- end}}
