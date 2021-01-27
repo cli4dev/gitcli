@@ -8,6 +8,7 @@ const TmplDetail = `
 {{- $time := "time.Time" -}}
 {{- $len := 32 -}}
 {{- $rows := .Rows|detail -}}
+{{- $tb :=. -}}
 <template>
   <div>
     <el-tabs v-model="tabName" type="border-card" @tab-click="handleClick">
@@ -25,11 +26,11 @@ const TmplDetail = `
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|RB) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}") }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
             {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}") }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
           	{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
                   <el-col :span="6">
@@ -79,7 +80,7 @@ const TmplDetail = `
     created(){
       {{- range $i,$c:=$rows|detail -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-        this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
+        this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")
       {{- end}}
       {{- end}}
     },

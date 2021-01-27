@@ -80,10 +80,12 @@ func create(tp string) func(c *cli.Context) (err error) {
 		}
 
 		//过滤数据表
+		allTables := tbs.Tbs
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
 
+			tb.AllTables = allTables
 			//根据关键字过滤
 			tb.FilterRowByKW(c.String("kw"))
 

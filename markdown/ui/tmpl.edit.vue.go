@@ -4,6 +4,7 @@ package ui
 const TmplEditVue = `
 {{- $rows := .Rows -}}
 {{- $empty := "" -}}
+{{- $tb :=. -}}
 <template>
 	<el-dialog title="编辑{{.Desc}}"{{if gt ($rows|len) 5}} width="65%" {{- else}} width="25%" {{- end}} @closed="closed" :visible.sync="dialogFormVisible">
 		<el-form :model="editData" {{if gt ($rows|update|len) 5 -}}:inline="true"{{- end}} :rules="rules" ref="editForm" label-width="110px">
@@ -58,7 +59,7 @@ export default {
 			editData: {},                //编辑数据对象
       {{- range $i,$c:=$rows|update -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-      {{$c.Name|lowerName}}:this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}"),
+      {{$c.Name|lowerName}}:this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
       {{- end}}
       {{- end}}
 			rules: {                    //数据验证规则

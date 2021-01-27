@@ -13,16 +13,17 @@ import (
 
 //Table 表名称
 type Table struct {
-	Name     string //表名
-	Desc     string //表描述
-	PKG      string //包名称
-	Drop     bool   //创建表前是否先删除
-	DBType   string //数据库类型
-	DBLink   string //
-	Rows     []*Row
-	RawRows  []*Row
-	Indexs   Indexs
-	BasePath string //生成项目基本路径
+	Name      string //表名
+	Desc      string //表描述
+	PKG       string //包名称
+	Drop      bool   //创建表前是否先删除
+	DBType    string //数据库类型
+	DBLink    string //
+	Rows      []*Row
+	RawRows   []*Row
+	Indexs    Indexs
+	BasePath  string   //生成项目基本路径
+	AllTables []*Table //所有表
 }
 
 //Row 行信息

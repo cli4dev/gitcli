@@ -4,6 +4,7 @@ package ui
 const TmplCreateVue = `
 {{- $empty := "" -}}
 {{- $rows := .Rows -}}
+{{- $tb :=. -}}
 <template>
   <!-- Add Form -->
   <el-dialog title="添加{{.Desc}}" {{- if gt ($rows|create|len) 5}} width="65%" {{else}} width="25%" {{- end}} :visible.sync="dialogAddVisible">
@@ -60,7 +61,7 @@ export default {
 			dialogAddVisible: false,
 			{{- range $i,$c:=$rows|create -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-      {{$c.Name|lowerName}}: this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}"),
+      {{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
       {{- end}}
 			{{- end}}
 			rules: {                    //数据验证规则

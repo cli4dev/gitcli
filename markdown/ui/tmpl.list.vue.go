@@ -9,6 +9,7 @@ const TmplList = `
 {{- $len := 32 -}}
 {{- $rows := .Rows -}}
 {{- $pks := .|pks -}}
+{{- $tb :=. -}}
 <template>
 	<div class="panel panel-default">
     	<!-- query start -->
@@ -71,7 +72,7 @@ const TmplList = `
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" >
 				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB)}}
 					<template slot-scope="scope">
-						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")}}</span>
+						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")}}</span>
 					</template>
 				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
@@ -178,7 +179,7 @@ export default {
   created(){
 		{{- range $i,$c:=$rows|query -}}
 		{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RB) }}
-		this.{{$c.Name|lowerName}} = this.$enum.get("{{(or ($c.Con|moduleCon|firstStr|rmhd) $c.Name)|lower}}")
+		this.{{$c.Name|lowerName}} = this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")
 		{{- end}}
     {{- end}}
   },

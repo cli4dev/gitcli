@@ -54,15 +54,15 @@ func getfuncs(tp string) map[string]interface{} {
 		"TA":       getKWS("ta"), //表单文本域
 		"DT":       getKWS("dt"), //表单日期选择器
 
-		"query":     getRows("q"),                        //查询字段
-		"list":      getRows("l"),                        //列表展示字段
-		"detail":    getRows("r"),                        //详情展示字段
-		"create":    getRows("c"),                        //创建字段
-		"delete":    getRows("d"),                        //删除时判定字段
-		"update":    getRows("u"),                        //更新字段
-		"delCon":    getBracketContent("d"),              //删除字段约束
-		"moduleCon": getBracketContent("sl", "cb", "rb"), //获取组件约束的内容
-		"firstStr":  getStringByIndex(0),                 //获取约束的内容
+		"query":    getRows("q"),           //查询字段
+		"list":     getRows("l"),           //列表展示字段
+		"detail":   getRows("r"),           //详情展示字段
+		"create":   getRows("c"),           //创建字段
+		"delete":   getRows("d"),           //删除时判定字段
+		"update":   getRows("u"),           //更新字段
+		"delCon":   getBracketContent("d"), //删除字段约束
+		"firstStr": getStringByIndex(0),    //获取约束的内容
+		"dicType":  GetDicType("sl", "cb", "rb"),
 
 		"rpath": getRouterPath,         //获取路由地址
 		"fpath": getFilePath,           //获取文件地址
@@ -497,6 +497,30 @@ func getRouterPath(tabName string) string {
 func getStringByIndex(index int) func(s []string) string {
 	return func(s []string) string {
 		return types.GetStringByIndex(s, index)
+	}
+}
+
+func GetDicType(keys ...string) func(con string, tb *Table) string {
+	return func(con string, tb *Table) string {
+		tp := getStringByIndex(0)(getBracketContent("sl", "cb", "rb")(con))
+		if tp == "" {
+			return ""
+		}
+
+		for _, tb := range tb.AllTables {
+			if tb.Name == tp {
+				if hasKW("di", "dn")(tb) && hasKW("dt")(tb) {
+					for _, v := range tb.Rows {
+						if getKWS("dt")(v.Con) {
+							return v.Name
+						}
+					}
+				}
+				return rmhd(tb.Name)
+			}
+		}
+
+		return tp
 	}
 }
 

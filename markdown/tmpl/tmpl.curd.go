@@ -88,7 +88,7 @@ where
 	and t.{{$c.Name}} >= @{{$c.Name}} 
 	and t.{{$c.Name}} < date_add(@{{$c.Name}}, interval 1 day)
 {{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
-	and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}} like CONCAT('%',@{{$c.Name}},'%'))
+	?t.{{$c.Name}}
 {{- else}}
 	&t.{{$c.Name}}{{end}}
 {{- end}}{{end}}{###}
@@ -109,7 +109,7 @@ where
 	and t.{{$c.Name}} >= @{{$c.Name}} 
 	and t.{{$c.Name}} < date_add(@{{$c.Name}}, interval 1 day)
 {{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
-	and if(isnull(@{{$c.Name}})||@{{$c.Name}}='',1=1,t.{{$c.Name}} like CONCAT('%',@{{$c.Name}},'%'))
+	?t.{{$c.Name}}
 {{- else}}
 	&t.{{$c.Name}}{{end}}
 {{- end}} 
@@ -152,7 +152,7 @@ where
 	and t.{{$c.Name}} >= to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
   and t.{{$c.Name}} < to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
 {{- else if  and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
-  and t.{{$c.Name}} like '%' || @{{$c.Name}} || '%'
+  ?t.{{$c.Name}}
 {{- else}}
 	&t.{{$c.Name}}{{end}}
 {{- end}}{{end}}
@@ -180,7 +180,7 @@ from (select L.*
 				and t.{{$c.Name}} >= to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
 				and t.{{$c.Name}} < to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
 			{{- else if and (gt $c.Len $length) (eq ($c.Type|codeType) $string)}}
-				and t.{{$c.Name}} like '%' || @{{$c.Name}} || '%'
+				?t.{{$c.Name}}
 			{{- else}}
 				&t.{{$c.Name}}{{end}}
 			{{- end}}{{end}}
