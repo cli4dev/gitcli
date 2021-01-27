@@ -5,6 +5,7 @@ import (
 	_ "github.com/micro-plat/gitcli/clones"
 	_ "github.com/micro-plat/gitcli/email"
 	_ "github.com/micro-plat/gitcli/markdown"
+	"github.com/micro-plat/lib4go/logger"
 
 	_ "github.com/micro-plat/gitcli/pulls"
 	_ "github.com/micro-plat/gitcli/resets"
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	logger.Pause()
 	var app = cli.New(cli.WithVersion("0.1.1"))
 	app.Start()
 }
