@@ -19,6 +19,7 @@ var tmptls = map[string]string{
 	"src/utility/filter.js":      srcUtilityFilter,
 	"src/utility/utility.js":     srcUtilityUtilityJS,
 	"src/utility/main.js":        srcUtilityMainJS,
+	"src/utility/message.js":     srcUtilityMessageJS,
 	"src/utility/env.js":         srcUtilityEnvJS,
 	"src/utility/package.json":   srcUtilityPackageJson,
 	"public/env.conf.json":       srcPublicEnvConfJson,

@@ -2,6 +2,14 @@ package ui
 
 const srcUtilityUtilityJS = `import Vue from "vue"
 
+//相关value的颜色样式
+var colorClass = {
+    0: "text-success",
+    1: "text-warning",
+    10: "text-muted",
+    90: "text-danger"
+}
+
 /*
 * 枚举对象使用时须通过引用并进行初始化
 * import utility from './filter'
@@ -133,6 +141,11 @@ Vue.filter('fltrSubstr', (value, number = 16) => {
         return value
     }
     return value.slice(0, number - 1) + '...'
+})
+
+// 根据value获取不同颜色的class
+Vue.filter('fltrColor', value => {
+    return colorClass[value] || "text-info"
 })
 
 //日期格式转换

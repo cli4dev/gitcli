@@ -1,6 +1,7 @@
 package ui
 
 const srcUtilityAuthJS = `var __user_info__="__user_info__"
+var __menus_info__="__menus_info__"
 export function Auth(Vue) {
     Auth.prototype.Vue = Vue
 }
@@ -13,11 +14,7 @@ Auth.prototype.checkAuthCode = function (that, url){
     }
 
     //检查verify地址
-    var verifyURL = url || that.$env.conf.api.verifyURL;
-    if(!verifyURL){
-        throw new Error("api.verifyURL未配置")
-    }
-
+    var verifyURL = url || "/sso/login/verify";
     //从服务器拉取数据
     var userInfo = that.$http.xget(verifyURL, {code: that.$route.query.code});
     if (!userInfo){
@@ -28,8 +25,7 @@ Auth.prototype.checkAuthCode = function (that, url){
 }
 
 //lognout 退出登录
-Auth.prototype.loginout = function(url, logoutURL){
-
+Auth.prototype.logout = function(url, logoutURL){
     //清除用户认证信息
     let that = Auth.prototype.Vue.prototype;
 
@@ -37,7 +33,7 @@ Auth.prototype.loginout = function(url, logoutURL){
     that.$http.clearAuthorization();
    
     //清除cookie 
-    logoutURL = logoutURL || that.$env.conf.api.logoutURL;
+    logoutURL = logoutURL || "/sso/logout";
     if (logoutURL){
         that.$http.xget(logoutURL);
     }
@@ -49,7 +45,7 @@ Auth.prototype.loginout = function(url, logoutURL){
     if(url){
         redirctURL = "?logouturl=" + encodeURIComponent(url);
     }
-    //检查loginOutURL是否配置
+    //检查logoutURL是否配置
     window.location = url || that.$env.conf.sso.host + "/" + that.$env.conf.sso.ident + "/login" + redirctURL;    
 }
 
@@ -62,12 +58,47 @@ Auth.prototype.getUserInfo = function(){
    return JSON.parse(userInfo)
 }
 
-//getMenus获取菜单数据
-Auth.prototype.getMenus = function(_that, url){  
-    return new Promise((resolve, reject) => {
+//根据路由获取菜单信息
+Auth.prototype.getMenuTitle = function(path){
+    if(!path){
+        throw new Error("路由path为空");
+    }
+    let that = Auth.prototype.Vue.prototype  
+    //获取本地配置的菜单
+    var menus = that.$env.conf.menus ? that.$env.conf.menus : []
+    if(!menus){
+        //获取网络菜单缓存
+        var menusInfo = window.localStorage.getItem(__menus_info__)  
+        menus = menusInfo ? JSON.parse(menusInfo) : []
+    }  
 
+    //根据路径查找名称    
+    var cur = getMenuItem(menus, path);
+    if (!cur){                
+        path = path.substring(0, path.lastIndexOf('/'));
+        cur = getMenuItem(menus, path);
+    }
+
+    return cur.name + " - " + that.$env.conf.name;
+}
+
+//获取menu首次打开菜单数据
+Auth.prototype.getFirstMenuItem = function(menus, path){
+    //根据路径查找名称    
+    path = path || window.location.pathname;
+    var cur = getMenuItem(menus, path);
+    if (!cur){                
+        path = path.substring(0, path.lastIndexOf('/'));
+        cur = getMenuItem(menus, path);
+    }
+
+    return cur
+}
+
+//getMenus获取菜单数据
+Auth.prototype.getMenus = function(url){  
+    return new Promise((resolve, reject) => {
         let that = Auth.prototype.Vue.prototype  
-        
         //获取本地配置的菜单
         if (that.$env.conf.menus){
             resolve(that.$env.conf.menus)
@@ -78,9 +109,8 @@ Auth.prototype.getMenus = function(_that, url){
         let menuURL = url || "/sso/member/menus/get"
         that.$http.get(menuURL)
         .then(res => { 
-            //根据路径查找名称    
-            var cur = getMenuItem(res, window.location.pathname);
-            _that.$refs.NewTap.open(cur.name, cur.path); //this用menu的this
+            //保存菜单信息
+            window.localStorage.setItem(__menus_info__, JSON.stringify(res)) ;
             resolve(res);
         })
         .catch(err => {
@@ -91,7 +121,6 @@ Auth.prototype.getMenus = function(_that, url){
 
 //getSystemInfo获取系统信息
 Auth.prototype.getSystemInfo = function(url ){   
-   
     return new Promise((resolve, reject) => {   
         let that = Auth.prototype.Vue.prototype 
        
@@ -116,7 +145,6 @@ Auth.prototype.getSystemInfo = function(url ){
 //getSystemList获取用户系统列表
 Auth.prototype.getSystemList = function(url ){      
     return new Promise((resolve, reject) => {
-
         let that = Auth.prototype.Vue.prototype  
        
         //获取本地配置的菜单

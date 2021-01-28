@@ -22,13 +22,12 @@ Vue.use(utility,true);
 Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
-    /* 路由发生变化修改页面title */
-    if (to.meta && to.meta.title) {
-      document.title = to.meta.title
-    }
-    next()
-  })
-
+  /* 路由发生变化修改页面title */
+  if (to.path) {
+      document.title = Vue.prototype.$auth.getMenuTitle(to.path)
+  }
+  next()
+})
 
   /* eslint-disable no-new */
 new Vue({
