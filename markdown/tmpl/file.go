@@ -2,6 +2,7 @@ package tmpl
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -26,20 +27,27 @@ func GetSEQFilePath(outpath string) string {
 	return filepath.Join(outpath, "seq_ids.sql.go")
 }
 
+//PathExists 文件是否存在
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
 //Create 创建文件，文件夹 存在时写入则覆盖
 func Create(path string, append bool) (file *os.File, err error) {
 	dir := filepath.Dir(path)
-	_, err = os.Stat(dir)
-	if os.IsNotExist(err) {
+	if !PathExists(dir) {
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 			err = fmt.Errorf("创建文件夹%s失败:%v", path, err)
 			return nil, err
 		}
 	}
 
-	_, err = os.Stat(path)
 	var srcf *os.File
-	if os.IsNotExist(err) {
+	if !PathExists(path) {
 		srcf, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm)
 		if err != nil {
 			err = fmt.Errorf("无法打开文件:%s(err:%v)", path, err)
@@ -58,4 +66,16 @@ func Create(path string, append bool) (file *os.File, err error) {
 	}
 	return srcf, nil
 
+}
+
+func Read(path string) (s []byte, err error) {
+	if !PathExists(path) {
+		return
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	return ioutil.ReadAll(f)
 }

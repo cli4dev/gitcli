@@ -63,11 +63,13 @@ func getfuncs(tp string) map[string]interface{} {
 		"update":   getRows("u"),           //更新字段
 		"delCon":   getBracketContent("d"), //删除字段约束
 		"firstStr": getStringByIndex(0),    //获取约束的内容
+		"lastStr":  getLastStringByIndex,
 		"dicType":  GetDicType("sl", "cb", "rb"),
 
-		"rpath": getRouterPath,         //获取路由地址
-		"fpath": getFilePath,           //获取文件地址
-		"l2d":   replaceUnderline("."), //下划线替换为.
+		"rpath":      getRouterPath,         //获取路由地址
+		"fpath":      getFilePath,           //获取文件地址
+		"parentPath": getParentPath,         //获取文件夹地址
+		"l2d":        replaceUnderline("."), //下划线替换为.
 
 		"var":    getVar,
 		"vars":   joinVars,
@@ -489,6 +491,12 @@ func getFilePath(tabName string) string {
 	return path.Join(dir, replaceUnderline(".")(tabName))
 }
 
+//getParentPath 获取文件地址
+func getParentPath(tabName string) string {
+	dir, _ := filepath.Split(replaceUnderline("/")(tabName))
+	return strings.TrimRight(dir, "/")
+}
+
 //getRouterPath 获取路由地址
 func getRouterPath(tabName string) string {
 	dir, f := filepath.Split(replaceUnderline("/")(tabName))
@@ -499,6 +507,13 @@ func getStringByIndex(index int) func(s []string) string {
 	return func(s []string) string {
 		return types.GetStringByIndex(s, index)
 	}
+}
+
+func getLastStringByIndex(s []string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	return types.GetStringByIndex(s, len(s)-1)
 }
 
 func GetDicType(keys ...string) func(con string, tb *Table) string {

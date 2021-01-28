@@ -228,7 +228,7 @@ export default {
 			var data = {
         {{range $i,$c:=$pks}}{{$c}}: val.{{$c}},{{end}}
       }
-      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|rmhd|rpath}}.detail",data);
+      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|rmhd|rpath}}/detail",data);
 		},
 		{{- end}}
 		{{- if gt ($rows|create|len) 0}}

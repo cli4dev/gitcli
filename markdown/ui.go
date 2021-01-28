@@ -2,10 +2,13 @@ package markdown
 
 import (
 	"fmt"
+	"path"
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
 	"github.com/micro-plat/gitcli/markdown/ui"
+	"github.com/micro-plat/gitcli/markdown/utils"
+	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/urfave/cli"
 )
 
@@ -29,7 +32,8 @@ func createPage(c *cli.Context) (err error) {
 			return err
 		}
 	}
-	return
+
+	return createVueRouter()(c)
 }
 
 //createUI 创建web界面
@@ -70,6 +74,18 @@ func create(tp string) func(c *cli.Context) (err error) {
 		if c.NArg() > 1 {
 			root = c.Args().Get(1)
 		}
+
+		_, projectPath, err := utils.GetProjectPath(root)
+		if err != nil {
+			return err
+		}
+
+		webPath, _ := utils.GetWebSrcPath(projectPath)
+		confPath := ""
+		if webPath != "" {
+			confPath = path.Join(webPath, fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
+		}
+
 		//读取文件
 		dbtp := tmpl.MYSQL
 		template := uiMap[tp]
@@ -84,6 +100,12 @@ func create(tp string) func(c *cli.Context) (err error) {
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
+
+			//保存的动态配置
+			err := tmpl.NewSnippetConf(tb).SaveConf(confPath)
+			if err != nil {
+				logs.Log.Error(err)
+			}
 
 			tb.AllTables = allTables
 			//根据关键字过滤

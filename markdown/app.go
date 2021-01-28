@@ -33,10 +33,10 @@ func createServiceBlock() func(c *cli.Context) (err error) {
 		if !c.Bool("field") {
 			return nil
 		}
-		if err := showCode("field")(c); err != nil {
+		if err := showField()(c); err != nil {
 			return err
 		}
-		return nil
+		return createGo("conf.go")(c)
 	}
 }
 
@@ -52,7 +52,6 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		if c.NArg() > 1 {
 			root = c.Args().Get(1)
 		}
-
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
@@ -61,6 +60,9 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+
+		confPath := tmpl.GetGoConfPath(root)
+		filedPath := tmpl.GetFieldConfPath(root)
 
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
@@ -71,12 +73,22 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
+			tb.SetBasePath(basePath)
+			//保存的动态配置
+			err := tmpl.NewSnippetConf(tb).SaveConf(confPath)
+			if err != nil {
+				logs.Log.Error(err)
+			}
+
+			err = tmpl.NewFieldConf(tb).SaveConf(filedPath)
+			if err != nil {
+				logs.Log.Error(err)
+			}
 
 			//根据关键字过滤
 			path := tmpl.GetFilePath(fmt.Sprintf("%s/services", projectPath), tb.Name, "go")
 			tb.FilterRowByKW(c.String("kw"))
 			tb.SetPkg(path)
-			tb.SetBasePath(basePath)
 
 			//翻译文件
 			content, err := tmpl.Translate(template, dbtp, tb)
@@ -128,7 +140,6 @@ func createEnums() func(c *cli.Context) (err error) {
 		//根据关键字过滤
 
 		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "enums", "go")
-		//path := filepath.Join(".", "system", "enums.go")
 		tbs.SetPkg(path)
 
 		//翻译文件
