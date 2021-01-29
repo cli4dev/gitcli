@@ -76,7 +76,7 @@ const TmplList = `
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" >
 				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
-						<span>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")}}</span>
+						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")}}</span>
 					</template>
 				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
@@ -204,7 +204,7 @@ export default {
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd")
 			{{- end -}}
       {{- end}}
-      let res = await this.$http.xpost("{{.Name|rmhd|rpath}}/query",this.queryData)
+      let res = await this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.queryData)
 			this.dataList.items = res.items
 			this.dataList.count = res.count
     },
@@ -228,7 +228,7 @@ export default {
 			var data = {
         {{range $i,$c:=$pks}}{{$c}}: val.{{$c}},{{end}}
       }
-      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"{{.Name|rmhd|rpath}}/detail",data);
+      this.$emit("addTab","详情"+val.{{range $i,$c:=$pks}}{{$c}}{{end}},"/{{.Name|rmhd|rpath}}/detail",data);
 		},
 		{{- end}}
 		{{- if gt ($rows|create|len) 0}}
@@ -246,7 +246,7 @@ export default {
     del(val){
 			this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {confirmButtonText: "确定",  cancelButtonText: "取消", type: "warning"})
 			.then(() => {
-				this.$http.del("{{.Name|rmhd|rpath}}", {data:val}, {}, true, true)
+				this.$http.del("/{{.Name|rmhd|rpath}}", {data:val}, {}, true, true)
 				.then(res => {			
 					this.dialogFormVisible = false;
 					this.refresh()

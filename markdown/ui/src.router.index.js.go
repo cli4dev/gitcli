@@ -43,13 +43,13 @@ export default new Router({
 				{
 					path: '{{$v.Name|rmhd|rpath}}',
 					name: '{{$v.Name|rmhd|varName}}',
-					component: () => import('../pages{{$v.Name|rmhd|rpath|parentPath}}/{{$v.Name|rmhd|l2d}}.list.vue')
+					component: () => import('../pages/{{$v.Name|rmhd|rpath|parentPath}}/{{$v.Name|rmhd|l2d}}.list.vue')
 				},
 				{{- if $v.HasDetail }}
 				{
 					path: '{{$v.Name|rmhd|rpath}}/detail',
 					name: '{{$v.Name|rmhd|varName}}Detail',
-					component: () => import('../pages{{$v.Name|rmhd|rpath|parentPath}}/{{$v.Name|rmhd|l2d}}.detail.vue')
+					component: () => import('../pages/{{$v.Name|rmhd|rpath|parentPath}}/{{$v.Name|rmhd|l2d}}.detail.vue')
 				},{{- end}}
         {{- end}}
       ]

@@ -102,7 +102,7 @@ export default {
 			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"yyyy-MM-dd")
 			{{- end -}}
 			{{- end}}
-			this.$http.put("{{.Name|rmhd|rpath}}", this.editData, {}, true, true)
+			this.$http.put("/{{.Name|rmhd|rpath}}", this.editData, {}, true, true)
 			.then(res => {			
 				this.dialogFormVisible = false;
 				this.refresh()

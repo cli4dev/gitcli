@@ -108,7 +108,7 @@ export default {
 			{{- end}}
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
-					this.$http.post("{{.Name|rmhd|rpath}}", this.addData, {}, true, true)
+					this.$http.post("/{{.Name|rmhd|rpath}}", this.addData, {}, true, true)
 						.then(res => {
 							this.$refs[formName].resetFields()
 							this.dialogAddVisible = false

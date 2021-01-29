@@ -54,6 +54,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"TA":       getKWS("ta"),  //表单文本域
 		"DTP":      getKWS("dtp"), //表单日期时间选择器
 		"DP":       getKWS("dp"),  //表单日期选择器
+		"CC":       getKWS("cc"),  //表单颜色样式
 
 		"query":    getRows("q"),           //查询字段
 		"list":     getRows("l"),           //列表展示字段
@@ -500,7 +501,7 @@ func getParentPath(tabName string) string {
 //getRouterPath 获取路由地址
 func getRouterPath(tabName string) string {
 	dir, f := filepath.Split(replaceUnderline("/")(tabName))
-	return "/" + dir + f
+	return dir + f
 }
 
 func getStringByIndex(index int) func(s []string) string {
