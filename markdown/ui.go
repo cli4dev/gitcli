@@ -32,8 +32,11 @@ func createPage(c *cli.Context) (err error) {
 			return err
 		}
 	}
+	if err := createVueRouter()(c); err != nil {
+		return err
+	}
 
-	return createVueRouter()(c)
+	return createVueMenus()(c)
 }
 
 //createUI 创建web界面

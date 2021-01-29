@@ -14,6 +14,7 @@ type SnippetConf struct {
 	Name      string `json:"name"`
 	HasDetail bool   `json:"has_detail"`
 	BasePath  string `json:"base_path"`
+	Desc      string `json:"desc"`
 }
 
 func NewSnippetConf(t *Table) *SnippetConf {
@@ -22,6 +23,7 @@ func NewSnippetConf(t *Table) *SnippetConf {
 		Name:      t.Name,
 		HasDetail: len(rows) > 0,
 		BasePath:  t.BasePath,
+		Desc:      t.Desc,
 	}
 }
 

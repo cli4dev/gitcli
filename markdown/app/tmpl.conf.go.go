@@ -35,8 +35,8 @@ const SnippetTmplConfGo = `package main
 
 import (
 	"github.com/micro-plat/hydra"
-	{{- range $i,$v:=. }}
-	"{{$v.BasePath}}/services/{{$v.Name|rmhd|parentPath}}"
+	{{- range $i,$v:=.|importPath }}
+	"{{$i}}"
 	{{- end}}
 )
 

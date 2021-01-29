@@ -18,6 +18,11 @@ func createVueRouter() func(c *cli.Context) (err error) {
 	return createConf("vue.router")
 }
 
+//createVueMenus 创建vue菜单
+func createVueMenus() func(c *cli.Context) (err error) {
+	return createConf("vue.menus")
+}
+
 func createGORouter() func(c *cli.Context) (err error) {
 	return createGo("conf.go")
 }
@@ -52,8 +57,8 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 			return
 		}
 
-		path := path.Join(webSrcPath, "router/index.js")
-		logs.Log.Infof("写入文件%s/router/index.js", webSrcPath)
+		path := path.Join(webPath, confPathMap[tp])
+		logs.Log.Info("写入文件", path)
 
 		confs, err := tmpl.GetSnippetConf(confPath)
 		if err != nil {
@@ -131,5 +136,11 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 
 var confMap = map[string]string{
 	"vue.router": ui.SnippetSrcRouterIndexJS,
+	"vue.menus":  ui.SrcMenusJson,
 	"conf.go":    app.SnippetTmplConfGo,
+}
+
+var confPathMap = map[string]string{
+	"vue.router": "src/router/index.js",
+	"vue.menus":  "public/menus.json",
 }

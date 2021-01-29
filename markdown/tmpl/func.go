@@ -71,6 +71,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"fpath":      getFilePath,           //获取文件地址
 		"parentPath": getParentPath,         //获取文件夹地址
 		"l2d":        replaceUnderline("."), //下划线替换为.
+		"importPath": getImportPath,
 
 		"var":    getVar,
 		"vars":   joinVars,
@@ -539,6 +540,18 @@ func GetDicType(keys ...string) func(con string, tb *Table) string {
 
 		return tp
 	}
+}
+
+func getImportPath(s []*SnippetConf) map[string]*SnippetConf {
+	r := make(map[string]*SnippetConf, 0)
+	for _, v := range s {
+		path, _ := Translate("{{.Name|rmhd|parentPath}}", "", v)
+		tpath := fmt.Sprintf("%s/services/%s", v.BasePath, path)
+		if _, ok := r[tpath]; !ok {
+			r[tpath] = v
+		}
+	}
+	return r
 }
 
 func getBracketContent(keys ...string) func(con string) []string {
