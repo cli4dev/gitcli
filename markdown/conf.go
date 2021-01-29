@@ -9,7 +9,6 @@ import (
 	"github.com/micro-plat/gitcli/markdown/tmpl"
 	"github.com/micro-plat/gitcli/markdown/ui"
 	"github.com/micro-plat/gitcli/markdown/utils"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/urfave/cli"
 )
 
@@ -43,12 +42,10 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 		}
 
 		webPath, webSrcPath := utils.GetWebSrcPath(projectPath)
-		confPath := ""
-		if webPath != "" {
-			confPath = path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
+		confPath := tmpl.GetVueConfPath(root)
+		if confPath == "" {
+			return
 		}
-
-		confPath = tmpl.GetVueConfPath(root)
 
 		//读取文件
 		template := confMap[tp]
@@ -56,7 +53,6 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 		if webSrcPath == "" {
 			return
 		}
-
 		path := path.Join(webPath, confPathMap[tp])
 		logs.Log.Info("写入文件", path)
 
@@ -91,19 +87,14 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		if c.NArg() > 1 {
 			root = c.Args().Get(1)
 		}
-		projectName, projectPath, err := utils.GetProjectPath(root)
+		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
 
-		if projectPath == "" {
+		confPath := tmpl.GetGoConfPath(root)
+		if confPath == "" {
 			return
-		}
-
-		confPath := ""
-
-		if projectPath != "" {
-			confPath = path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_%s.json", projectName, md5.Encrypt(projectPath)))
 		}
 
 		//读取文件

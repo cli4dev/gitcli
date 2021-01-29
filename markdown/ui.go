@@ -2,13 +2,10 @@ package markdown
 
 import (
 	"fmt"
-	"path"
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/tmpl"
 	"github.com/micro-plat/gitcli/markdown/ui"
-	"github.com/micro-plat/gitcli/markdown/utils"
-	"github.com/micro-plat/lib4go/security/md5"
 	"github.com/urfave/cli"
 )
 
@@ -77,17 +74,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 		if c.NArg() > 1 {
 			root = c.Args().Get(1)
 		}
-
-		_, projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
-
-		webPath, _ := utils.GetWebSrcPath(projectPath)
-		confPath := ""
-		if webPath != "" {
-			confPath = path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
-		}
+		confPath := tmpl.GetVueConfPath(root)
 
 		//读取文件
 		dbtp := tmpl.MYSQL
