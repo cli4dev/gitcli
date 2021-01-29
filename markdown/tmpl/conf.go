@@ -17,7 +17,7 @@ type SnippetConf struct {
 }
 
 func NewSnippetConf(t *Table) *SnippetConf {
-	rows := getRows("d")(t.Rows)
+	rows := getRows("r")(t.Rows)
 	return &SnippetConf{
 		Name:      t.Name,
 		HasDetail: len(rows) > 0,
@@ -160,14 +160,14 @@ func (t *FieldConf) SaveConf(confPath string) error {
 }
 
 func GetFieldConfPath(root string) string {
-	_, projectPath, err := utils.GetProjectPath(root)
+	projectName, projectPath, err := utils.GetProjectPath(root)
 	if err != nil {
 		panic(err)
 	}
 	if projectPath == "" {
 		return ""
 	}
-	return path.Join(projectPath, fmt.Sprintf("webserver_filed_%s.json", md5.Encrypt(projectPath)))
+	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_filed_%s.json", projectName, md5.Encrypt(projectPath)))
 }
 
 func GetVueConfPath(root string) string {
@@ -179,16 +179,16 @@ func GetVueConfPath(root string) string {
 	if webPath == "" {
 		return ""
 	}
-	return path.Join(webPath, fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
+	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
 }
 
 func GetGoConfPath(root string) string {
-	_, projectPath, err := utils.GetProjectPath(root)
+	projectName, projectPath, err := utils.GetProjectPath(root)
 	if err != nil {
 		panic(err)
 	}
 	if projectPath == "" {
 		return ""
 	}
-	return path.Join(projectPath, fmt.Sprintf("webserver_%s.json", md5.Encrypt(projectPath)))
+	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_%s.json", projectName, md5.Encrypt(projectPath)))
 }

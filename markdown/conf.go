@@ -18,6 +18,10 @@ func createVueRouter() func(c *cli.Context) (err error) {
 	return createConf("vue.router")
 }
 
+func createGORouter() func(c *cli.Context) (err error) {
+	return createGo("conf.go")
+}
+
 func createConf(tp string) func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
@@ -36,8 +40,9 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 		webPath, webSrcPath := utils.GetWebSrcPath(projectPath)
 		confPath := ""
 		if webPath != "" {
-			confPath = path.Join(webPath, fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
+			confPath = path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
 		}
+
 		confPath = tmpl.GetVueConfPath(root)
 
 		//读取文件
@@ -65,7 +70,7 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
-		logs.Log.Info("生成文件:", path, confs)
+		logs.Log.Info("生成文件:", path)
 		fs.WriteString(content)
 		fs.Close()
 		return nil
@@ -81,7 +86,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		if c.NArg() > 1 {
 			root = c.Args().Get(1)
 		}
-		_, projectPath, err := utils.GetProjectPath(root)
+		projectName, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
@@ -93,13 +98,13 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		confPath := ""
 
 		if projectPath != "" {
-			confPath = path.Join(projectPath, fmt.Sprintf("webserver_%s.json", md5.Encrypt(projectPath)))
+			confPath = path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_%s.json", projectName, md5.Encrypt(projectPath)))
 		}
 
 		//读取文件
 		template := confMap[tp]
 
-		path := path.Join(projectPath, "conf.go")
+		path := path.Join(projectPath, "init.go")
 		logs.Log.Infof("写入文件%s", path)
 
 		confs, err := tmpl.GetSnippetConf(confPath)
@@ -117,7 +122,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
-		logs.Log.Info("生成文件:", path, confs)
+		logs.Log.Info("生成文件:", path)
 		fs.WriteString(content)
 		fs.Close()
 		return nil

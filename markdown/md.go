@@ -51,9 +51,6 @@ func init() {
 						}, cli.BoolFlag{
 							Name:  "cover,v",
 							Usage: `-文件已存在时自动覆盖`,
-						}, cli.BoolFlag{
-							Name:  "field",
-							Usage: `-创建表字段列表`,
 						},
 					},
 				},

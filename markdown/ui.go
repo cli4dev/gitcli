@@ -83,7 +83,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 		webPath, _ := utils.GetWebSrcPath(projectPath)
 		confPath := ""
 		if webPath != "" {
-			confPath = path.Join(webPath, fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
+			confPath = path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
 		}
 
 		//读取文件

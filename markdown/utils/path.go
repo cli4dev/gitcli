@@ -12,13 +12,13 @@ import (
 	"strings"
 )
 
-//getHomePath 获取用户home目录 没实现跨平台
-func getHomePath() string {
+//GetGitcliHomePath 获取用户home目录 没实现跨平台
+func GetGitcliHomePath() string {
 	user, err := user.Current()
 	if err != nil {
 		panic(err)
 	}
-	return user.HomeDir
+	return filepath.Join(user.HomeDir, ".gitcli")
 }
 
 //GetProjectPath 获取项目路径
