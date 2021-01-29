@@ -33,7 +33,7 @@ func createServiceBlock() func(c *cli.Context) (err error) {
 		if err := showField()(c); err != nil {
 			return err
 		}
-		return createGo("conf.go")(c)
+		return createGORouter()(c)
 	}
 }
 
@@ -114,6 +114,15 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 
 func createEnums() func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
+		if err := createEnum()(c); err != nil {
+			return err
+		}
+		return createGORouter()(c)
+	}
+}
+
+func createEnum() func(c *cli.Context) (err error) {
+	return func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
@@ -131,12 +140,17 @@ func createEnums() func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+
+		basePath, err := utils.GetProjectBasePath(projectPath)
+		if err != nil {
+			return err
+		}
 		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 
 		//根据关键字过滤
 
-		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "enums", "go")
+		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "system.enums", "go")
 		tbs.SetPkg(path)
 
 		//翻译文件
@@ -147,6 +161,16 @@ func createEnums() func(c *cli.Context) (err error) {
 		if !c.Bool("w2f") {
 			logs.Log.Info(content)
 			return nil
+		}
+
+		confPath := tmpl.GetGoConfPath(root)
+		tb := &tmpl.Table{
+			Name:     "_system_enums",
+			BasePath: basePath,
+		}
+		err = tmpl.NewSnippetConf(tb).SaveConf(confPath)
+		if err != nil {
+			logs.Log.Error(err)
 		}
 
 		//生成文件

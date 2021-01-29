@@ -14,7 +14,7 @@ const srcPublicEnvConfJson = `
     "api": {
         "host": "http://localhost:8089",
         "confURL": "",
-        "enumURL": ""
+        "enumURL": "/system/enums/query"
     },
     "menus": [
         {

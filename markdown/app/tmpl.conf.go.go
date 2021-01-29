@@ -34,6 +34,7 @@ func init() {
 const SnippetTmplConfGo = `package main
 
 import (
+	"github.com/micro-plat/hydra"
 	{{- range $i,$v:=. }}
 	"{{$v.BasePath}}/services/{{$v.Name|rmhd|parentPath}}"
 	{{- end}}
@@ -42,7 +43,7 @@ import (
 //init 检查应用程序配置文件，并根据配置初始化服务
 func init() {
 	{{- range $i,$v:=. }}
-	App.Web("{{$v.Name|rmhd|rpath}}", {{$v.Name|rmhd|parentPath|names|lastStr}}.New{{$v.Name|rmhd|varName}}Handler())
+	hydra.S.Web("{{$v.Name|rmhd|rpath}}", {{$v.Name|rmhd|parentPath|names|lastStr}}.New{{$v.Name|rmhd|varName}}Handler())
 	{{- end}}
 }
 

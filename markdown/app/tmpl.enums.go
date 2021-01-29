@@ -10,17 +10,17 @@ import (
 	"gitlab.100bm.cn/micro-plat/dds/dds"
 )
 
-//EnumsHandler 枚举数据查询服务
-type EnumsHandler struct {
+//SystemEnumsHandler 枚举数据查询服务
+type SystemEnumsHandler struct {
 }
 
-//NewEnumsHandler 枚举数据查询服务
-func NewEnumsHandler() *EnumsHandler {
-	return &EnumsHandler{}
+//NewSystemEnumsHandler 枚举数据查询服务
+func NewSystemEnumsHandler() *SystemEnumsHandler {
+	return &SystemEnumsHandler{}
 }
 
 //QueryHandle 枚举数据查询服务
-func (o *EnumsHandler) QueryHandle(ctx hydra.IContext) interface{} {
+func (o *SystemEnumsHandler) QueryHandle(ctx hydra.IContext) interface{} {
 
 	//根据传入的枚举类型获取数据
 	tp := ctx.Request().GetString("dic_type")
