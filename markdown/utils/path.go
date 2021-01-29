@@ -22,8 +22,8 @@ func GetGitcliHomePath() string {
 }
 
 //GetProjectPath 获取项目路径
-func GetProjectPath(projectPath string) (string, string, error) {
-	npath := projectPath
+func GetProjectPath(root string) (string, string, error) {
+	npath := root
 	if !strings.HasPrefix(npath, "./") && !strings.HasPrefix(npath, "/") && !strings.HasPrefix(npath, "../") {
 		srcPath, err := os.Getwd()
 		if err != nil {
@@ -32,11 +32,11 @@ func GetProjectPath(projectPath string) (string, string, error) {
 		npath = filepath.Join(srcPath, npath)
 	}
 
-	root, err := filepath.Abs(npath)
+	aPath, err := filepath.Abs(npath)
 	if err != nil {
 		return "", "", fmt.Errorf("不是有效的项目路径:%s", root)
 	}
-	return filepath.Base(root), root, nil
+	return filepath.Base(aPath), aPath, nil
 }
 
 //GetWebSrcPath 获取web项目src目录

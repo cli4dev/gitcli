@@ -17,6 +17,7 @@ type SnippetConf struct {
 	Desc      string `json:"desc"`
 }
 
+//NewSnippetConf .
 func NewSnippetConf(t *Table) *SnippetConf {
 	rows := getRows("r")(t.Rows)
 	return &SnippetConf{
@@ -27,6 +28,7 @@ func NewSnippetConf(t *Table) *SnippetConf {
 	}
 }
 
+//SaveConf 保存配置
 func (t *SnippetConf) SaveConf(confPath string) error {
 	if confPath == "" {
 		return nil
@@ -46,6 +48,7 @@ func (t *SnippetConf) SaveConf(confPath string) error {
 	return writeConf(confPath, conf)
 }
 
+//GetSnippetConf 获取配置
 func GetSnippetConf(path string) ([]*SnippetConf, error) {
 
 	conf := make(map[string]*SnippetConf, 0)
@@ -67,12 +70,14 @@ type FieldConf struct {
 	Fields []*FieldItem `json:"fields"`
 }
 
+//FieldItem .
 type FieldItem struct {
 	Desc  string `json:"desc"`
 	Name  string `json:"name"`
 	Table string `json:"table"`
 }
 
+//NewFieldConf .
 func NewFieldConf(t *Table) *FieldConf {
 	fields := []*FieldItem{}
 	for _, v := range t.Rows {

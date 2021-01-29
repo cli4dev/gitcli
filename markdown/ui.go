@@ -70,10 +70,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-		root := ""
-		if c.NArg() > 1 {
-			root = c.Args().Get(1)
-		}
+	     root:= c.Args().Get(1)
 		confPath := tmpl.GetVueConfPath(root)
 
 		//读取文件

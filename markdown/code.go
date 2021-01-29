@@ -29,10 +29,7 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-		root := ""
-		if c.NArg() > 1 {
-			root = c.Args().Get(1)
-		}
+	     root:= c.Args().Get(1)
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
@@ -76,10 +73,7 @@ func showFiledCode(tp string) func(c *cli.Context) (err error) {
 
 		//读取文件
 		dbtp := tmpl.MYSQL
-		root := ""
-		if c.NArg() > 1 {
-			root = c.Args().Get(1)
-		}
+	     root:= c.Args().Get(1)
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err

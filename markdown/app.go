@@ -44,11 +44,8 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		}
 		//读取文件
 		dbtp := tmpl.MYSQL
-		template := appCodeMap[tp]
-		root := ""
-		if c.NArg() > 1 {
-			root = c.Args().Get(1)
-		}
+		root := c.Args().Get(1)
+
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
@@ -89,7 +86,7 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 			tb.SetPkg(path)
 
 			//翻译文件
-			content, err := tmpl.Translate(template, dbtp, tb)
+			content, err := tmpl.Translate(appCodeMap[tp], dbtp, tb)
 			if err != nil {
 				return fmt.Errorf("翻译%s模板出错:%+v", tp, err)
 			}
@@ -132,10 +129,7 @@ func createEnum() func(c *cli.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
-		root := ""
-		if c.NArg() > 1 {
-			root = c.Args().Get(1)
-		}
+		root := c.Args().Get(1)
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
