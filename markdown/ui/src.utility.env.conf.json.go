@@ -37,7 +37,10 @@ const srcPublicEnvConfJson = `
             ]
         }
     ],
-    "sysList": []
+    "sysList": [],
+    "enums": [{"name":"全国","type":"province","value":"*","group":"fltr"},{"name":"全市","type":"city","value":"*","group":"fltr"}],
+    "textColor": {},
+    "bgColor": {}
 }
 `
 

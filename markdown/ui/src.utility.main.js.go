@@ -4,7 +4,7 @@ const srcUtilityMainJS = `import { Enum } from './enum'
 import { Http } from './http'
 import { Env } from './env'
 import { Utility } from './utility'
-import { Auth } from './auth'
+import { Sys } from './sys'
 import { Message } from './message'
 
 import packageData from '../../package.json'
@@ -21,10 +21,9 @@ export default {
         Vue.prototype.$msg = new Message(Vue);
         Vue.prototype.$enum = new Enum();
         Vue.prototype.$http = new Http(Vue);
-        Vue.prototype.$utility = new Utility();
-
         Vue.prototype.$env = new Env(getConf(Vue, path))    
-        Vue.prototype.$auth = new Auth(Vue);
+        Vue.prototype.$sys = new Sys(Vue);
+        Vue.prototype.$utility = new Utility();
 
         let that = Vue.prototype
 
@@ -65,6 +64,11 @@ export default {
             that.$enum.callback(function(type){
                 return that.$http.xget(that.$env.conf.api.enumURL, { dic_type: type || "" }, "") 
             })
+        }
+
+        //保存初始数据
+        if (that.$env.conf.enums){
+            that.$enum.set(that.$env.conf.enums)
         }
     }
 }

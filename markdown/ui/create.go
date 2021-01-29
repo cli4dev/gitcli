@@ -13,7 +13,7 @@ var tmptls = map[string]string{
 	"src/main.js":                srcMainJS,
 	"src/pages/system/menus.vue": srcPagesSystemMenus,
 	"src/router/index.js":        srcRouterIndexJS,
-	"src/utility/auth.js":        srcUtilityAuthJS,
+	"src/utility/sys.js":         srcUtilitySysJS,
 	"src/utility/http.js":        srcUtilityHTTPJS,
 	"src/utility/enum.js":        srcUtilityEnumJS,
 	"src/utility/filter.js":      srcUtilityFilter,
@@ -32,6 +32,7 @@ var tmptls = map[string]string{
 
 var ssoTmptls = map[string]string{
 	"public/env.conf.json": srcSSOPublicEnvConfJson,
+	"src/main.js":          srcSSOMainJS,
 }
 
 //CreateWeb 创建web项目

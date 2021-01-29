@@ -26,7 +26,7 @@ const TmplDetail = `
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|RD) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
+                    <div {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
             {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
                   <el-col :span="6">

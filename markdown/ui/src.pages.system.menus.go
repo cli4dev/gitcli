@@ -51,15 +51,8 @@ export default {
     this.userinfo = this.$auth.getUserInfo()
   },
   methods: {
-    pwd() {
-      this.$http.clearAuthorization();
-
-      var keys = this.$cookies.keys();
-      for (var i in keys) {
-        this.$cookies.remove(keys[i]);
-      }
-      var url = this.$env.conf.sso.host + "/" + this.$env.conf.sso.ident + "/changepwd"
-      window.location.href = url;
+    pwd() {    
+      this.$sys.changePwd()
     },
     signOutM() {
       this.$auth.loginout();
@@ -68,6 +61,8 @@ export default {
       this.$auth.getMenus(this).then(res => {
         this.menus = res;
         this.getUserOtherSys();
+        var cur = this.$sys.findMenuItem(res);
+        this.$refs.NewTap.open(cur.name, cur.path);
       });
     },
     //获取系统的相关数据
