@@ -164,12 +164,12 @@ Vue.filter('fltrSubstr', (value, number = 16) => {
 
 // 根据value获取text不同颜色的class
 Vue.filter('fltrTextColor', value => {
-    return Vue.prototype.$conf.textColor[value] || "text-info"
+    return Vue.prototype.$env.conf.textColor[value] || "text-info"
 })
 
 // 根据value获取背景不同颜色的class
 Vue.filter('fltrBgColor', value => {
-    return Vue.prototype.$conf.bgColor[value] || "bg-info"
+    return Vue.prototype.$env.conf.bgColor[value] || "bg-info"
 })
 
 //日期格式转换

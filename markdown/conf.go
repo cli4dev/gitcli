@@ -31,7 +31,7 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-	     root:= c.Args().Get(1)
+		root := c.Args().Get(1)
 
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
@@ -80,7 +80,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-	  root:= c.Args().Get(1)
+		root := c.Args().Get(1)
 		_, projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err

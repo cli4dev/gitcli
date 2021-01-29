@@ -45,20 +45,20 @@ export default {
 
   },
   mounted() {
-    this.$auth.checkAuthCode(this)
+    this.$sys.checkAuthCode(this)
     this.getMenu();
     this.getSystemInfo();
-    this.userinfo = this.$auth.getUserInfo()
+    this.userinfo = this.$sys.getUserInfo()
   },
   methods: {
     pwd() {    
       this.$sys.changePwd()
     },
     signOutM() {
-      this.$auth.loginout();
+      this.$sys.loginout();
     },
     getMenu() {
-      this.$auth.getMenus(this).then(res => {
+      this.$sys.getMenus(this).then(res => {
         this.menus = res;
         this.getUserOtherSys();
         var cur = this.$sys.findMenuItem(res);
@@ -67,13 +67,13 @@ export default {
     },
     //获取系统的相关数据
     getSystemInfo() {
-      this.$auth.getSystemInfo().then(res => {
+      this.$sys.getSystemInfo().then(res => {
         this.system = res;
       })
     },
     //用户可用的其他系统
     getUserOtherSys() {
-      this.$auth.getSystemList().then(res => {
+      this.$sys.getSystemList().then(res => {
         this.items = res;
       })
     },
