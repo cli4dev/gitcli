@@ -32,49 +32,28 @@ func (t *SnippetConf) SaveConf(confPath string) error {
 		return nil
 	}
 
-	s, err := Read(confPath)
+	//读取配置
+	conf := make(map[string]*SnippetConf, 0)
+	err := readConf(confPath, &conf)
 	if err != nil {
 		return err
 	}
 
-	//创建文件
-	fs, err := Create(confPath, true)
-	if err != nil {
-		return err
-	}
-
-	//设置
-	conf := make(map[string]interface{}, 0)
-	if len(s) > 0 {
-		err = json.Unmarshal(s, &conf)
-		if err != nil {
-			return err
-		}
-	}
+	//设置配置
 	conf[t.Name] = t
-	r, err := json.Marshal(conf)
-	if err != nil {
-		return err
-	}
-	fs.WriteString(string(r))
-	fs.Close()
-	return nil
+
+	//写入配置
+	return writeConf(confPath, conf)
 }
 
 func GetSnippetConf(path string) ([]*SnippetConf, error) {
 
-	s, err := Read(path)
+	conf := make(map[string]*SnippetConf, 0)
+	err := readConf(path, &conf)
 	if err != nil {
 		return nil, err
 	}
 
-	conf := make(map[string]*SnippetConf, 0)
-	if len(s) > 0 {
-		err = json.Unmarshal(s, &conf)
-		if err != nil {
-			return nil, err
-		}
-	}
 	confs := make([]*SnippetConf, 0)
 	for _, v := range conf {
 		confs = append(confs, v)
@@ -85,7 +64,7 @@ func GetSnippetConf(path string) ([]*SnippetConf, error) {
 
 //FieldConf 用于field文件生成
 type FieldConf struct {
-	Fields []FieldItem `json:"fields"`
+	Fields []*FieldItem `json:"fields"`
 }
 
 type FieldItem struct {
@@ -95,9 +74,9 @@ type FieldItem struct {
 }
 
 func NewFieldConf(t *Table) *FieldConf {
-	fields := []FieldItem{}
+	fields := []*FieldItem{}
 	for _, v := range t.Rows {
-		item := FieldItem{
+		item := &FieldItem{
 			Desc:  v.Desc,
 			Name:  v.Name,
 			Table: t.Name,
@@ -108,20 +87,9 @@ func NewFieldConf(t *Table) *FieldConf {
 }
 
 func GetFieldConf(path string) (map[string]*FieldItem, error) {
-
-	s, err := Read(path)
-	if err != nil {
-		return nil, err
-	}
-
 	conf := make(map[string]*FieldItem, 0)
-	if len(s) > 0 {
-		err = json.Unmarshal(s, &conf)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return conf, nil
+	err := readConf(path, &conf)
+	return conf, err
 }
 
 func (t *FieldConf) SaveConf(confPath string) error {
@@ -129,10 +97,23 @@ func (t *FieldConf) SaveConf(confPath string) error {
 		return nil
 	}
 
-	s, err := Read(confPath)
+	//读取配置
+	conf := make(map[string]*FieldItem, 0)
+	err := readConf(confPath, &conf)
 	if err != nil {
 		return err
 	}
+
+	//设置配置
+	for _, v := range t.Fields {
+		conf[v.Name] = v
+	}
+
+	//写入配置
+	return writeConf(confPath, conf)
+}
+
+func writeConf(confPath string, conf interface{}) error {
 
 	//创建文件
 	fs, err := Create(confPath, true)
@@ -140,24 +121,29 @@ func (t *FieldConf) SaveConf(confPath string) error {
 		return err
 	}
 
-	//设置
-	conf := make(map[string]interface{}, 0)
-	if len(s) > 0 {
-		err = json.Unmarshal(s, &conf)
-		if err != nil {
-			return err
-		}
-	}
-	for _, v := range t.Fields {
-		conf[v.Name] = v
-	}
-
+	//写入
 	r, err := json.Marshal(conf)
 	if err != nil {
 		return err
 	}
 	fs.WriteString(string(r))
 	fs.Close()
+	return nil
+}
+
+func readConf(path string, conf interface{}) error {
+	//读取
+	s, err := Read(path)
+	if err != nil {
+		return err
+	}
+
+	if len(s) > 0 {
+		err = json.Unmarshal(s, &conf)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

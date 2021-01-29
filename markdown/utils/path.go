@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-//GetGitcliHomePath 获取用户home目录 没实现跨平台
+//GetGitcliHomePath 获取用户home目录 仅支持unix跨平台
 func GetGitcliHomePath() string {
 	user, err := user.Current()
 	if err != nil {

@@ -70,13 +70,14 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
+			//设置项目目录
 			tb.SetBasePath(basePath)
+
 			//保存的动态配置
 			err := tmpl.NewSnippetConf(tb).SaveConf(confPath)
 			if err != nil {
 				logs.Log.Error(err)
 			}
-
 			err = tmpl.NewFieldConf(tb).SaveConf(filedPath)
 			if err != nil {
 				logs.Log.Error(err)
@@ -98,7 +99,6 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 			}
 
 			//生成文件
-
 			fs, err := tmpl.Create(path, c.Bool("cover"))
 			if err != nil {
 				return err
