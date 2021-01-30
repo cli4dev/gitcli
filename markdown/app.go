@@ -67,6 +67,7 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
+			logs.Log.Warn("createBlockCode,project:", projectPath, "base:", basePath)
 			//设置项目目录
 			tb.SetBasePath(basePath)
 
@@ -139,6 +140,7 @@ func createEnum() func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
+
 		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 

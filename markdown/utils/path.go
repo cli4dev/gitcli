@@ -10,6 +10,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	logs "github.com/lib4dev/cli/logger"
 )
 
 //GetGitcliHomePath 获取用户home目录 仅支持unix跨平台
@@ -100,10 +102,11 @@ func GetProjectBasePath(projectPath string) (string, error) {
 		}
 		return basePath, nil
 	}
-
+	logs.Log.Warn("gopath:", gopath)
 	if gopath != "" {
-		if strings.Contains(projectPath, gopath) {
-			basePath = strings.TrimPrefix(projectPath, fmt.Sprintf("%s/src/", gopath))
+		root := fmt.Sprintf("%s/src/", gopath)
+		if strings.HasPrefix(strings.ToLower(projectPath), strings.ToLower(root)) {
+			basePath = projectPath[len(root):]
 		}
 		return basePath, nil
 	}
