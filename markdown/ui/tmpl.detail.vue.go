@@ -8,6 +8,7 @@ const TmplDetail = `
 {{- $time := "time.Time" -}}
 {{- $len := 32 -}}
 {{- $rows := .Rows|detail -}}
+{{- $pks := .|pks -}}
 {{- $tb :=. -}}
 <template>
   <div>
@@ -32,7 +33,7 @@ const TmplDetail = `
                   <el-col :span="6">
                     <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
-          	{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
+          	{{- else if and (or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int)) (ne $c.Name ($pks|firstStr)) }}
                   <el-col :span="6">
                     <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(0) }}</div>
                   </el-col>

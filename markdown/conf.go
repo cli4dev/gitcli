@@ -3,6 +3,7 @@ package markdown
 import (
 	"fmt"
 	"path"
+	"path/filepath"
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/app"
@@ -33,7 +34,7 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 		}
 		root := c.Args().Get(1)
 
-		_, projectPath, err := utils.GetProjectPath(root)
+		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
@@ -51,7 +52,6 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 			return
 		}
 		path := path.Join(webPath, confPathMap[tp])
-		logs.Log.Info("写入文件", path)
 
 		confs, err := tmpl.GetSnippetConf(confPath)
 		if err != nil {
@@ -81,7 +81,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 		root := c.Args().Get(1)
-		_, projectPath, err := utils.GetProjectPath(root)
+		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
@@ -93,16 +93,17 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 
 		//读取文件
 		template := confMap[tp]
-
 		path := path.Join(projectPath, "init.go")
-		logs.Log.Infof("写入文件%s", path)
 
 		confs, err := tmpl.GetSnippetConf(confPath)
 		if err != nil {
 			return err
 		}
 
-		content, err := tmpl.Translate(template, "", confs)
+		content, err := tmpl.Translate(template, "", map[string]interface{}{
+			"BasePath": filepath.Base(projectPath),
+			"Confs":    confs,
+		})
 		if err != nil {
 			return err
 		}

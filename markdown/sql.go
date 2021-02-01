@@ -45,9 +45,9 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-	     root:= c.Args().Get(1)
+		root := c.Args().Get(1)
 
-		_, projectPath, err := utils.GetProjectPath(root)
+		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
@@ -94,9 +94,9 @@ func createImport(sqlType string) func(c *cli.Context) (err error) {
 		//读取文件
 		dbtp := tmpl.MYSQL
 		tpName := sqlMap[sqlType]
-	     root:= c.Args().Get(1)
+		root := c.Args().Get(1)
 
-		_, projectPath, err := utils.GetProjectPath(root)
+		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}

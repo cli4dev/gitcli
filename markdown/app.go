@@ -46,7 +46,7 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		dbtp := tmpl.MYSQL
 		root := c.Args().Get(1)
 
-		_, projectPath, err := utils.GetProjectPath(root)
+		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
@@ -130,7 +130,7 @@ func createEnum() func(c *cli.Context) (err error) {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
 		root := c.Args().Get(1)
-		_, projectPath, err := utils.GetProjectPath(root)
+	 projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}

@@ -153,18 +153,19 @@ func readConf(path string, conf interface{}) error {
 }
 
 func GetFieldConfPath(root string) string {
-	projectName, projectPath, err := utils.GetProjectPath(root)
+	projectPath, err := utils.GetProjectPath(root)
 	if err != nil {
 		panic(err)
 	}
 	if projectPath == "" {
 		return ""
 	}
+	projectName, _ := Translate("{{.|fileBasePath}}", "", projectPath)
 	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_filed_%s.json", projectName, md5.Encrypt(projectPath)))
 }
 
 func GetVueConfPath(root string) string {
-	_, projectPath, err := utils.GetProjectPath(root)
+	projectPath, err := utils.GetProjectPath(root)
 	if err != nil {
 		panic(err)
 	}
@@ -176,12 +177,13 @@ func GetVueConfPath(root string) string {
 }
 
 func GetGoConfPath(root string) string {
-	projectName, projectPath, err := utils.GetProjectPath(root)
+	projectPath, err := utils.GetProjectPath(root)
 	if err != nil {
 		panic(err)
 	}
 	if projectPath == "" {
 		return ""
 	}
+	projectName, _ := Translate("{{.|fileBasePath}}", "", projectPath)
 	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_%s.json", projectName, md5.Encrypt(projectPath)))
 }

@@ -67,11 +67,12 @@ func getfuncs(tp string) map[string]interface{} {
 		"lastStr":  getLastStringByIndex,
 		"dicType":  GetDicType("sl", "cb", "rb"),
 
-		"rpath":      getRouterPath,         //获取路由地址
-		"fpath":      getFilePath,           //获取文件地址
-		"parentPath": getParentPath,         //获取文件夹地址
-		"l2d":        replaceUnderline("."), //下划线替换为.
-		"importPath": getImportPath,
+		"rpath":        getRouterPath,         //获取路由地址
+		"fpath":        getFilePath,           //获取文件地址
+		"parentPath":   getParentPath,         //获取文件夹地址
+		"l2d":          replaceUnderline("."), //下划线替换为.
+		"importPath":   getImportPath,
+		"fileBasePath": filepath.Base,
 
 		"var":    getVar,
 		"vars":   joinVars,
