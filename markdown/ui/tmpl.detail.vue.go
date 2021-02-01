@@ -31,15 +31,19 @@ const TmplDetail = `
                   </el-col>
             {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
+                    <el-tooltip class="item" v-if="info.{{$c.Name}} && info.{{$c.Name}}.length > 50" effect="dark" placement="top">
+                      <div slot="content" style="width: 110px">{{"{{info."}}{{$c.Name}}}}</div>
+                      <div >{{"{{ info."}}{{$c.Name}} | fltrSubstr(50) }}</div>
+                    </el-tooltip>
+                    <div>{{"{{ info."}}{{$c.Name}}}}</div>
                   </el-col>
           	{{- else if and (or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int)) (ne $c.Name ($pks|firstStr)) }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(0) }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon|firstStr) "0"}})}}</div>
                   </el-col>
             {{- else if eq ($c.Type|codeType) $decimal }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrNumberFormat(2) }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon|firstStr) "2"}})}}</div>
                   </el-col>
             {{- else if eq ($c.Type|codeType) $time }}
                   <el-col :span="6">

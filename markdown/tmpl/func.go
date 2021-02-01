@@ -56,16 +56,17 @@ func getfuncs(tp string) map[string]interface{} {
 		"DP":       getKWS("dp"),  //表单日期选择器
 		"CC":       getKWS("cc"),  //表单颜色样式
 
-		"query":    getRows("q"),           //查询字段
-		"list":     getRows("l"),           //列表展示字段
-		"detail":   getRows("r"),           //详情展示字段
-		"create":   getRows("c"),           //创建字段
-		"delete":   getRows("d"),           //删除时判定字段
-		"update":   getRows("u"),           //更新字段
-		"delCon":   getBracketContent("d"), //删除字段约束
-		"firstStr": getStringByIndex(0),    //获取约束的内容
-		"lastStr":  getLastStringByIndex,
-		"dicType":  GetDicType("sl", "cb", "rb"),
+		"query":      getRows("q"),                 //查询字段
+		"list":       getRows("l"),                 //列表展示字段
+		"detail":     getRows("r"),                 //详情展示字段
+		"create":     getRows("c"),                 //创建字段
+		"delete":     getRows("d"),                 //删除时判定字段
+		"update":     getRows("u"),                 //更新字段
+		"delCon":     getBracketContent("d"),       //删除字段约束
+		"decimalCon": getBracketContent("decimal"), //小数点字段约束
+		"firstStr":   getStringByIndex(0),          //获取约束的内容
+		"lastStr":    getLastStringByIndex,
+		"dicType":    GetDicType("sl", "cb", "rb"),
 
 		"rpath":        getRouterPath,         //获取路由地址
 		"fpath":        getFilePath,           //获取文件地址
@@ -561,7 +562,7 @@ func getBracketContent(keys ...string) func(con string) []string {
 		s := ""
 		for _, key := range keys {
 			rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
-			strs := rex.FindAllString(con, -1)
+			strs := rex.FindAllString(strings.ToLower(con), -1)
 			if len(strs) < 1 {
 				continue
 			}

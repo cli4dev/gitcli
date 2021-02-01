@@ -80,19 +80,19 @@ const TmplList = `
 					</template>
 				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
-						<el-tooltip class="item" v-if="scope.row.{{$c.Name}}.length > 20" effect="dark" placement="top">
+						<el-tooltip class="item" v-if="scope.row.{{$c.Name}} && scope.row.{{$c.Name}}.length > 20" effect="dark" placement="top">
 							<div slot="content" style="width: 110px">{{"{{scope.row."}}{{$c.Name}}}}</div>
 							<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20) }}</span>
 						</el-tooltip>
-						<span v-else>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20)}}</span>
+						<span v-else>{{"{{scope.row."}}{{$c.Name}}}}</span>
 					</template>
 				{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat(0)}}</span>
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat({{or ($c.Con|decimalCon|firstStr) "0"}})}}</span>
 				</template>
 				{{- else if eq ($c.Type|codeType) $decimal }}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat(2)}}</span>
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat({{or ($c.Con|decimalCon|firstStr) "2"}})}}</span>
 				</template>
 				{{- else if eq ($c.Type|codeType) $time }}
 				<template slot-scope="scope">
