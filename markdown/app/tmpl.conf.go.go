@@ -31,7 +31,7 @@ func init() {
 
 `
 
-const SnippetTmplConfGo = `package {{.BasePath|fileBasePath}}
+const SnippetTmplConfGo = `package {{if (hasSuffix .ProjectPath .BasePath )}}main{{else}}{{.ProjectPath|fileBasePath}}{{end}}
 
 import (
 	"github.com/micro-plat/hydra"

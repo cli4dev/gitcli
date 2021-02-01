@@ -80,7 +80,11 @@ const TmplList = `
 					</template>
 				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
 					<template slot-scope="scope">
-						<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20)}}</span>
+						<el-tooltip class="item" v-if="scope.row.{{$c.Name}}.length > 20" effect="dark" placement="top">
+							<div slot="content" style="width: 110px">{{"{{scope.row."}}{{$c.Name}}}}</div>
+							<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20) }}</span>
+						</el-tooltip>
+						<span v-else>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20)}}</span>
 					</template>
 				{{- else if or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int) }}
 				<template slot-scope="scope">

@@ -160,8 +160,7 @@ func GetFieldConfPath(root string) string {
 	if projectPath == "" {
 		return ""
 	}
-	projectName, _ := Translate("{{.|fileBasePath}}", "", projectPath)
-	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_filed_%s.json", projectName, md5.Encrypt(projectPath)))
+	return path.Join(projectPath, fmt.Sprintf(".gitcli/server_filed_%s.json", md5.Encrypt(projectPath)))
 }
 
 func GetVueConfPath(root string) string {
@@ -173,7 +172,7 @@ func GetVueConfPath(root string) string {
 	if webPath == "" {
 		return ""
 	}
-	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("web/web_%s.json", md5.Encrypt(webPath)))
+	return path.Join(webPath, fmt.Sprintf(".gitcli/web_%s.json", md5.Encrypt(webPath)))
 }
 
 func GetGoConfPath(root string) string {
@@ -184,6 +183,5 @@ func GetGoConfPath(root string) string {
 	if projectPath == "" {
 		return ""
 	}
-	projectName, _ := Translate("{{.|fileBasePath}}", "", projectPath)
-	return path.Join(utils.GetGitcliHomePath(), fmt.Sprintf("server/%s_%s.json", projectName, md5.Encrypt(projectPath)))
+	return path.Join(projectPath, fmt.Sprintf(".gitcli/server_%s.json", md5.Encrypt(projectPath)))
 }

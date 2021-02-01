@@ -3,7 +3,6 @@ package markdown
 import (
 	"fmt"
 	"path"
-	"path/filepath"
 
 	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/app"
@@ -86,6 +85,10 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
+		basePath, err := utils.GetProjectBasePath(root)
+		if err != nil {
+			return err
+		}
 		confPath := tmpl.GetGoConfPath(root)
 		if confPath == "" {
 			return
@@ -101,8 +104,9 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		}
 
 		content, err := tmpl.Translate(template, "", map[string]interface{}{
-			"BasePath": filepath.Base(projectPath),
-			"Confs":    confs,
+			"BasePath":    basePath,
+			"ProjectPath": projectPath,
+			"Confs":       confs,
 		})
 		if err != nil {
 			return err

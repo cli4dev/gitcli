@@ -68,7 +68,7 @@ export default {
       {{- end}}
 			rules: {                    //数据验证规则
 				{{- range $i,$c:=$rows|update -}}
-				{{if eq ($c|isNull) $empty}}
+				{{if ne ($c|isNull) $empty}}
 				{{$c.Name}}: [
 					{ required: true, message: "请输入{{$c.Desc|shortName}}", trigger: "blur" }
 				],

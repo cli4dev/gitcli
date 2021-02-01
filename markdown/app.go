@@ -131,7 +131,7 @@ func createEnum() func(c *cli.Context) (err error) {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
 		root := c.Args().Get(1)
-	 projectPath, err := utils.GetProjectPath(root)
+		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
 		}
