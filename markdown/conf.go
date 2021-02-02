@@ -85,7 +85,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
-		basePath, err := utils.GetProjectBasePath(root)
+		gomod, err := utils.GetGOMOD()
 		if err != nil {
 			return err
 		}
@@ -102,9 +102,9 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-
+		fmt.Println("b:", gomod, "p:", projectPath)
 		content, err := tmpl.Translate(template, "", map[string]interface{}{
-			"BasePath":    basePath,
+			"GOMOD":       gomod,
 			"ProjectPath": projectPath,
 			"Confs":       confs,
 		})

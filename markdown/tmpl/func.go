@@ -74,7 +74,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"l2d":          replaceUnderline("."), //下划线替换为.
 		"importPath":   getImportPath,
 		"fileBasePath": filepath.Base,
-		"hasSuffix":    strings.HasSuffix,
+		"hasPrefix":    strings.HasPrefix,
 
 		"var":    getVar,
 		"vars":   joinVars,

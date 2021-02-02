@@ -10,8 +10,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-
-	logs "github.com/lib4dev/cli/logger"
 )
 
 //GetGitcliHomePath 获取用户home目录 仅支持unix跨平台
@@ -58,13 +56,27 @@ func GetWebSrcPath(projectPath string) (string, string) {
 	return GetWebSrcPath(parentDir)
 }
 
+func GetGOMOD() (string, error) {
+	envs, err := exec.Command("go", "env").Output()
+	if err != nil {
+		return "", fmt.Errorf("执行go env出错，%+v", err)
+	}
+	for _, v := range strings.Split(string(envs), "\n") {
+		if strings.HasPrefix(v, "GOMOD=") {
+			gomod := strings.TrimPrefix(v, `GOMOD="`)
+			gomod = strings.TrimRight(gomod, `"`)
+			return gomod, nil
+		}
+	}
+	return "", nil
+}
+
 //GetProjectBasePath 如果开启了gomod 则返回module名
 //未使用gomod则判断path中是否存在$GOPATH，存在则返回$GOPATH下面的名字
 //默认返回空
 func GetProjectBasePath(projectPath string) (string, error) {
-	cmd := exec.Command("go", "env")
 	envs := []byte{}
-	envs, err := cmd.Output()
+	envs, err := exec.Command("go", "env").Output()
 	if err != nil {
 		return "", fmt.Errorf("执行go env出错，%+v", err)
 	}
@@ -80,7 +92,6 @@ func GetProjectBasePath(projectPath string) (string, error) {
 			gomod = strings.TrimRight(gomod, `"`)
 		}
 	}
-
 	if gomod != "" && strings.Contains(gomod, projectPath) {
 		f, err := os.Open(gomod)
 		if err != nil {
@@ -102,7 +113,6 @@ func GetProjectBasePath(projectPath string) (string, error) {
 		}
 		return basePath, nil
 	}
-	logs.Log.Warn("gopath:", gopath)
 	if gopath != "" {
 		root := fmt.Sprintf("%s/src/", gopath)
 		if strings.HasPrefix(strings.ToLower(projectPath), strings.ToLower(root)) {
