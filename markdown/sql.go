@@ -15,7 +15,23 @@ func createCurd() func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-		return createImport("driver")(c)
+		err = createConstFile("driver")(c)
+		if err != nil {
+			return err
+		}
+		err = createConstFile("seq")(c)
+		if err != nil {
+			return err
+		}
+		err = createConstFile("seq.install.go")(c)
+		if err != nil {
+			return err
+		}
+		err = createConstFile("seq.install.sql")(c)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 }
 
@@ -56,7 +72,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 		tb.FilterByKW(c.String("table"))
 
 		for _, tb := range tb.Tbs {
-			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, "go")
+			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, fmt.Sprintf("%s.", dbtp))
 			//根据关键字过滤
 			tb.FilterRowByKW(c.String("kw"))
 			tb.DBType = dbtp
@@ -84,7 +100,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 	}
 }
 
-func createImport(sqlType string) func(c *cli.Context) (err error) {
+func createConstFile(tp string) func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
 
 		if len(c.Args()) == 0 {
@@ -93,7 +109,7 @@ func createImport(sqlType string) func(c *cli.Context) (err error) {
 
 		//读取文件
 		dbtp := tmpl.MYSQL
-		tpName := sqlMap[sqlType]
+		tpName := sqlMap[tp]
 		root := c.Args().Get(1)
 
 		projectPath, err := utils.GetProjectPath(root)
@@ -101,8 +117,10 @@ func createImport(sqlType string) func(c *cli.Context) (err error) {
 			return err
 		}
 
-		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), dbtp, "go")
-
+		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), sqlPathMap[tp], dbtp)
+		if tmpl.PathExists(path) {
+			return
+		}
 		//翻译文件
 		content, err := tmpl.Translate(tpName, dbtp, nil)
 		if err != nil {
@@ -125,9 +143,19 @@ func createImport(sqlType string) func(c *cli.Context) (err error) {
 }
 
 var sqlMap = map[string]string{
-	"insert": tmpl.InsertSingle,
-	"update": tmpl.UpdateSingle,
-	"select": tmpl.SelectSingle,
-	"curd":   tmpl.MarkdownCurdSql,
-	"driver": tmpl.MarkdownCurdDriverSql,
+	"insert":          tmpl.InsertSingle,
+	"update":          tmpl.UpdateSingle,
+	"select":          tmpl.SelectSingle,
+	"curd":            tmpl.MarkdownCurdSql,
+	"driver":          tmpl.MarkdownCurdDriverSql,
+	"seq":             tmpl.MarkdownCurdSeqSql,
+	"seq.install.go":  tmpl.MarkdownCurdSeqInstallGO,
+	"seq.install.sql": tmpl.MarkdownCurdSeqInstallSQL,
+}
+
+var sqlPathMap = map[string]string{
+	"driver":          "",
+	"seq":             "seq.info",
+	"seq.install.go":  "/install",
+	"seq.install.sql": "_/sys_sequence_info",
 }

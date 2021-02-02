@@ -147,6 +147,10 @@ func fGetLowerCase(n string) string {
 	items := strings.Split(n, "_")
 	nitems := make([]string, 0, len(items))
 	for k, i := range items {
+		if strings.EqualFold(i, "id") || strings.EqualFold(i, "url") {
+			nitems = append(nitems, strings.ToUpper(i))
+			continue
+		}
 		if k == 0 {
 			nitems = append(nitems, i)
 		}
@@ -164,6 +168,10 @@ func fGetUpperCase(n string) string {
 	items := strings.Split(f, "_")
 	nitems := make([]string, 0, len(items))
 	for _, i := range items {
+		if strings.EqualFold(i, "id") || strings.EqualFold(i, "url") {
+			nitems = append(nitems, strings.ToUpper(i))
+			continue
+		}
 		nitems = append(nitems, strings.ToUpper(i[0:1])+i[1:])
 	}
 	return strings.Join(nitems, "")

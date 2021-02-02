@@ -41,7 +41,7 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 		for _, tb := range tb.Tbs {
 			//翻译文件
 
-			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), tb.Name, "go")
+			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), tb.Name, "")
 			tb.SetPkg(path)
 
 			content, err := tmpl.Translate(script, dbtp, tb)
@@ -87,7 +87,7 @@ func showFiledCode(tp string) func(c *cli.Context) (err error) {
 		script := entityMap[tp]
 		//翻译文件
 
-		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), "field", "go")
+		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), "field", "")
 
 		confs, err := tmpl.GetFieldConf(filedPath)
 		if err != nil {

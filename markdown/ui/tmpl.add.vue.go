@@ -43,7 +43,7 @@ const TmplCreateVue = `
       </el-form-item>
       {{- else -}}
       <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
-				<el-input clearable v-model="addData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
+				<el-input maxlength="{{$c.Len}}" clearable v-model="addData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
 				</el-input>
       </el-form-item>
       {{- end}}

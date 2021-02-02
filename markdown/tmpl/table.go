@@ -210,8 +210,8 @@ func GetFilePath(root string, name string, ext ...string) string {
 }
 
 //GetFileName 获取文件名称
-func GetFileName(root string, name string, ext ...string) string {
-	ex := types.GetStringByIndex(ext, 0, "vue")
+func GetFileName(root string, name string, prefix string, ext ...string) string {
+	ex := types.GetStringByIndex(ext, 0, "go")
 	path, _ := Translate(fmt.Sprintf("{{.|rmhd|l2d}}.%s", ex), "", name)
-	return filepath.Join(types.GetString(root, "."), path)
+	return filepath.Join(types.GetString(root, "."), fmt.Sprintf("%s%s", prefix, path))
 }

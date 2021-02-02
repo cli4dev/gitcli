@@ -30,6 +30,9 @@ func createServiceBlock() func(c *cli.Context) (err error) {
 		if err := createCurd()(c); err != nil {
 			return err
 		}
+		if err := createModulesSeq()(c); err != nil {
+			return err
+		}
 		if err := showField()(c); err != nil {
 			return err
 		}

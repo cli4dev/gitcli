@@ -14,6 +14,7 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"{{.BasePath}}/modules/const/sql"
 	"{{.BasePath}}/modules/const/field"
+	{{if ne (.|seqValue) $empty}}"{{.BasePath}}/modules/db"{{end}}
 )
 
 //{{.Name|rmhd|varName}}Handler {{.Desc}}处理服务
@@ -36,9 +37,20 @@ func (u *{{.Name|rmhd|varName}}Handler) PostHandle(ctx hydra.IContext) (r interf
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Insert{{.Name|rmhd|upperName}},ctx.Request().GetMap())
-	if err != nil||count<1 {
-		return errs.NewErrorf(http.StatusNotExtended,"添加数据出错:%+v", err)
+	{{- if ne (.|seqValue) $empty}}
+	xdb := hydra.C.DB().GetRegularDB()
+	{{$pks|firstStr|lowerName}}, err := db.GetNewID(xdb, sql.SQLGetSEQ, map[string]interface{}{"name": "{{.Desc}}"})
+	if err != nil {
+		return err
+	}
+	input := ctx.Request().GetMap()
+	input["{{$pks|firstStr}}"] = {{$pks|firstStr|lowerName}}
+	count, err := xdb.Execute(sql.Insert{{.Name|rmhd|upperName}}, input)
+  {{- else}}
+	count, err := hydra.C.DB().GetRegularDB().Execute(sql.Insert{{.Name|rmhd|upperName}},ctx.Request().GetMap())
+	{{- end}}
+	if err != nil || count < 1 {
+		return errs.NewErrorf(http.StatusNotExtended, "添加数据出错:%+v", err)
 	}
 
 	ctx.Log().Info("3.返回结果")

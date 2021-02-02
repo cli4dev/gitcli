@@ -6,7 +6,6 @@ import (
 	"path"
 
 	"github.com/micro-plat/gitcli/markdown/utils"
-	"github.com/micro-plat/lib4go/security/md5"
 )
 
 //SnippetConf 用于vue的路由,hydra服务的注册,import的路径等代码片段生成
@@ -160,7 +159,7 @@ func GetFieldConfPath(root string) string {
 	if projectPath == "" {
 		return ""
 	}
-	return path.Join(projectPath, fmt.Sprintf(".gitcli/server_filed_%s.json", md5.Encrypt(projectPath)))
+	return path.Join(projectPath, fmt.Sprintf(".gitcli/server_filed.json"))
 }
 
 func GetVueConfPath(root string) string {
@@ -172,7 +171,7 @@ func GetVueConfPath(root string) string {
 	if webPath == "" {
 		return ""
 	}
-	return path.Join(webPath, fmt.Sprintf(".gitcli/web_%s.json", md5.Encrypt(webPath)))
+	return path.Join(webPath, fmt.Sprintf(".gitcli/web.json"))
 }
 
 func GetGoConfPath(root string) string {
@@ -183,5 +182,5 @@ func GetGoConfPath(root string) string {
 	if projectPath == "" {
 		return ""
 	}
-	return path.Join(projectPath, fmt.Sprintf(".gitcli/server_%s.json", md5.Encrypt(projectPath)))
+	return path.Join(projectPath, fmt.Sprintf(".gitcli/server.json"))
 }
