@@ -55,7 +55,7 @@ export default {
       this.$sys.changePwd()
     },
     signOutM() {
-      this.$sys.loginout();
+      this.$sys.logout();
     },
     getMenu() {
       this.$sys.getMenus(this).then(res => {
