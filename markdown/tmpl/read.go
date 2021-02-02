@@ -34,6 +34,19 @@ func (t *Tables) FilterByKW(kwc string) {
 	t.Tbs = tbs
 }
 
+func (t *Tables) ExcludeByKW(kwc string) {
+	if kwc == "" {
+		return
+	}
+	tbs := make([]*Table, 0, 1)
+	for _, tb := range t.Tbs {
+		if !strings.Contains(tb.Name, kwc) {
+			tbs = append(tbs, tb)
+		}
+	}
+	t.Tbs = tbs
+}
+
 //BuildSEQFile 生成seq_ids脚本
 func (t *Tables) BuildSEQFile(d bool) {
 	t.SEQFile = d
