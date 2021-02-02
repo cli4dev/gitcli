@@ -25,7 +25,7 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
-		basePath, err := utils.GetProjectBasePath(root)
+		basePath, err := utils.GetProjectBasePath(projectPath)
 		if err != nil {
 			return err
 		}
@@ -33,10 +33,9 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 		if confPath == "" {
 			return
 		}
-
 		//读取文件
 		template := modulesMap[tp]
-		path := path.Join(projectPath, "modules/db/seq.info.mysql.go")
+		path := path.Join(projectPath, "modules/db/mysql.seq.info.go")
 		if tmpl.PathExists(path) {
 			return
 		}

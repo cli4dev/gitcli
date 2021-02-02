@@ -117,12 +117,19 @@ func createConstFile(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
+		basePath, err := utils.GetProjectBasePath(projectPath)
+		if err != nil {
+			return err
+		}
+
 		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), sqlPathMap[tp], dbtp)
 		if tmpl.PathExists(path) {
 			return
 		}
 		//翻译文件
-		content, err := tmpl.Translate(tpName, dbtp, nil)
+		content, err := tmpl.Translate(tpName, dbtp, map[string]interface{}{
+			"BasePath": basePath,
+		})
 		if err != nil {
 			return err
 		}
@@ -155,7 +162,7 @@ var sqlMap = map[string]string{
 
 var sqlPathMap = map[string]string{
 	"driver":          "",
-	"seq":             "seq.info",
+	"seq":             ".seq.info",
 	"seq.install.go":  "/install",
 	"seq.install.sql": "_/sys_sequence_info",
 }

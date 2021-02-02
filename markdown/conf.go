@@ -102,7 +102,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-		fmt.Println("b:", gomod, "p:", projectPath)
+
 		content, err := tmpl.Translate(template, "", map[string]interface{}{
 			"GOMOD":       gomod,
 			"ProjectPath": projectPath,

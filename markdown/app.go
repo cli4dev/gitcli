@@ -70,7 +70,6 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
-			logs.Log.Warn("createBlockCode,project:", projectPath, "base:", basePath)
 			//设置项目目录
 			tb.SetBasePath(basePath)
 
