@@ -17,6 +17,7 @@ const MarkdownCurdSql = `
 {{- $isoracle := .DBType|isoracle -}}
 {{- $pks := .|pks -}}
 {{- $order:=.|order -}}
+{{- $empty:="" -}}
 package {{.PKG}}
 
 {{- if and $ismysql (gt ($createrows|len) 0)}}
@@ -24,12 +25,14 @@ package {{.PKG}}
 const Insert{{.Name|rmhd|upperName}} = {###}
 insert into {{.Name}}{{.DBLink}}
 (
+	{{if ne (.|seqValue) $empty}}{{range $i,$c:=$pks}}{{$c}},{{end}}{{end}}
 	{{- range $i,$c:=$createrows}}
 	{{$c.Name}}{{if lt $i ($createrows|maxIndex)}},{{end}}
 	{{- end}}
 )
 values
 (
+	{{if ne (.|seqValue) $empty}}{{range $i,$c:=$pks}}@{{$c}},{{end}}{{end}}
 	{{- range $i,$c:=$createrows}}
 	@{{$c.Name}}{{if lt $i ($createrows|maxIndex)}},{{end}}
 	{{- end}}
