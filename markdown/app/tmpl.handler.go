@@ -14,7 +14,7 @@ import (
 	"github.com/micro-plat/lib4go/types"
 	"{{.BasePath}}/modules/const/sql"
 	"{{.BasePath}}/modules/const/field"
-	{{if ne (.|seqValue) $empty}}"{{.BasePath}}/modules/db"{{end}}
+	{{if and (ne (.|seqValue) $empty) (gt (.Rows|create|len) 0)}}"{{.BasePath}}/modules/db"{{end}}
 )
 
 //{{.Name|rmhd|varName}}Handler {{.Desc}}处理服务
