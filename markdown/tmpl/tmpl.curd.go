@@ -238,7 +238,7 @@ const Delete{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 update {{.Name}}{{.DBLink}} 
 set
 {{- range $i,$c:=$deleterows}}
-	{{$c.Name}}={{or ($c.Con|delCon|firstStr) "1"}}{{if lt $i ($deleterows|maxIndex)}},{{end}}
+	{{$c.Name}}={{or ($c.Con|delCon) "1"}}{{if lt $i ($deleterows|maxIndex)}},{{end}}
 {{- end}}
 where
 {{- if eq ($pks|len) 0}}
@@ -248,7 +248,7 @@ where
 	&{{$c}}
 {{- end}}
 {{- range $i,$c:=$deleterows}}
-	and {{$c.Name}}<>{{or ($c.Con|delCon|firstStr) "1"}}{{if lt $i ($deleterows|maxIndex)}},{{end}}
+	and {{$c.Name}}<>{{or ($c.Con|delCon) "1"}}{{if lt $i ($deleterows|maxIndex)}},{{end}}
 {{- end}}
 {{end }}{###}
 {{end}}

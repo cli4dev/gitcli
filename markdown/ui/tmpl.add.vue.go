@@ -70,7 +70,7 @@ export default {
 			{{- end}}
 			rules: {                    //数据验证规则
 				{{- range $i,$c:=$rows|create -}}
-				{{if eq ($c|isNull) $empty}}
+				{{if ne ($c|isNull) $empty}}
 				{{$c.Name}}: [{ required: true, message: "请输入{{$c.Desc|shortName}}", trigger: "blur" }],
 				{{- end}}
 				{{- end}}
@@ -99,10 +99,9 @@ export default {
 		},
 		add(formName) {
 			{{- range $i,$c:=$rows|create -}}
-			{{- if $c.Con|DTP }}
+			{{- if or ($c.Con|cCon|DTP) (and (not ($c.Con|cCon|DP)) ($c.Con|DTP))}}
 			this.addData.{{$c.Name}} = this.$utility.dateFormat(this.addData.{{$c.Name}},"yyyy-MM-dd hh:mm:ss")
-			{{- end -}}
-			{{- if $c.Con|DP }}
+			{{- else if or ($c.Con|cCon|DP) (and (not ($c.Con|cCon|DTP)) ($c.Con|DP))}}
 			this.addData.{{$c.Name}} = this.$utility.dateFormat(this.addData.{{$c.Name}},"yyyy-MM-dd")
 			{{- end -}}
 			{{- end}}

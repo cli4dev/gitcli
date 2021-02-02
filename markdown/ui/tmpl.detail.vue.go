@@ -39,15 +39,15 @@ const TmplDetail = `
                   </el-col>
           	{{- else if and (or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int)) (ne $c.Name ($pks|firstStr)) }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon|firstStr) "0"}})}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon) "0"}})}}</div>
                   </el-col>
             {{- else if eq ($c.Type|codeType) $decimal }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon|firstStr) "2"}})}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon) "2"}})}}</div>
                   </el-col>
             {{- else if eq ($c.Type|codeType) $time }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | {{if $c.Con|DTP}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | {{if or ($c.Con|rCon|DTP) (and (not ($c.Con|rCon|DP)) ($c.Con|DTP))}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</div>
                   </el-col>
             {{- else}}
                   <el-col :span="6">

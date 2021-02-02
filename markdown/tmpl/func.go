@@ -64,6 +64,11 @@ func getfuncs(tp string) map[string]interface{} {
 		"update":     getRows("u"),                 //更新字段
 		"delCon":     getBracketContent("d"),       //删除字段约束
 		"decimalCon": getBracketContent("decimal"), //小数点字段约束
+		"lCon":       getBracketContent("l"),       //删除字段约束
+		"rCon":       getBracketContent("r"),       //删除字段约束
+		"cCon":       getBracketContent("c"),       //删除字段约束
+		"uCon":       getBracketContent("u"),       //删除字段约束
+		"qCon":       getBracketContent("q"),       //删除字段约束
 		"firstStr":   getStringByIndex(0),          //获取约束的内容
 		"lastStr":    getLastStringByIndex,
 		"dicType":    GetDicType("sl", "cb", "rb"),
@@ -82,9 +87,6 @@ func getfuncs(tp string) map[string]interface{} {
 
 		"lowerName": fGetLowerCase, //小驼峰式命名
 		"upperName": fGetUpperCase, //大驼峰式命名
-
-		"fieldExist": fieldExist,
-		"fieldSet":   fieldSet,
 	}
 }
 
@@ -339,7 +341,7 @@ func getSeqs() func(tb *Table) []map[string]interface{} {
 
 		for _, v := range tb.Rows {
 			if strings.Contains(v.Con, "SEQ") {
-				descsimple := strings.Join(getBracketContent("SEQ")(v.Desc), ",")
+				descsimple := getBracketContent("SEQ")(v.Desc)
 				row := map[string]interface{}{
 					"name":       v.Name,
 					"descsimple": descsimple,
@@ -531,7 +533,7 @@ func getLastStringByIndex(s []string) string {
 
 func GetDicType(keys ...string) func(con string, tb *Table) string {
 	return func(con string, tb *Table) string {
-		tp := getStringByIndex(0)(getBracketContent("sl", "cb", "rb")(con))
+		tp := getBracketContent("sl", "cb", "rb")(con)
 		if tp == "" {
 			return ""
 		}
@@ -565,8 +567,8 @@ func getImportPath(s []*SnippetConf) map[string]*SnippetConf {
 	return r
 }
 
-func getBracketContent(keys ...string) func(con string) []string {
-	return func(con string) []string {
+func getBracketContent(keys ...string) func(con string) string {
+	return func(con string) string {
 		s := ""
 		for _, key := range keys {
 			rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
@@ -580,10 +582,10 @@ func getBracketContent(keys ...string) func(con string) []string {
 			s = fmt.Sprintf("%s,%s", s, str)
 		}
 		if s == "" {
-			return []string{}
+			return ""
 		}
 		s = strings.TrimLeft(s, ",")
-		return strings.Split(s, ",")
+		return s
 	}
 }
 func hasKW(tp ...string) func(t *Table) bool {
@@ -603,14 +605,4 @@ func hasKW(tp ...string) func(t *Table) bool {
 		}
 		return true
 	}
-}
-
-func fieldExist(key string) bool {
-	_, ok := fieldMap[key]
-	return ok
-}
-
-func fieldSet(key string) string {
-	fieldMap[key] = true
-	return ""
 }
