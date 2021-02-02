@@ -52,7 +52,7 @@ func init() {
 							Name:  "cover,v",
 							Usage: `-文件已存在时自动覆盖`,
 						}, cli.StringFlag{
-							Name:  "exclude,e",
+							Name:  "except,e",
 							Usage: `-过滤表,不进行生成`,
 						},
 					},
@@ -320,7 +320,7 @@ func init() {
 							Usage: `-文件已存在时自动覆盖`,
 						},
 						cli.StringFlag{
-							Name:  "exclude,e",
+							Name:  "except,e",
 							Usage: `-过滤表,不进行生成`,
 						},
 					},

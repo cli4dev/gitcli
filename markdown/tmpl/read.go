@@ -34,7 +34,7 @@ func (t *Tables) FilterByKW(kwc string) {
 	t.Tbs = tbs
 }
 
-func (t *Tables) ExcludeByKW(kwc string) {
+func (t *Tables) ExceptByKW(kwc string) {
 	if kwc == "" {
 		return
 	}
