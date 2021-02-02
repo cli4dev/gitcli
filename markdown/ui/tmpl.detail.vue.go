@@ -35,7 +35,7 @@ const TmplDetail = `
                       <div slot="content" style="width: 110px">{{"{{info."}}{{$c.Name}}}}</div>
                       <div >{{"{{ info."}}{{$c.Name}} | fltrSubstr(50) }}</div>
                     </el-tooltip>
-                    <div>{{"{{ info."}}{{$c.Name}}}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrEmpty }}</div>
                   </el-col>
           	{{- else if and (or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int)) (ne $c.Name ($pks|firstStr)) }}
                   <el-col :span="6">
