@@ -80,12 +80,18 @@ Enum.prototype.getName = function (type, value, group) {
   }
 
   var enumMap = Enum.prototype.get(type, null, group)
-  for (var i = 0; i < enumMap.length; i++){
-    if (enumMap[i].value == value) {
-      return enumMap[i].name
+  var data = value.split(",")
+  var result = []
+
+  for (var i = 0; i < data.length; i++){
+    for (var j = 0; j < enumMap.length; j++){
+      if (enumMap[j].value == data[i]) {
+        result.push(enumMap[j].name)
+        break
+      }
     }
   }
-  return value 
+  return result.join(",") || value 
 }
 
 //对应type数据刷新
@@ -94,8 +100,8 @@ Enum.prototype.clear = function (type) {
 };
 
 //filter
-vue.filter('fltrEnum', (value, enumType, group) => {
-  return Enum.prototype.getName(enumType, value, group)
+vue.filter('fltrEnum', (value, enumType) => {
+  return Enum.prototype.getName(enumType, value, "fltr")
 })
 
 //数据格式检查

@@ -6,16 +6,17 @@ export function Sys(Vue) {
 }
 
 //checkAuthCode 向服务器发送请求，验证auth code
-Sys.prototype.checkAuthCode = function (that, url){
+Sys.prototype.checkAuthCode = function (router, url){
     //检查请求参数中是否有code
-    if (!that.$route.query.code){
+    if (!router.query.code){
         return
     }
 
     //检查verify地址
     var verifyURL = url || "/sso/login/verify";
     //从服务器拉取数据
-    var userInfo = that.$http.xget(verifyURL, {code: that.$route.query.code});
+    let that = Sys.prototype.Vue.prototype;
+    var userInfo = that.$http.xget(verifyURL, {code: router.query.code})
     if (!userInfo){
         throw new Error("userInfo数据为空");
     }

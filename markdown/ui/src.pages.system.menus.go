@@ -45,7 +45,6 @@ export default {
 
   },
   mounted() {
-    this.$sys.checkAuthCode(this)
     this.getMenu();
     this.getSystemInfo();
     this.userinfo = this.$sys.getUserInfo()
