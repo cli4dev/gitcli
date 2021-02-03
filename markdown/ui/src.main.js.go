@@ -23,7 +23,8 @@ Vue.config.productionTip = false;
 
 router.beforeEach((to, from, next) => {
   /* 路由发生变化修改页面title */
-  if (to.path) {
+  Vue.prototype.$sys.checkAuthCode(to)
+  if (to.path != "/") {
       document.title = Vue.prototype.$sys.getTitle(to.path)
   }
   next()
