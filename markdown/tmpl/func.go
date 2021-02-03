@@ -581,7 +581,6 @@ func getImportPath(s []*SnippetConf) map[string]*SnippetConf {
 }
 
 func getDateFormat(con, subCon string) string {
-	fmt.Println(subCon)
 	if subCon == "" {
 		if getKWS("dtime")(con) {
 			return "yyyy-MM-dd HH:mm:ss"
@@ -630,7 +629,6 @@ func getSubConContent(tp, kw string) func(con string) string {
 		if c == "" {
 			return ""
 		}
-		fmt.Println("c:", con, ":", c)
 		subConMap := map[string]string{}
 		for _, v := range strings.Split(c, ",") {
 			sub := strings.Index(v, ":")

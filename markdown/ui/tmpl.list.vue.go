@@ -87,7 +87,7 @@ const TmplList = `
 				</template>
 				{{- else if $c.Type|isTime }}
 				<template slot-scope="scope">
-					<div>{{"{{ info."}}{{$c.Name}} | fltrDate("{{ or (dateFormat $c.Con ($c.Con|lfCon)) "yyyy-MM-dd"}}") }}</div>
+					<div>{{"{{scope.row."}}{{$c.Name}} | fltrDate("{{ or (dateFormat $c.Con ($c.Con|lfCon)) "yyyy-MM-dd"}}") }}</div>
 				</template>
 				{{- else}}
 				<template slot-scope="scope">

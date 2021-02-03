@@ -75,7 +75,7 @@ Enum.prototype.get = function (type, pid, group) {
 
 //根据value值获取name
 Enum.prototype.getName = function (type, value, group) {
-  if (value == "") {
+  if (!value) {
     return "-"
   }
 
