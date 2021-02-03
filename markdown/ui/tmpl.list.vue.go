@@ -197,7 +197,7 @@ export default {
       this.query()
 		},
     /**查询数据并赋值*/
-    query:async function(){
+    query(){
       this.queryData.pi = this.paging.pi
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
@@ -207,7 +207,7 @@ export default {
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd")
 			{{- end -}}
       {{- end}}
-      let res = await this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.queryData)
+      let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.queryData)
 			this.dataList.items = res.items
 			this.dataList.count = res.count
     },
