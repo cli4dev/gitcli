@@ -205,7 +205,7 @@ func line2TableRow(line *Line) (*Row, error) {
 		Len:    l,
 		Def:    strings.TrimSpace(strings.Replace(colums[2], "&#124;", "|", -1)),
 		IsNull: strings.TrimSpace(colums[3]),
-		Con:    strings.Replace(strings.TrimSpace(colums[4]), " ", "", -1),
+		Con:    strings.TrimSpace(colums[4]), // strings.Replace(strings.TrimSpace(colums[4]), " ", "", -1),
 		Desc:   strings.TrimSpace(strings.Replace(colums[5], "&#124;", "|", -1)),
 	}
 	return c, nil

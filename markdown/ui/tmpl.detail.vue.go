@@ -1,11 +1,6 @@
 package ui
 
 const TmplDetail = `
-{{- $string := "string" -}}
-{{- $int := "int" -}}
-{{- $int64 := "int64" -}}
-{{- $decimal := "types.Decimal" -}}
-{{- $time := "time.Time" -}}
 {{- $len := 32 -}}
 {{- $rows := .Rows|detail -}}
 {{- $pks := .|pks -}}
@@ -27,27 +22,27 @@ const TmplDetail = `
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|RD) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div {{if ($c.Con|CC)}}:class="info.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}") }}</div>
+                    <div {{if ($c.Con|CC)}}:class="info.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|rfCon) $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
-            {{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
+            {{- else if and ($c.Type|isString) (gt $c.Len $len )}}
                   <el-col :span="6">
-                    <el-tooltip class="item" v-if="info.{{$c.Name}} && info.{{$c.Name}}.length > 50" effect="dark" placement="top">
+                    <el-tooltip class="item" v-if="info.{{$c.Name}} && info.{{$c.Name}}.length > {{or ($c.Con|rfCon) "50"}}" effect="dark" placement="top">
                       <div slot="content" style="width: 110px">{{"{{info."}}{{$c.Name}}}}</div>
-                      <div >{{"{{ info."}}{{$c.Name}} | fltrSubstr(50) }}</div>
+                      <div >{{"{{ info."}}{{$c.Name}} | fltrSubstr({{or ($c.Con|rfCon) "50"}}) }}</div>
                     </el-tooltip>
                     <div>{{"{{ info."}}{{$c.Name}} | fltrEmpty }}</div>
                   </el-col>
-          	{{- else if and (or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int)) (ne $c.Name ($pks|firstStr)) }}
+          	{{- else if and (or ($c.Type|isInt64) ($c.Type|isInt)) (ne $c.Name ($pks|firstStr)) }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon) "0"}})}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|rfCon) "0"}})}}</div>
                   </el-col>
-            {{- else if eq ($c.Type|codeType) $decimal }}
+            {{- else if $c.Type|isDecimal }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|decimalCon) "2"}})}}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} |  fltrNumberFormat({{or ($c.Con|rfCon) "2"}})}}</div>
                   </el-col>
-            {{- else if eq ($c.Type|codeType) $time }}
+            {{- else if $c.Type|isTime }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | {{if or ($c.Con|rCon|DTIME) (and (not ($c.Con|rCon|DATE)) ($c.Con|DTIME))}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | fltrDate("{{ or (dateFormat $c.Con ($c.Con|rfCon)) "yyyy-MM-dd"}}") }}</div>
                   </el-col>
             {{- else}}
                   <el-col :span="6">

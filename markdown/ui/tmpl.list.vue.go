@@ -1,11 +1,6 @@
 package ui
 
 const TmplList = `
-{{- $string := "string" -}}
-{{- $int := "int" -}}
-{{- $int64 := "int64" -}}
-{{- $decimal := "types.Decimal" -}}
-{{- $time := "time.Time" -}}
 {{- $len := 32 -}}
 {{- $rows := .Rows -}}
 {{- $pks := .|pks -}}
@@ -34,14 +29,10 @@ const TmplList = `
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 						</el-select>
 				</el-form-item>
-        {{- else if or ($c.Con|qCon|DTIME) (and (not ($c.Con|qCon|DATE)) ($c.Con|DTIME)) }}
-					<el-form-item label="{{$c.Desc|shortName}}:">
-						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
-					</el-form-item>
-				{{- else if or ($c.Con|qCon|DATE) (and (not ($c.Con|qCon|DTIME)) ($c.Con|DATE)) }}
-					<el-form-item label="{{$c.Desc|shortName}}:">
-						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="date" value-format="yyyy-MM-dd"  placeholder="选择日期"></el-date-picker>
-					</el-form-item>
+				{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
+				<el-form-item label="{{$c.Desc|shortName}}:">
+						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qfCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qfCon)}}"  placeholder="选择日期"></el-date-picker>
+				</el-form-item>
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
           <el-checkbox-group v-model="queryData.{{$c.Name}}">
@@ -76,27 +67,27 @@ const TmplList = `
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
 				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
-						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con $tb) $c.Name)|lower}}")}}</span>
+						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|lfCon) $tb) $c.Name)|lower}}")}}</span>
 					</template>
-				{{- else if and (eq ($c.Type|codeType) $string) (gt $c.Len $len )}}
+				{{- else if and ($c.Type|isString) (gt $c.Len $len )}}
 					<template slot-scope="scope">
 						<el-tooltip class="item" v-if="scope.row.{{$c.Name}} && scope.row.{{$c.Name}}.length > 20" effect="dark" placement="top">
 							<div slot="content" style="width: 110px">{{"{{scope.row."}}{{$c.Name}}}}</div>
-							<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr(20) }}</span>
+							<span>{{"{{scope.row."}}{{$c.Name}} | fltrSubstr({{or ($c.Con|lfCon) "20"}}) }}</span>
 						</el-tooltip>
 						<span v-else>{{"{{scope.row."}}{{$c.Name}}}}</span>
 					</template>
-				{{- else if and (or (eq ($c.Type|codeType) $int64) (eq ($c.Type|codeType) $int)) (ne $c.Name ($pks|firstStr))}}
+				{{- else if and (or ($c.Type|isInt64) ($c.Type|isInt) ) (ne $c.Name ($pks|firstStr))}}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat({{or ($c.Con|decimalCon) "0"}})}}</span>
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat({{or ($c.Con|lfCon) "0"}})}}</span>
 				</template>
-				{{- else if eq ($c.Type|codeType) $decimal }}
+				{{- else if $c.Type|isDecimal }}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat({{or ($c.Con|decimalCon) "2"}})}}</span>
+					<span>{{"{{scope.row."}}{{$c.Name}} | fltrNumberFormat({{or ($c.Con|lfCon) "2"}})}}</span>
 				</template>
-				{{- else if eq ($c.Type|codeType) $time }}
+				{{- else if $c.Type|isTime }}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | {{if or ($c.Con|lCon|DTIME) (and (not ($c.Con|lCon|DATE)) ($c.Con|DTIME)) }}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</span>
+					<div>{{"{{ info."}}{{$c.Name}} | fltrDate("{{ or (dateFormat $c.Con ($c.Con|lfCon)) "yyyy-MM-dd"}}") }}</div>
 				</template>
 				{{- else}}
 				<template slot-scope="scope">
@@ -176,12 +167,10 @@ export default {
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|qfCon) $tb) $c.Name)|lower}}"),
 			{{- end}}
-			{{- if or ($c.Con|qCon|DTIME) (and (not ($c.Con|qCon|DATE)) ($c.Con|DTIME)) }}
-			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),
-			{{- else if or ($c.Con|qCon|DATE) (and (not ($c.Con|qCon|DTIME)) ($c.Con|DATE))  }}
-			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"yyyy-MM-dd"),{{end}}
+			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
+			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qfCon)}}"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
@@ -201,10 +190,8 @@ export default {
       this.queryData.pi = this.paging.pi
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
-			{{- if or ($c.Con|qCon|DTIME) (and (not ($c.Con|qCon|DATE)) ($c.Con|DTIME)) }}
-			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd hh:mm:ss")
-			{{- else if or ($c.Con|qCon|DATE) (and (not ($c.Con|qCon|DTIME)) ($c.Con|DATE))  }}
-			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd")
+			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
+			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qfCon)}}")
 			{{- end -}}
       {{- end}}
       let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.queryData)

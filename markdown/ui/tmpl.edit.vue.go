@@ -32,14 +32,10 @@ const TmplEditVue = `
 					<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
 				</el-checkbox-group>
 			</el-form-item>
-			{{- else if or ($c.Con|uCon|DTIME) (and (not ($c.Con|uCon|DATE)) ($c.Con|DTIME)) }}
+			{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
 			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
-      	<el-date-picker class="input-cos" v-model="editData.{{$c.Name}}" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
+					<el-date-picker class="input-cos"  v-model="editData.{{$c.Name}}" type="{{dateType $c.Con ($c.Con|ufCon)}}" value-format="{{dateFormat $c.Con ($c.Con|ufCon)}}"  placeholder="选择日期"></el-date-picker>
 			</el-form-item>
-			{{- else if or ($c.Con|uCon|DATE) (and (not ($c.Con|uCon|DTIME)) ($c.Con|DATE))  }}
-			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
-      	<el-date-picker class="input-cos" v-model="editData.{{$c.Name}}" type="date" value-format="yyyy-MM-dd"  placeholder="选择日期"></el-date-picker>
-      </el-form-item>
       {{- else -}}
       <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
 				<el-input maxlength="{{$c.Len}}" clearable v-model="editData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
@@ -63,7 +59,7 @@ export default {
 			editData: {},                //编辑数据对象
       {{- range $i,$c:=$rows|update -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-      {{$c.Name|lowerName}}:this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
+      {{$c.Name|lowerName}}:this.$enum.get("{{(or (dicType $c.Con ($c.Con|qfCon) $tb) $c.Name)|lower}}"),
       {{- end}}
       {{- end}}
 			rules: {                    //数据验证规则
@@ -95,10 +91,8 @@ export default {
 		},
 		edit() {
 			{{- range $i,$c:=$rows|update -}}
-			{{- if or ($c.Con|uCon|DTIME) (and (not ($c.Con|uCon|DATE)) ($c.Con|DTIME))}}
-			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"yyyy-MM-dd hh:mm:ss")
-			{{- else if or ($c.Con|uCon|DATE) (and (not ($c.Con|uCon|DTIME)) ($c.Con|DATE))}}
-			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"yyyy-MM-dd")
+			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
+			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"{{dateFormat $c.Con ($c.Con|ufCon)}}")
 			{{- end -}}
 			{{- end}}
 			this.$http.put("/{{.Name|rmhd|rpath}}", this.editData, {}, true, true)

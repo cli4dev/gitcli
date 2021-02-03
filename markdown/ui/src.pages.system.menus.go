@@ -57,7 +57,7 @@ export default {
       this.$sys.logout();
     },
     getMenu() {
-      this.$sys.getMenus(this).then(res => {
+      this.$sys.getMenus().then(res => {
         this.menus = res;
         this.getUserOtherSys();
         var cur = this.$sys.findMenuItem(res);

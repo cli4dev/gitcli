@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/lib4go/types"
 )
 
@@ -56,22 +57,24 @@ func getfuncs(tp string) map[string]interface{} {
 		"DATE":     getKWS("date"),  //表单日期选择器
 		"CC":       getKWS("cc"),    //表单颜色样式
 
-		"query":      getRows("q"),                 //查询字段
-		"list":       getRows("l"),                 //列表展示字段
-		"detail":     getRows("r"),                 //详情展示字段
-		"create":     getRows("c"),                 //创建字段
-		"delete":     getRows("d"),                 //删除时判定字段
-		"update":     getRows("u"),                 //更新字段
-		"delCon":     getBracketContent("d"),       //删除字段约束
-		"decimalCon": getBracketContent("decimal"), //小数点字段约束
-		"lCon":       getBracketContent("l"),       //删除字段约束
-		"rCon":       getBracketContent("r"),       //删除字段约束
-		"cCon":       getBracketContent("c"),       //删除字段约束
-		"uCon":       getBracketContent("u"),       //删除字段约束
-		"qCon":       getBracketContent("q"),       //删除字段约束
-		"firstStr":   getStringByIndex(0),          //获取约束的内容
-		"lastStr":    getLastStringByIndex,
-		"dicType":    GetDicType("sl", "cb", "rb"),
+		"query":         getRows("q"),               //查询字段
+		"list":          getRows("l"),               //列表展示字段
+		"detail":        getRows("r"),               //详情展示字段
+		"create":        getRows("c"),               //创建字段
+		"delete":        getRows("d"),               //删除时判定字段
+		"update":        getRows("u"),               //更新字段
+		"delCon":        getBracketContent("d"),     //删除字段约束
+		"lfCon":         getSubConContent("l", "f"), //列表展示字段的格式子约束l(f:xx)
+		"qfCon":         getSubConContent("q", "f"), //查询字段的格式子约束q(f:xx)
+		"rfCon":         getSubConContent("r", "f"), //详情展示字段的格式子约束r(f:xx)
+		"ufCon":         getSubConContent("u", "f"), //编辑字段的格式子约束u(f:xx)
+		"cfCon":         getSubConContent("c", "f"), //添加字段的格式子约束c(f:xx)
+		"firstStr":      getStringByIndex(0),        //获取约束的内容
+		"lastStr":       getLastStringByIndex,
+		"dicType":       getDicType("sl", "cb", "rb"),
+		"dateType":      getDateType,
+		"dateFormat":    getDateFormat,
+		"dateFormatDef": getDateFormatDef,
 
 		"rpath":        getRouterPath,         //获取路由地址
 		"fpath":        getFilePath,           //获取文件地址
@@ -80,10 +83,15 @@ func getfuncs(tp string) map[string]interface{} {
 		"importPath":   getImportPath,
 		"fileBasePath": filepath.Base,
 		"hasPrefix":    strings.HasPrefix,
+		"decodeEmpty":  decodeEmptyString, //字符串为空时，返回另外一个值
 
-		"var":    getVar,
-		"vars":   joinVars,
-		"isTime": isTime,
+		"var":       getVar,
+		"vars":      joinVars,
+		"isTime":    isType("time.Time"),
+		"isDecimal": isType("types.Decimal"),
+		"isInt64":   isType("int64"),
+		"isInt":     isType("int"),
+		"isString":  isType("string"),
 
 		"lowerName": fGetLowerCase, //小驼峰式命名
 		"upperName": fGetUpperCase, //大驼峰式命名
@@ -480,9 +488,12 @@ func getVar(name string, value ...string) string {
 	}
 	return ""
 }
-func isTime(input string) bool {
-	tp := codeType(input)
-	return tp == "time.Time"
+
+func isType(t string) func(input string) bool {
+	return func(input string) bool {
+		tp := codeType(input)
+		return tp == t
+	}
 }
 
 func stringsEqual(s string) func(s1 string) bool {
@@ -531,13 +542,15 @@ func getLastStringByIndex(s []string) string {
 	return types.GetStringByIndex(s, len(s)-1)
 }
 
-func GetDicType(keys ...string) func(con string, tb *Table) string {
-	return func(con string, tb *Table) string {
-		tp := getBracketContent("sl", "cb", "rb")(con)
+func getDicType(keys ...string) func(con string, subcon string, tb *Table) string {
+	return func(con string, subcon string, tb *Table) string {
+		tp := subcon
 		if tp == "" {
-			return ""
+			tp = getBracketContent(keys...)(con)
+			if tp == "" {
+				return ""
+			}
 		}
-
 		for _, tb := range tb.AllTables {
 			if tb.Name == tp {
 				if hasKW("di", "dn")(tb) && hasKW("dt")(tb) {
@@ -567,17 +580,89 @@ func getImportPath(s []*SnippetConf) map[string]*SnippetConf {
 	return r
 }
 
+func getDateFormat(con, subCon string) string {
+	fmt.Println(subCon)
+	if subCon == "" {
+		if getKWS("dtime")(con) {
+			return "yyyy-MM-dd HH:mm:ss"
+		}
+		if getKWS("date")(con) {
+			return "yyyy-MM-dd"
+		}
+	}
+
+	return subCon
+}
+
+func getDateFormatDef(con, subCon string) string {
+	f := getDateFormat(con, subCon)
+	if len(f) > 10 {
+		f = strings.ReplaceAll(f, "H", "0")
+		f = strings.ReplaceAll(f, "h", "0")
+		f = strings.ReplaceAll(f, "m", "0")
+		f = strings.ReplaceAll(f, "s", "0")
+	}
+	return f
+}
+func getDateType(con, subCon string) string {
+	if subCon == "" {
+		if getKWS("dtime")(con) {
+			return "datetime"
+		}
+		if getKWS("date")(con) {
+			return "date"
+		}
+	}
+
+	if strings.Contains(subCon, "h") || strings.Contains(subCon, "H") || strings.Contains(subCon, "m") || strings.Contains(subCon, "s") {
+		return "datetime"
+	}
+	return "date"
+}
+
+func decodeEmptyString(def, new string) string {
+	return types.DecodeString(def, "", new)
+}
+
+func getSubConContent(tp, kw string) func(con string) string {
+	return func(con string) string {
+		c := getBracketContent(tp)(con)
+		if c == "" {
+			return ""
+		}
+		fmt.Println("c:", con, ":", c)
+		subConMap := map[string]string{}
+		for _, v := range strings.Split(c, ",") {
+			sub := strings.Index(v, ":")
+			if sub < 1 {
+				logs.Log.Warn("约束格式不正确：", con)
+				continue
+			}
+			subConMap[v[0:sub]] = v[sub+1 : len(v)]
+		}
+		if v, ok := subConMap[kw]; ok {
+			return v
+		}
+		return ""
+	}
+}
+
 func getBracketContent(keys ...string) func(con string) string {
 	return func(con string) string {
 		s := ""
 		for _, key := range keys {
-			rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, key))
-			strs := rex.FindAllString(strings.ToLower(con), -1)
+			kw := ""
+			for k := range key {
+				kw += fmt.Sprintf("[%s%s]", strings.ToLower(key[k:k+1]), strings.ToUpper(key[k:k+1]))
+			}
+			rex := regexp.MustCompile(fmt.Sprintf(`%s\((.+?)\)`, kw))
+			strs := rex.FindAllString(con, -1)
 			if len(strs) < 1 {
 				continue
 			}
 			str := strs[0]
-			str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
+			//str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
+			str = str[strings.Index(str, "(")+1 : len(str)]
 			str = strings.TrimRight(str, ")")
 			s = fmt.Sprintf("%s,%s", s, str)
 		}
