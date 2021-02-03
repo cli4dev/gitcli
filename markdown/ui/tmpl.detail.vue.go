@@ -47,7 +47,7 @@ const TmplDetail = `
                   </el-col>
             {{- else if eq ($c.Type|codeType) $time }}
                   <el-col :span="6">
-                    <div>{{"{{ info."}}{{$c.Name}} | {{if or ($c.Con|rCon|DTP) (and (not ($c.Con|rCon|DP)) ($c.Con|DTP))}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</div>
+                    <div>{{"{{ info."}}{{$c.Name}} | {{if or ($c.Con|rCon|DTIME) (and (not ($c.Con|rCon|DATE)) ($c.Con|DTIME))}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</div>
                   </el-col>
             {{- else}}
                   <el-col :span="6">

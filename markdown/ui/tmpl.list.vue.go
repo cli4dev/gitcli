@@ -34,11 +34,11 @@ const TmplList = `
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 						</el-select>
 				</el-form-item>
-        {{- else if or ($c.Con|qCon|DTP) (and (not ($c.Con|qCon|DP)) ($c.Con|DTP)) }}
+        {{- else if or ($c.Con|qCon|DTIME) (and (not ($c.Con|qCon|DATE)) ($c.Con|DTIME)) }}
 					<el-form-item label="{{$c.Desc|shortName}}:">
 						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
 					</el-form-item>
-				{{- else if or ($c.Con|qCon|DP) (and (not ($c.Con|qCon|DTP)) ($c.Con|DP)) }}
+				{{- else if or ($c.Con|qCon|DATE) (and (not ($c.Con|qCon|DTIME)) ($c.Con|DATE)) }}
 					<el-form-item label="{{$c.Desc|shortName}}:">
 						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="date" value-format="yyyy-MM-dd"  placeholder="选择日期"></el-date-picker>
 					</el-form-item>
@@ -96,7 +96,7 @@ const TmplList = `
 				</template>
 				{{- else if eq ($c.Type|codeType) $time }}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | {{if or ($c.Con|lCon|DTP) (and (not ($c.Con|lCon|DP)) ($c.Con|DTP)) }}{{($c.Con|lCon)}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</span>
+					<span>{{"{{scope.row."}}{{$c.Name}} | {{if or ($c.Con|lCon|DTIME) (and (not ($c.Con|lCon|DATE)) ($c.Con|DTIME)) }}{{($c.Con|lCon)}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</span>
 				</template>
 				{{- else}}
 				<template slot-scope="scope">
@@ -178,9 +178,9 @@ export default {
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
 			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con $tb) $c.Name)|lower}}"),
 			{{- end}}
-			{{- if or ($c.Con|qCon|DTP) (and (not ($c.Con|qCon|DP)) ($c.Con|DTP)) }}
+			{{- if or ($c.Con|qCon|DTIME) (and (not ($c.Con|qCon|DATE)) ($c.Con|DTIME)) }}
 			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"yyyy-MM-dd 00:00:00"),
-			{{- else if or ($c.Con|qCon|DP) (and (not ($c.Con|qCon|DTP)) ($c.Con|DP))  }}
+			{{- else if or ($c.Con|qCon|DATE) (and (not ($c.Con|qCon|DTIME)) ($c.Con|DATE))  }}
 			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"yyyy-MM-dd"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
@@ -201,9 +201,9 @@ export default {
       this.queryData.pi = this.paging.pi
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
-			{{- if or ($c.Con|qCon|DTP) (and (not ($c.Con|qCon|DP)) ($c.Con|DTP)) }}
+			{{- if or ($c.Con|qCon|DTIME) (and (not ($c.Con|qCon|DATE)) ($c.Con|DTIME)) }}
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd hh:mm:ss")
-			{{- else if or ($c.Con|qCon|DP) (and (not ($c.Con|qCon|DTP)) ($c.Con|DP))  }}
+			{{- else if or ($c.Con|qCon|DATE) (and (not ($c.Con|qCon|DTIME)) ($c.Con|DATE))  }}
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"yyyy-MM-dd")
 			{{- end -}}
       {{- end}}

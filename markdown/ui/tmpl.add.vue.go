@@ -33,11 +33,11 @@ const TmplCreateVue = `
 					<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
 				</el-checkbox-group>
 			</el-form-item>
-			{{- else if $c.Con|DTP }}
+			{{- else if $c.Con|DTIME }}
 			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
       	<el-date-picker class="input-cos" v-model="addData.{{$c.Name}}" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"  placeholder="选择日期"></el-date-picker>
 			</el-form-item>
-			{{- else if $c.Con|DP }}
+			{{- else if $c.Con|DATE }}
 			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
       	<el-date-picker class="input-cos" v-model="addData.{{$c.Name}}" type="date" value-format="yyyy-MM-dd"  placeholder="选择日期"></el-date-picker>
       </el-form-item>
@@ -99,9 +99,9 @@ export default {
 		},
 		add(formName) {
 			{{- range $i,$c:=$rows|create -}}
-			{{- if or ($c.Con|cCon|DTP) (and (not ($c.Con|cCon|DP)) ($c.Con|DTP))}}
+			{{- if or ($c.Con|cCon|DTIME) (and (not ($c.Con|cCon|DATE)) ($c.Con|DTIME))}}
 			this.addData.{{$c.Name}} = this.$utility.dateFormat(this.addData.{{$c.Name}},"yyyy-MM-dd hh:mm:ss")
-			{{- else if or ($c.Con|cCon|DP) (and (not ($c.Con|cCon|DTP)) ($c.Con|DP))}}
+			{{- else if or ($c.Con|cCon|DATE) (and (not ($c.Con|cCon|DTIME)) ($c.Con|DATE))}}
 			this.addData.{{$c.Name}} = this.$utility.dateFormat(this.addData.{{$c.Name}},"yyyy-MM-dd")
 			{{- end -}}
 			{{- end}}

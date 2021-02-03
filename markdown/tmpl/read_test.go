@@ -21,7 +21,7 @@ func TestRead(t *testing.T) {
 	| mer_type    | number(1)    |         |  否   |   CRUQL,DN   | 类型     |
 	| bd_uid      | number(20)   |         |  否   |   CRUQL,DN   | 商务人员 |
 	| status      | number(1)    |    0    |  否   |   RUQL,SL    | 状态     |
-	| create_time | date         | sysdate |  否   |    RL,DTP     | 创建时间 |`
+	| create_time | date         | sysdate |  否   |    RL,DTIME     | 创建时间 |`
 	b := bytes.NewBuffer([]byte(text))
 	lines, err := readMarkdownByReader(bufio.NewReader(b))
 	assert.Equal(t, nil, err)
@@ -41,7 +41,7 @@ func TestRead(t *testing.T) {
 	assert.Equal(t, "date", tb.Tbs[0].Rows[6].Type)
 	assert.Equal(t, "sysdate", tb.Tbs[0].Rows[6].Def)
 	assert.Equal(t, "否", tb.Tbs[0].Rows[6].IsNull)
-	assert.Equal(t, "RL,DTP", tb.Tbs[0].Rows[6].Con)
+	assert.Equal(t, "RL,DTIME", tb.Tbs[0].Rows[6].Con)
 	assert.Equal(t, "创建时间", tb.Tbs[0].Rows[6].Desc)
 }
 func TestPKG(t *testing.T) {

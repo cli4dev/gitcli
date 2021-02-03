@@ -92,6 +92,7 @@ SL: "select"      //表单下拉框,默认使用dds字典表枚举,指定表名�
 CB: "checkbox"    //表单复选框,默认使用dds字典表枚举,指定表名的CB[(字典表名)]
 RD: "radio"       //表单单选框,默认使用dds字典表枚举,指定表名的RB[(字典表名)]
 TA: "textarea"    //表单文本域
+CC: "color-class"  //状态颜色过滤器
 DATE: "date-picker" //表单日期选择器
 DTIME: "datetime-picker" //表单日期时间选择器
 

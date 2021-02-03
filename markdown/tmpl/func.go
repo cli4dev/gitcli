@@ -48,13 +48,13 @@ func getfuncs(tp string) map[string]interface{} {
 
 		"ismysql":  stringsEqual("mysql"),
 		"isoracle": stringsEqual("oracle"),
-		"SL":       getKWS("sl"),  //表单下拉框
-		"CB":       getKWS("cb"),  //表单复选框
-		"RD":       getKWS("rd"),  //表单单选框
-		"TA":       getKWS("ta"),  //表单文本域
-		"DTP":      getKWS("dtp"), //表单日期时间选择器
-		"DP":       getKWS("dp"),  //表单日期选择器
-		"CC":       getKWS("cc"),  //表单颜色样式
+		"SL":       getKWS("sl"),    //表单下拉框
+		"CB":       getKWS("cb"),    //表单复选框
+		"RD":       getKWS("rd"),    //表单单选框
+		"TA":       getKWS("ta"),    //表单文本域
+		"DTIME":    getKWS("dtime"), //表单日期时间选择器
+		"DATE":     getKWS("date"),  //表单日期选择器
+		"CC":       getKWS("cc"),    //表单颜色样式
 
 		"query":      getRows("q"),                 //查询字段
 		"list":       getRows("l"),                 //列表展示字段
