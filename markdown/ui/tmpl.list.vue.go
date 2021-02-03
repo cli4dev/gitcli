@@ -96,7 +96,7 @@ const TmplList = `
 				</template>
 				{{- else if eq ($c.Type|codeType) $time }}
 				<template slot-scope="scope">
-					<span>{{"{{scope.row."}}{{$c.Name}} | {{if or ($c.Con|lCon|DTIME) (and (not ($c.Con|lCon|DATE)) ($c.Con|DTIME)) }}{{($c.Con|lCon)}}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</span>
+					<span>{{"{{scope.row."}}{{$c.Name}} | {{if or ($c.Con|lCon|DTIME) (and (not ($c.Con|lCon|DATE)) ($c.Con|DTIME)) }}fltrDate("yyyy-MM-dd hh:mm:ss"){{else}}fltrDate{{end}} }}</span>
 				</template>
 				{{- else}}
 				<template slot-scope="scope">
