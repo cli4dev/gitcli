@@ -605,12 +605,10 @@ func getDateFormat(con, subCon string) string {
 
 func getDateFormatDef(con, subCon string) string {
 	f := getDateFormat(con, subCon)
-	if len(f) > 10 {
-		f = strings.ReplaceAll(f, "H", "0")
-		f = strings.ReplaceAll(f, "h", "0")
-		f = strings.ReplaceAll(f, "m", "0")
-		f = strings.ReplaceAll(f, "s", "0")
-	}
+	f = strings.ReplaceAll(f, "H", "0")
+	f = strings.ReplaceAll(f, "h", "0")
+	f = strings.ReplaceAll(f, "m", "0")
+	f = strings.ReplaceAll(f, "s", "0")
 	return f
 }
 func getDateType(con, subCon string) string {
@@ -637,6 +635,9 @@ func getDicChildrenName(tp string) func(name string, t *Table) string {
 			if kw == subCon {
 				return v.Name
 			}
+			if subCon != "" { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
+				return ""
+			}
 			con := getBracketContent("sl", "rd", "cb")(v.Con)
 			if strings.Contains(con, kw) {
 				return v.Name
@@ -649,20 +650,23 @@ func getDicChildrenName(tp string) func(name string, t *Table) string {
 func getDicParentName(tp string) func(con string, t *Table) string {
 	return func(con string, t *Table) string {
 		subCon := getSubConContent(tp, "e")(con) //该字段枚举子约束
-		if !strings.HasPrefix(subCon, "#") {     //该字段枚举子约束没有联动，查找组件约束的联动
-			c := getBracketContent("sl", "rd", "cb")(con)
-			if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
-				return ""
-			}
-			for _, v := range strings.Split(c, ",") {
-				if strings.HasPrefix(v, "#") {
-					subCon = v
-					break
-				}
-			}
+		if strings.HasPrefix(subCon, "#") {      ///该字段设置有级联枚举子约束
+			return strings.TrimPrefix(subCon, "#")
 		}
-		if subCon == "" {
+
+		if subCon != "" { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
 			return ""
+		}
+		//查找组件约束的联动
+		c := getBracketContent("sl", "rd", "cb")(con)
+		if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
+			return ""
+		}
+		for _, v := range strings.Split(c, ",") {
+			if strings.HasPrefix(v, "#") {
+				subCon = v
+				break
+			}
 		}
 		//取父级联动字段名
 		return strings.TrimPrefix(subCon, "#")
