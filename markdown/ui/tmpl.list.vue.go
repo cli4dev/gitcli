@@ -194,7 +194,7 @@ export default {
     init(){
       this.query()
 		},
-		{{- range $i,$c:=$rows|list -}}
+		{{- range $i,$c:=$rows|query -}}
 		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (qDicPName $c.Con $tb)  }}
 		set{{$c.Name|upperName}}(pid){
 			this.{{$c.Name|lowerName}}=[];

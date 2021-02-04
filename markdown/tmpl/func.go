@@ -639,7 +639,7 @@ func getDicChildrenName(tp string) func(name string, t *Table) string {
 			if subCon != "" { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
 				return ""
 			}
-			con := getBracketContent("sl", "rd", "cb")(v.Con)
+			con := getBracketContent("sl", "rd", "cb", "slm")(v.Con)
 			if strings.Contains(con, kw) {
 				return v.Name
 			}
@@ -654,12 +654,11 @@ func getDicParentName(tp string) func(con string, t *Table) string {
 		if strings.HasPrefix(subCon, "#") {      ///该字段设置有级联枚举子约束
 			return strings.TrimPrefix(subCon, "#")
 		}
-
 		if subCon != "" { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
 			return ""
 		}
 		//查找组件约束的联动
-		c := getBracketContent("sl", "rd", "cb")(con)
+		c := getBracketContent("sl", "rd", "slm", "cb")(con)
 		if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
 			return ""
 		}
