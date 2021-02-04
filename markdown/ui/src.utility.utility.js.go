@@ -149,7 +149,7 @@ Vue.filter('fltrDate', (value, format = "yyyy-MM-dd") => {
 })
 
 //完整日期格式转换
-Vue.filter('fltrDateTime', (value, format = "yyyy-MM-dd hh:mm") => {
+Vue.filter('fltrDateTime', (value, format = "yyyy-MM-dd HH:mm") => {
     if (!value) {
         return '-'
     } 
@@ -186,7 +186,7 @@ Vue.filter('fltrBgColor', value => {
 })
 
 //日期格式转换
-Utility.prototype.dateFormat = function (date, fmt = "yyyy-MM-dd hh:mm") {
+Utility.prototype.dateFormat = function (date, fmt = "yyyy-MM-dd HH:mm") {
     if(!date){
         return ""
     }
