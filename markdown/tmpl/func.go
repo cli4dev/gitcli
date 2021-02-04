@@ -68,11 +68,13 @@ func getfuncs(tp string) map[string]interface{} {
 		"delete":        getRows("d"),               //删除时判定字段
 		"update":        getRows("u"),               //更新字段
 		"delCon":        getBracketContent("d"),     //删除字段约束
-		"lfCon":         getSubConContent("l", "f"), //列表展示字段的格式子约束l(f:xx)
-		"qeCon":         getSubConContent("q", "e"), //查询字段的格式子约束q(e:xx)
-		"rfCon":         getSubConContent("r", "f"), //详情展示字段的格式子枚举约束r(f:xx)
-		"ueCon":         getSubConContent("u", "e"), //编辑字段的格式子枚举约束u(f:xx)
-		"ceCon":         getSubConContent("c", "e"), //添加字段的格式子枚举约束c(f:xx)
+		"lfCon":         getSubConContent("l", "f"), //列表展示字段的过滤器子约束l(f:xx)
+		"leCon":         getSubConContent("l", "e"), //列表展示字段的枚举子约束l(e:xx)
+		"qeCon":         getSubConContent("q", "e"), //查询字段的枚举子约束q(e:xx)
+		"rfCon":         getSubConContent("r", "f"), //详情展示字段的过滤器子约束r(f:xx)
+		"reCon":         getSubConContent("r", "e"), //详情展示字段的枚举子约束r(e:xx)
+		"ueCon":         getSubConContent("u", "e"), //编辑字段的格式枚举子约束u(e:xx)
+		"ceCon":         getSubConContent("c", "e"), //添加字段的格式枚举子约束c(e:xx)
 		"firstStr":      getStringByIndex(0),        //获取约束的内容
 		"lastStr":       getLastStringByIndex,
 		"dicType":       getDicType("sl", "cb", "rd"),

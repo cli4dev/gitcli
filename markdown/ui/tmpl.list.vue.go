@@ -67,7 +67,7 @@ const TmplList = `
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
 				{{- if or ($c.Con|SL) ($c.Con|SLM)  ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
-						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|lfCon) $tb) $c.Name)|lower}}")}}</span>
+						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|leCon) $tb) $c.Name)|lower}}")}}</span>
 					</template>
 				{{- else if and ($c.Type|isString) (gt $c.Len $len )}}
 					<template slot-scope="scope">
