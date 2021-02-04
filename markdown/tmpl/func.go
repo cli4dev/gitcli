@@ -47,16 +47,17 @@ func getfuncs(tp string) map[string]interface{} {
 		"lower":     getLower,        //获取变量的最小写字符
 		"order":     getOrderBy,
 
-		"ismysql":  stringsEqual("mysql"),
-		"isoracle": stringsEqual("oracle"),
-		"SL":       getKWS("sl"),    //表单下拉框
-		"SLM":      getKWS("slm"),   //表单下拉框
-		"CB":       getKWS("cb"),    //表单复选框
-		"RD":       getKWS("rd"),    //表单单选框
-		"TA":       getKWS("ta"),    //表单文本域
-		"DTIME":    getKWS("dtime"), //表单日期时间选择器
-		"DATE":     getKWS("date"),  //表单日期选择器
-		"CC":       getKWS("cc"),    //表单颜色样式
+		"ismysql":     stringsEqual("mysql"),
+		"isoracle":    stringsEqual("oracle"),
+		"SL":          getKWS("sl"),    //表单下拉框
+		"SLM":         getKWS("slm"),   //表单下拉框
+		"CB":          getKWS("cb"),    //表单复选框
+		"RD":          getKWS("rd"),    //表单单选框
+		"TA":          getKWS("ta"),    //表单文本域
+		"DTIME":       getKWS("dtime"), //表单日期时间选择器
+		"DATE":        getKWS("date"),  //表单日期选择器
+		"CC":          getKWS("cc"),    //表单颜色样式
+		"hasCascader": hasKW("#"),      //数据表是否包含该字段
 
 		"query":         getRows("q"),               //查询字段
 		"list":          getRows("l"),               //列表展示字段
@@ -66,10 +67,10 @@ func getfuncs(tp string) map[string]interface{} {
 		"update":        getRows("u"),               //更新字段
 		"delCon":        getBracketContent("d"),     //删除字段约束
 		"lfCon":         getSubConContent("l", "f"), //列表展示字段的格式子约束l(f:xx)
-		"qfCon":         getSubConContent("q", "f"), //查询字段的格式子约束q(f:xx)
-		"rfCon":         getSubConContent("r", "f"), //详情展示字段的格式子约束r(f:xx)
-		"ufCon":         getSubConContent("u", "f"), //编辑字段的格式子约束u(f:xx)
-		"cfCon":         getSubConContent("c", "f"), //添加字段的格式子约束c(f:xx)
+		"qeCon":         getSubConContent("q", "e"), //查询字段的格式子约束q(e:xx)
+		"rfCon":         getSubConContent("r", "f"), //详情展示字段的格式子枚举约束r(f:xx)
+		"ueCon":         getSubConContent("u", "e"), //编辑字段的格式子枚举约束u(f:xx)
+		"ceCon":         getSubConContent("c", "e"), //添加字段的格式子枚举约束c(f:xx)
 		"firstStr":      getStringByIndex(0),        //获取约束的内容
 		"lastStr":       getLastStringByIndex,
 		"dicType":       getDicType("sl", "cb", "rd"),

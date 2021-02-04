@@ -24,14 +24,14 @@ const TmplList = `
 				</el-form-item>
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
-					<el-select size="medium" v-model="queryData.{{$c.Name}}" class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
+					<el-select size="medium" v-model="queryData.{{$c.Name}}" clearable filterable class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
 						<el-option value="" label="全部"></el-option>
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 						</el-select>
 				</el-form-item>
 				{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
-						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qfCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qfCon)}}"  placeholder="选择日期"></el-date-picker>
+						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qeCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qeCon)}}"  placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
@@ -167,10 +167,10 @@ export default {
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|qfCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"),
 			{{- end}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
-			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qfCon)}}"),{{end}}
+			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qeCon)}}"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
@@ -191,7 +191,7 @@ export default {
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
-			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qfCon)}}")
+			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qeCon)}}")
 			{{- end -}}
       {{- end}}
       let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.queryData)

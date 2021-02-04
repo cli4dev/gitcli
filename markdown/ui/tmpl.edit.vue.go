@@ -22,13 +22,13 @@ const TmplEditVue = `
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select  placeholder="---请选择---" clearable v-model="editData.{{$c.Name}}" style="width: 100%;">
+				<el-select  placeholder="---请选择---" clearable filterable v-model="editData.{{$c.Name}}" style="width: 100%;">
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
 				</el-select>
 			</el-form-item>
 			{{- else if $c.Con|SLM }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select  placeholder="---请选择---" clearable v-model="{{$c.Name|lowerName}}Array" multiple style="width: 100%;">
+				<el-select  placeholder="---请选择---" clearable filterable v-model="{{$c.Name|lowerName}}Array" multiple style="width: 100%;">
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
 				</el-select>
 			</el-form-item>
@@ -40,7 +40,7 @@ const TmplEditVue = `
 			</el-form-item>
 			{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
 			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
-					<el-date-picker class="input-cos"  v-model="editData.{{$c.Name}}" type="{{dateType $c.Con ($c.Con|ufCon)}}" value-format="{{dateFormat $c.Con ($c.Con|ufCon)}}"  placeholder="选择日期"></el-date-picker>
+					<el-date-picker class="input-cos"  v-model="editData.{{$c.Name}}" type="{{dateType $c.Con ($c.Con|ueCon)}}" value-format="{{dateFormat $c.Con ($c.Con|ueCon)}}"  placeholder="选择日期"></el-date-picker>
 			</el-form-item>
       {{- else -}}
       <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
@@ -65,9 +65,9 @@ export default {
 			editData: {},                //编辑数据对象
       {{- range $i,$c:=$rows|update -}}
       {{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-      {{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ufCon) $tb) $c.Name)|lower}}"),
+      {{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}"),
 			{{- else if $c.Con|SLM }}
-			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ufCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}"),
 			{{$c.Name|lowerName}}Array: [],
 			{{- end}}
       {{- end}}
@@ -106,7 +106,7 @@ export default {
 		edit() {
 			{{- range $i,$c:=$rows|update -}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
-			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"{{dateFormat $c.Con ($c.Con|ufCon)}}")
+			this.editData.{{$c.Name}} = this.$utility.dateFormat(this.editData.{{$c.Name}},"{{dateFormat $c.Con ($c.Con|ueCon)}}")
 			{{- else if $c.Con|SLM }}
 			this.editData.{{$c.Name}} = this.{{$c.Name|lowerName}}Array.toString()
 			{{- end -}}
