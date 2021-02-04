@@ -82,6 +82,10 @@ func getfuncs(tp string) map[string]interface{} {
 		"dateFormatDef": getDateFormatDef,
 		"qDicCName":     getDicChildrenName("q"),
 		"qDicPName":     getDicParentName("q"),
+		"cDicCName":     getDicChildrenName("c"),
+		"cDicPName":     getDicParentName("c"),
+		"uDicCName":     getDicChildrenName("u"),
+		"uDicPName":     getDicParentName("u"),
 
 		"rpath":        getRouterPath,         //获取路由地址
 		"fpath":        getFilePath,           //获取文件地址

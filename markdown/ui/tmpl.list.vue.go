@@ -27,14 +27,16 @@ const TmplList = `
 					<el-select 
 					size="medium" 
 					v-model="queryData.{{$c.Name}}" 
-					{{if (qDicCName $c.Name $tb) }}@change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})"{{end}}
+					{{- if (qDicCName $c.Name $tb) }}
+					@change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})"
+					{{- end}}
 					clearable 
 					filterable 
 					class="input-cos" 
 					placeholder="请选择{{$c.Desc|shortName}}">
 						<el-option value="" label="全部"></el-option>
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
-						</el-select>
+					</el-select>
 				</el-form-item>
 				{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
@@ -196,6 +198,7 @@ export default {
 		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (qDicPName $c.Con $tb)  }}
 		set{{$c.Name|upperName}}(pid){
 			this.{{$c.Name|lowerName}}=[];
+			this.queryData.{{$c.Name}} = ""
 			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}",pid)
 		},
 		{{- end}}

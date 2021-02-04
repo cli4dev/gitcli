@@ -23,8 +23,18 @@ const TmplCreateVue = `
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select  placeholder="---请选择---" clearable filterable v-model="addData.{{$c.Name}}" style="width: 100%;">
-					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
+				<el-select 
+				style="width: 100%;"
+				v-model="addData.{{$c.Name}}" 
+				{{- if (cDicCName $c.Name $tb) }}
+				@change="set{{(cDicCName $c.Name $tb)|upperName}}(addData.{{$c.Name}})"
+				{{- end}}
+				clearable 
+				filterable 
+				class="input-cos" 
+				placeholder="---请选择---">
+					<el-option value="" label="全部"></el-option>
+					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 				</el-select>
 			</el-form-item>
 			{{- else if $c.Con|SLM }}
@@ -69,7 +79,7 @@ export default {
 			dialogAddVisible: false,
 			{{- range $i,$c:=$rows|create -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}:{{if (cDicPName $c.Con $tb) }} []{{else}}this.$enum.get("{{(or (dicType $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"){{end}},
 			{{- else if $c.Con|SLM }}
 			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"),
 			{{$c.Name|lowerName}}Array: [],
@@ -104,6 +114,15 @@ export default {
 		show(){
 			this.dialogAddVisible = true;
 		},
+		{{- range $i,$c:=$rows|create -}}
+		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (cDicPName $c.Con $tb)  }}
+		set{{$c.Name|upperName}}(pid){
+			this.{{$c.Name|lowerName}}=[];
+			this.addData.{{$c.Name}} = ""
+			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicType $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}",pid)
+		},
+		{{- end}}
+		{{- end }}
 		add(formName) {
 			{{- range $i,$c:=$rows|create -}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
