@@ -27,6 +27,12 @@ const TmplCreateVue = `
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
 				</el-select>
 			</el-form-item>
+			{{- else if $c.Con|SLM }}
+			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
+				<el-select  placeholder="---请选择---" clearable v-model="{{$c.Name|lowerName}}Array" multiple style="width: 100%;">
+					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
+				</el-select>
+			</el-form-item>
 			{{- else if $c.Con|CB }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}"> 
 				<el-checkbox-group v-model="addData.{{$c.Name}}">
@@ -61,7 +67,10 @@ export default {
 			dialogAddVisible: false,
 			{{- range $i,$c:=$rows|create -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-      {{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|cfCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|cfCon) $tb) $c.Name)|lower}}"),
+			{{- else if $c.Con|SLM }}
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|cfCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}Array: [],
       {{- end}}
 			{{- end}}
 			rules: {                    //数据验证规则
@@ -97,6 +106,8 @@ export default {
 			{{- range $i,$c:=$rows|create -}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
 			this.addData.{{$c.Name}} = this.$utility.dateFormat(this.addData.{{$c.Name}},"{{dateFormat $c.Con ($c.Con|ufCon)}}")
+			{{- else if $c.Con|SLM }}
+			this.addData.{{$c.Name}} = this.{{$c.Name|lowerName}}Array.toString()
 			{{- end -}}
 			{{- end}}
 			this.$refs[formName].validate((valid) => {

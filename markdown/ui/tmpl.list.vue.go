@@ -22,7 +22,7 @@ const TmplList = `
             <el-radio v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
           </el-radio-group>
 				</el-form-item>
-				{{- else if $c.Con|SL }}
+				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
 					<el-select size="medium" v-model="queryData.{{$c.Name}}" class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
 						<el-option value="" label="全部"></el-option>
@@ -65,7 +65,7 @@ const TmplList = `
 			<el-table :data="dataList.items" border style="width: 100%">
 				{{- range $i,$c:=$rows|list}}
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
-				{{- if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD)}}
+				{{- if or ($c.Con|SL) ($c.Con|SLM)  ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
 						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|lfCon) $tb) $c.Name)|lower}}")}}</span>
 					</template>
@@ -166,7 +166,7 @@ export default {
 			addData:{},                 //添加数据对象 
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
-			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
+			{{if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD) }}
 			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|qfCon) $tb) $c.Name)|lower}}"),
 			{{- end}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}

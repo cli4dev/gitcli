@@ -50,6 +50,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"ismysql":  stringsEqual("mysql"),
 		"isoracle": stringsEqual("oracle"),
 		"SL":       getKWS("sl"),    //表单下拉框
+		"SLM":      getKWS("slm"),   //表单下拉框
 		"CB":       getKWS("cb"),    //表单复选框
 		"RD":       getKWS("rd"),    //表单单选框
 		"TA":       getKWS("ta"),    //表单文本域
