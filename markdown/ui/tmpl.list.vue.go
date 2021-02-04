@@ -17,11 +17,6 @@ const TmplList = `
 					</el-input>
 				</el-form-item>
 				{{- else if $c.Con|RD}}
-				<el-form-item  label="{{$c.Desc|shortName}}:">
-					<el-radio-group v-model="queryData.{{$c.Name}}" style="margin-left:5px">
-            <el-radio v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
-          </el-radio-group>
-				</el-form-item>
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
 					<el-select 

@@ -650,26 +650,41 @@ func getDicChildrenName(tp string) func(name string, t *Table) string {
 
 func getDicParentName(tp string) func(con string, t *Table) string {
 	return func(con string, t *Table) string {
-		subCon := getSubConContent(tp, "e")(con) //该字段枚举子约束
-		if strings.HasPrefix(subCon, "#") {      ///该字段设置有级联枚举子约束
-			return strings.TrimPrefix(subCon, "#")
-		}
-		if subCon != "" { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
+		subCon := getSubConContent(tp, "e")(con)             //该字段枚举子约束
+		if subCon != "" && !strings.HasPrefix(subCon, "#") { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
 			return ""
 		}
-		//查找组件约束的联动
-		c := getBracketContent("sl", "rd", "slm", "cb")(con)
-		if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
-			return ""
+
+		parentName := ""
+		if strings.HasPrefix(subCon, "#") { ///该字段设置有级联枚举子约束
+			parentName = strings.TrimPrefix(subCon, "#")
 		}
-		for _, v := range strings.Split(c, ",") {
-			if strings.HasPrefix(v, "#") {
-				subCon = v
-				break
+
+		if parentName == "" {
+			//查找组件约束的联动
+			c := getBracketContent("sl", "rd", "slm", "cb")(con)
+			if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
+				return ""
+			}
+			for _, v := range strings.Split(c, ",") {
+				if strings.HasPrefix(v, "#") {
+					parentName = strings.TrimPrefix(v, "#")
+					break
+				}
 			}
 		}
-		//取父级联动字段名
-		return strings.TrimPrefix(subCon, "#")
+
+		if parentName == "" {
+			return ""
+		}
+
+		for _, v := range t.Rows {
+			if v.Name == parentName {
+				return parentName
+			}
+		}
+
+		return ""
 	}
 }
 
