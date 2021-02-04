@@ -44,7 +44,9 @@ const TmplEditVue = `
 			</el-form-item>
       {{- else -}}
       <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
-				<el-input maxlength="{{$c.Len}}" clearable v-model="editData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
+				<el-input {{if gt $c.Len 0}}maxlength="{{$c.Len}}"{{end}} 
+				{{if gt $c.DecimalLen 0}} oninput="if(isNaN(value)) { value = null } if(value.indexOf('.')>0){value=value.slice(0,value.indexOf('.')+{{$c.DecimalLen|add1}})}"{{end}}
+				clearable v-model="editData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
 				</el-input>
       </el-form-item>
       {{- end}}

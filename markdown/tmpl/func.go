@@ -47,6 +47,8 @@ func getfuncs(tp string) map[string]interface{} {
 		"lower":     getLower,        //获取变量的最小写字符
 		"order":     getOrderBy,
 
+		"add1": add(1), //加1
+
 		"ismysql":     stringsEqual("mysql"),
 		"isoracle":    stringsEqual("oracle"),
 		"SL":          getKWS("sl"),    //表单下拉框
@@ -690,4 +692,8 @@ func hasKW(tp ...string) func(t *Table) bool {
 		}
 		return true
 	}
+}
+
+func add(a int) func(b int) int {
+	return func(b int) int { return a + b }
 }

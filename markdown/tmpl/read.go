@@ -7,8 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
+
+	"github.com/micro-plat/lib4go/types"
 )
 
 //Tables markdown中的所有表信息
@@ -192,18 +193,19 @@ func line2TableRow(line *Line) (*Row, error) {
 		return nil, fmt.Errorf("字段名称不能为空 %s(行:%d)", line.Text, line.LineID)
 	}
 
-	tp, l, err := getType(line)
+	tp, len, decimalLen, err := getType(line)
 	if err != nil {
 		return nil, err
 	}
 	c := &Row{
-		Name:   strings.TrimSpace(strings.Replace(colums[0], "&#124;", "|", -1)),
-		Type:   tp,
-		Len:    l,
-		Def:    strings.TrimSpace(strings.Replace(colums[2], "&#124;", "|", -1)),
-		IsNull: strings.TrimSpace(colums[3]),
-		Con:    strings.TrimSpace(colums[4]), // strings.Replace(strings.TrimSpace(colums[4]), " ", "", -1),
-		Desc:   strings.TrimSpace(strings.Replace(colums[5], "&#124;", "|", -1)),
+		Name:       strings.TrimSpace(strings.Replace(colums[0], "&#124;", "|", -1)),
+		Type:       tp,
+		Len:        len,
+		DecimalLen: decimalLen,
+		Def:        strings.TrimSpace(strings.Replace(colums[2], "&#124;", "|", -1)),
+		IsNull:     strings.TrimSpace(colums[3]),
+		Con:        strings.TrimSpace(colums[4]), // strings.Replace(strings.TrimSpace(colums[4]), " ", "", -1),
+		Desc:       strings.TrimSpace(strings.Replace(colums[5], "&#124;", "|", -1)),
 	}
 	return c, nil
 }
@@ -241,20 +243,24 @@ func getPKSName(path string) string {
 	return name
 }
 
-func getType(line *Line) (string, int, error) {
+//类型，长度，小数长度，错误
+func getType(line *Line) (string, int, int, error) {
 	colums := strings.Split(strings.Trim(line.Text, "|"), "|")
 	if colums[0] == "" {
-		return "", 0, fmt.Errorf("字段名称不能为空 %s(行:%d)", line.Text, line.LineID)
+		return "", 0, 0, fmt.Errorf("字段名称不能为空 %s(行:%d)", line.Text, line.LineID)
 	}
+
 	t := strings.TrimSpace(colums[1])
 	reg := regexp.MustCompile(`[\w]+`)
 	names := reg.FindAllString(t, -1)
-	if len(names) == 0 || len(names) > 3 {
-		return "", 0, fmt.Errorf("未设置字段类型:%v(行:%d)", names, line.LineID)
+	if len(names) == 0 || len(names) > 4 {
+		return "", 0, 0, fmt.Errorf("未设置字段类型:%v(行:%d)", names, line.LineID)
 	}
 	if len(names) == 1 {
-		return t, 0, nil
+		return t, 0, 0, nil
 	}
-	l, _ := strconv.Atoi(strings.Join(names[1:], ","))
-	return t, l, nil
+	if len(names) == 2 {
+		return t, types.GetInt(names[1]), 0, nil
+	}
+	return t, types.GetInt(names[1]), types.GetInt(names[2]), nil
 }
