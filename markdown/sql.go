@@ -70,7 +70,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
-		tb.ExceptByKW(c.String("except"))
+		tb.Exclude()
 
 		for _, tb := range tb.Tbs {
 			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, fmt.Sprintf("%s.", dbtp))

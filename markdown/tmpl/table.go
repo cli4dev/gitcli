@@ -24,6 +24,7 @@ type Table struct {
 	Indexs    Indexs
 	BasePath  string   //生成项目基本路径
 	AllTables []*Table //所有表
+	Exclude   bool     //排除生成sql
 }
 
 //Row 行信息
@@ -92,10 +93,11 @@ func (t fields) Swap(i, j int) {
 //NewTable 创建表
 func NewTable(name, desc string) *Table {
 	return &Table{
-		Name:    name,
+		Name:    strings.TrimLeft(name, "^"),
 		Desc:    desc,
 		Rows:    make([]*Row, 0, 1),
 		RawRows: make([]*Row, 0, 1),
+		Exclude: strings.Contains(name, "^"),
 	}
 }
 

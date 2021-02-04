@@ -51,9 +51,6 @@ func init() {
 						}, cli.BoolFlag{
 							Name:  "cover,v",
 							Usage: `-文件已存在时自动覆盖`,
-						}, cli.StringFlag{
-							Name:  "except,e",
-							Usage: `-过滤表,不进行生成`,
 						},
 					},
 				},
@@ -318,10 +315,6 @@ func init() {
 						}, cli.BoolFlag{
 							Name:  "cover,v",
 							Usage: `-文件已存在时自动覆盖`,
-						},
-						cli.StringFlag{
-							Name:  "except,e",
-							Usage: `-过滤表,不进行生成`,
 						},
 					},
 				},

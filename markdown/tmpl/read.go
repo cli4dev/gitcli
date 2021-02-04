@@ -34,13 +34,10 @@ func (t *Tables) FilterByKW(kwc string) {
 	t.Tbs = tbs
 }
 
-func (t *Tables) ExceptByKW(kwc string) {
-	if kwc == "" {
-		return
-	}
+func (t *Tables) Exclude() {
 	tbs := make([]*Table, 0, 1)
 	for _, tb := range t.Tbs {
-		if !strings.Contains(tb.Name, kwc) {
+		if !tb.Exclude {
 			tbs = append(tbs, tb)
 		}
 	}
@@ -225,7 +222,7 @@ func getTableName(line *Line) (string, error) {
 		return "", fmt.Errorf("%d行表名称标注不正确，请以###开头:(%s)", line.LineID, line.Text)
 	}
 
-	reg := regexp.MustCompile(`\[[\w]+[,]?[\p{Han}A-Za-z0-9_]+\]`)
+	reg := regexp.MustCompile(`\[[\^]?[\w]+[,]?[\p{Han}A-Za-z0-9_]+\]`)
 	names := reg.FindAllString(line.Text, -1)
 	if len(names) == 0 {
 		return "", fmt.Errorf("未设置表名称或者格式不正确:%s(行:%d)，格式：### 描述[表名,菜单名]，菜单名可选", line.Text, line.LineID)
