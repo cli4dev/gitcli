@@ -178,7 +178,7 @@ export default {
 			{{if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD) }}
 			{{$c.Name|lowerName}}: {{if (qDicPName $c.Con $tb) }}[]{{else}}this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"){{end}},
 			{{- end}}
-			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
+			{{- if or ($c.Con|DTIME) ($c.Con|DATE) ($c.Type|isTime) }}
 			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qfCon)}}"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
@@ -208,7 +208,7 @@ export default {
       this.queryData.pi = this.paging.pi
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
-			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
+			{{- if or ($c.Con|DTIME) ($c.Con|DATE) ($c.Type|isTime) }}
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qfCon)}}")
 			{{- end -}}
       {{- end}}
