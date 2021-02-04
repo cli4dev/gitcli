@@ -67,7 +67,7 @@ Enum.prototype.get = function (type, pid, group) {
   if (!type) return [];
 
   var result = getEnumList(type, pid, group) //根据存储查询
-  if (result.length == 0){
+  if (needCallback(result)){
     result = getEnumListByCallback(type, pid, group)//根据回调获取
   }
   return result
@@ -126,12 +126,24 @@ function getEnumListByCallback(type, pid, group){
 //根据type从window._EnumList_中获取相应的数据
 function getEnumList(type, pid, group){
   var list = []
+  var location = window.location.pathname
   var result = window._EnumList_[type] || []
   result.forEach((item)=>{
-    if ((!item.group || item.group == group) && (!pid ||item.pid == pid)) {
+    if ((!item.group || item.group == group) && (!pid ||item.pid == pid) && (!item.location || item.location == location || item.location.indexOf(location) > -1)) {
       list.push(item)
     }
   }) 
   return list
+}
+
+//检查是否需要执行回调
+function needCallback(list){
+  if(!list || list.length == 0){
+     return true
+  }
+  if (list.length == 1){
+      return list[0].value == "*" || list[0].value == "0"
+  }
+  return false
 }
 `

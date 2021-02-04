@@ -194,7 +194,7 @@ export default {
 			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qeCon)}}")
 			{{- end -}}
       {{- end}}
-      let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.queryData)
+      let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.$utility.delEmptyProperty(this.queryData))
 			this.dataList.items = res.items
 			this.dataList.count = res.count
     },
