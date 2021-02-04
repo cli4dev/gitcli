@@ -24,7 +24,14 @@ const TmplList = `
 				</el-form-item>
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
-					<el-select size="medium" v-model="queryData.{{$c.Name}}" clearable filterable class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
+					<el-select 
+					size="medium" 
+					v-model="queryData.{{$c.Name}}" 
+					{{if (qDicCName $c.Name $tb) }}@change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})"{{end}}
+					clearable 
+					filterable 
+					class="input-cos" 
+					placeholder="请选择{{$c.Desc|shortName}}">
 						<el-option value="" label="全部"></el-option>
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 						</el-select>
@@ -167,7 +174,7 @@ export default {
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}: {{if (qDicPName $c.Con $tb) }}[]{{else}}this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"){{end}},
 			{{- end}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
 			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qeCon)}}"),{{end}}
@@ -185,6 +192,14 @@ export default {
     init(){
       this.query()
 		},
+		{{- range $i,$c:=$rows|list -}}
+		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (qDicPName $c.Con $tb)  }}
+		set{{$c.Name|upperName}}(pid){
+			this.{{$c.Name|lowerName}}=[];
+			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}",pid)
+		},
+		{{- end}}
+		{{- end }}
     /**查询数据并赋值*/
     query(){
       this.queryData.pi = this.paging.pi

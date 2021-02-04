@@ -49,17 +49,16 @@ func getfuncs(tp string) map[string]interface{} {
 
 		"add1": add(1), //加1
 
-		"ismysql":     stringsEqual("mysql"),
-		"isoracle":    stringsEqual("oracle"),
-		"SL":          getKWS("sl"),    //表单下拉框
-		"SLM":         getKWS("slm"),   //表单下拉框
-		"CB":          getKWS("cb"),    //表单复选框
-		"RD":          getKWS("rd"),    //表单单选框
-		"TA":          getKWS("ta"),    //表单文本域
-		"DTIME":       getKWS("dtime"), //表单日期时间选择器
-		"DATE":        getKWS("date"),  //表单日期选择器
-		"CC":          getKWS("cc"),    //表单颜色样式
-		"hasCascader": hasKW("#"),      //数据表是否包含该字段
+		"ismysql":  stringsEqual("mysql"),
+		"isoracle": stringsEqual("oracle"),
+		"SL":       getKWS("sl"),    //表单下拉框
+		"SLM":      getKWS("slm"),   //表单下拉框
+		"CB":       getKWS("cb"),    //表单复选框
+		"RD":       getKWS("rd"),    //表单单选框
+		"TA":       getKWS("ta"),    //表单文本域
+		"DTIME":    getKWS("dtime"), //表单日期时间选择器
+		"DATE":     getKWS("date"),  //表单日期选择器
+		"CC":       getKWS("cc"),    //表单颜色样式
 
 		"query":         getRows("q"),               //查询字段
 		"list":          getRows("l"),               //列表展示字段
@@ -81,6 +80,8 @@ func getfuncs(tp string) map[string]interface{} {
 		"dateType":      getDateType,
 		"dateFormat":    getDateFormat,
 		"dateFormatDef": getDateFormatDef,
+		"qDicCName":     getDicChildrenName("q"),
+		"qDicPName":     getDicParentName("q"),
 
 		"rpath":        getRouterPath,         //获取路由地址
 		"fpath":        getFilePath,           //获取文件地址
@@ -89,7 +90,6 @@ func getfuncs(tp string) map[string]interface{} {
 		"importPath":   getImportPath,
 		"fileBasePath": filepath.Base,
 		"hasPrefix":    strings.HasPrefix,
-		"decodeEmpty":  decodeEmptyString, //字符串为空时，返回另外一个值
 
 		"var":       getVar,
 		"vars":      joinVars,
@@ -551,7 +551,7 @@ func getLastStringByIndex(s []string) string {
 func getDicType(keys ...string) func(con string, subcon string, tb *Table) string {
 	return func(con string, subcon string, tb *Table) string {
 		tp := subcon
-		if tp == "" {
+		if tp == "" || strings.HasPrefix(subcon, "#") {
 			tp = getBracketContent(keys...)(con)
 			if tp == "" {
 				return ""
@@ -625,8 +625,44 @@ func getDateType(con, subCon string) string {
 	return "date"
 }
 
-func decodeEmptyString(def, new string) string {
-	return types.DecodeString(def, "", new)
+func getDicChildrenName(tp string) func(name string, t *Table) string {
+	return func(name string, t *Table) string {
+		kw := fmt.Sprintf("#%s", name)
+		for _, v := range t.Rows {
+			subCon := getSubConContent(tp, "e")(v.Con) //该字段枚举子约束
+			if kw == subCon {
+				return v.Name
+			}
+			con := getBracketContent("sl", "rd", "cb")(v.Con)
+			if strings.Contains(con, kw) {
+				return v.Name
+			}
+		}
+		return ""
+	}
+}
+
+func getDicParentName(tp string) func(con string, t *Table) string {
+	return func(con string, t *Table) string {
+		subCon := getSubConContent(tp, "e")(con) //该字段枚举子约束
+		if !strings.HasPrefix(subCon, "#") {     //该字段枚举子约束没有联动，查找组件约束的联动
+			c := getBracketContent("sl", "rd", "cb")(con)
+			if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
+				return ""
+			}
+			for _, v := range strings.Split(c, ",") {
+				if strings.HasPrefix(v, "#") {
+					subCon = v
+					break
+				}
+			}
+		}
+		if subCon == "" {
+			return ""
+		}
+		//取父级联动字段名
+		return strings.TrimPrefix(subCon, "#")
+	}
 }
 
 func getSubConContent(tp, kw string) func(con string) string {
