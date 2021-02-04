@@ -76,7 +76,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"ceCon":         getSubConContent("c", "e"), //添加字段的格式枚举子约束c(e:xx)
 		"firstStr":      getStringByIndex(0),        //获取约束的内容
 		"lastStr":       getLastStringByIndex,
-		"dicType":       getDicType("sl", "cb", "rd"),
+		"dicType":       getDicType("sl", "cb", "rd", "slm"),
 		"dateType":      getDateType,
 		"dateFormat":    getDateFormat,
 		"dateFormatDef": getDateFormatDef,
