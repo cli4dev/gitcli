@@ -38,9 +38,9 @@ const TmplList = `
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 					</el-select>
 				</el-form-item>
-				{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
+				{{- else if or ($c.Con|DTIME) ($c.Con|DATE) ($c.Type|isTime) }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
-						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qeCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qeCon)}}"  placeholder="选择日期"></el-date-picker>
+						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qfCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qfCon)}}"  placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
@@ -179,7 +179,7 @@ export default {
 			{{$c.Name|lowerName}}: {{if (qDicPName $c.Con $tb) }}[]{{else}}this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"){{end}},
 			{{- end}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
-			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qeCon)}}"),{{end}}
+			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qfCon)}}"),{{end}}
       {{- end}}
 			dataList: {count: 0,items: []}, //表单数据对象
 		}
@@ -209,7 +209,7 @@ export default {
 			this.queryData.ps = this.paging.ps
 			{{- range $i,$c:=$rows|query -}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) }}
-			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qeCon)}}")
+			this.queryData.{{$c.Name}} = this.$utility.dateFormat(this.{{$c.Name|lowerName}},"{{dateFormat $c.Con ($c.Con|qfCon)}}")
 			{{- end -}}
       {{- end}}
       let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.$utility.delEmptyProperty(this.queryData))
