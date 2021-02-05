@@ -19,16 +19,7 @@ const TmplList = `
 				{{- else if $c.Con|RD}}
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
-					<el-select 
-					size="medium" 
-					v-model="queryData.{{$c.Name}}" 
-					{{- if (qDicCName $c.Name $tb) }}
-					@change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})"
-					{{- end}}
-					clearable 
-					filterable 
-					class="input-cos" 
-					placeholder="请选择{{$c.Desc|shortName}}">
+					<el-select size="medium" v-model="queryData.{{$c.Name}}" {{- if (qDicCName $c.Name $tb) }} @change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})" {{- end}} clearable filterable class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
 						<el-option value="" label="全部"></el-option>
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 					</el-select>
@@ -66,7 +57,7 @@ const TmplList = `
 
     	<!-- list start-->
 		<el-scrollbar style="height:100%">
-			<el-table :data="dataList.items" border style="width: 100%">
+			<el-table :data="dataList.items" stripe style="width: 100%">
 				{{- range $i,$c:=$rows|list}}
 				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
 				{{- if or ($c.Con|SL) ($c.Con|SLM)  ($c.Con|CB) ($c.Con|RD)}}
@@ -100,16 +91,16 @@ const TmplList = `
 				{{end}}
 				</el-table-column>
 				{{- end}}
-				<el-table-column  label="操作">
+				<el-table-column  label="操作" align="center">
 					<template slot-scope="scope">
 						{{- if gt ($rows|update|len) 0}}
-						<el-button type="text" size="small" @click="showEdit(scope.row)">编辑</el-button>
+						<el-button type="text" size="mini" @click="showEdit(scope.row)">编辑</el-button>
 						{{- end}}
 						{{- if gt ($rows|detail|len) 0}}
-						<el-button type="text" size="small" @click="showDetail(scope.row)">详情</el-button>
+						<el-button type="text" size="mini" @click="showDetail(scope.row)">详情</el-button>
 						{{- end}}
 						{{- if gt ($rows|delete|len) 0}}
-						<el-button type="text" size="small" @click="del(scope.row)">删除</el-button>
+						<el-button type="text" size="mini" @click="del(scope.row)">删除</el-button>
 						{{- end}}
 					</template>
 				</el-table-column>

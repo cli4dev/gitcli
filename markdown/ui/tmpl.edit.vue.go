@@ -23,17 +23,7 @@ const TmplEditVue = `
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select 
-				style="width: 100%;"
-				v-model="editData.{{$c.Name}}" 
-				{{- if (uDicCName $c.Name $tb) }}
-				@change="set{{(uDicCName $c.Name $tb)|upperName}}(editData.{{$c.Name}})"
-				{{- end}}
-				clearable 
-				filterable 
-				class="input-cos" 
-				placeholder="---请选择---">
-					<el-option value="" label="全部"></el-option>
+				<el-select style="width: 100%;"	v-model="editData.{{$c.Name}}" {{- if (uDicCName $c.Name $tb) }} @change="set{{(uDicCName $c.Name $tb)|upperName}}(editData.{{$c.Name}})"	{{- end}}	clearable filterable class="input-cos" placeholder="---请选择---">
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 				</el-select>
 			</el-form-item>
