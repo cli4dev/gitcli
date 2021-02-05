@@ -13,7 +13,7 @@ const TmplList = `
 			{{- range $i,$c:=$rows|query}}
 				{{- if $c.Con|TA}}
 				<el-form-item>
-					<el-input type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="queryData.{{$c.Name}}">
+					<el-input size="medium" type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="queryData.{{$c.Name}}">
 					</el-input>
 				</el-form-item>
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
@@ -25,29 +25,29 @@ const TmplList = `
 				</el-form-item>
 				{{- else if or ($c.Con|DTIME) ($c.Con|DATE) ($c.Type|isTime) }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
-						<el-date-picker class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qfCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qfCon)}}"  placeholder="选择日期"></el-date-picker>
+						<el-date-picker size="medium" class="input-cos" v-model="{{$c.Name|lowerName}}" type="{{dateType $c.Con ($c.Con|qfCon)}}" value-format="{{dateFormat $c.Con ($c.Con|qfCon)}}"  placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				{{- else if $c.Con|CB }}
 				<el-form-item label="{{$c.Desc|shortName}}:">
-          <el-checkbox-group v-model="queryData.{{$c.Name}}">
+          <el-checkbox-group size="medium" v-model="queryData.{{$c.Name}}">
           	<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
 				{{- else}}
 				<el-form-item>
-					<el-input clearable v-model="queryData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
+					<el-input clearable size="medium" v-model="queryData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
 					</el-input>
 				</el-form-item>
 				{{- end}}
 			{{end}}
 				{{- if gt ($rows|query|len) 0}}
 				<el-form-item>
-					<el-button type="primary" @click="query" size="small">查询</el-button>
+					<el-button  type="primary" @click="query" size="medium">查询</el-button>
 				</el-form-item>
 				{{end}}
 				{{- if gt ($rows|create|len) 0}}
 				<el-form-item>
-					<el-button type="success" size="small" @click="showAdd">添加</el-button>
+					<el-button type="success" size="medium" @click="showAdd">添加</el-button>
 				</el-form-item>
 				{{end}}
 			</el-form>
@@ -185,7 +185,7 @@ export default {
 		{{- if gt $tb.ELTableIndex 0}}
 		indexMethod(index) {
 			return index * {{$tb.ELTableIndex}};
-		}
+		},
 		{{- end}}
 		{{- range $i,$c:=$rows|query -}}
 		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (qDicPName $c.Con $tb)  }}

@@ -12,41 +12,41 @@ const TmplCreateVue = `
     	{{- range $i,$c:=$rows|create }}
       {{if $c.Con|TA -}}
 			<el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
-				<el-input type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="addData.{{$c.Name}}">
+				<el-input size="medium" type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="addData.{{$c.Name}}">
         </el-input>
 			</el-form-item>
 			{{- else if $c.Con|RD }}
 			<el-form-item  label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-radio-group v-model="addData.{{$c.Name}}" style="margin-left:5px">
+				<el-radio-group size="medium" v-model="addData.{{$c.Name}}" style="margin-left:5px">
         	<el-radio v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :label="item.value">{{"{{item.name}}"}}</el-radio>
 				</el-radio-group>
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select style="width: 100%;"	v-model="addData.{{$c.Name}}" {{- if (cDicCName $c.Name $tb) }} @change="set{{(cDicCName $c.Name $tb)|upperName}}(addData.{{$c.Name}})" {{- end}}	clearable filterable class="input-cos" placeholder="---请选择---">
+				<el-select size="medium" style="width: 100%;"	v-model="addData.{{$c.Name}}" {{- if (cDicCName $c.Name $tb) }} @change="set{{(cDicCName $c.Name $tb)|upperName}}(addData.{{$c.Name}})" {{- end}}	clearable filterable class="input-cos" placeholder="---请选择---">
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 				</el-select>
 			</el-form-item>
 			{{- else if $c.Con|SLM }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select  placeholder="---请选择---" clearable filterable v-model="{{$c.Name|lowerName}}Array" multiple style="width: 100%;">
+				<el-select size="medium"  placeholder="---请选择---" clearable filterable v-model="{{$c.Name|lowerName}}Array" multiple style="width: 100%;">
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name" ></el-option>
 				</el-select>
 			</el-form-item>
 			{{- else if $c.Con|CB }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}"> 
-				<el-checkbox-group v-model="addData.{{$c.Name}}">
+				<el-checkbox-group size="medium" v-model="addData.{{$c.Name}}">
 					<el-checkbox v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-checkbox>
 				</el-checkbox-group>
 			</el-form-item>
 			{{- else if or ($c.Con|DTIME) ($c.Con|DATE) }}
 			<el-form-item prop="{{$c.Name}}" label="{{$c.Desc|shortName}}:">
-					<el-date-picker class="input-cos"  v-model="addData.{{$c.Name}}" type="{{dateType $c.Con ($c.Con|ceCon)}}" value-format="{{dateFormat $c.Con ($c.Con|ceCon)}}"  placeholder="选择日期"></el-date-picker>
+					<el-date-picker size="medium" class="input-cos"  v-model="addData.{{$c.Name}}" type="{{dateType $c.Con ($c.Con|ceCon)}}" value-format="{{dateFormat $c.Con ($c.Con|ceCon)}}"  placeholder="选择日期"></el-date-picker>
 			</el-form-item>
       {{- else -}}
       <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
-				<el-input {{if gt $c.Len 0}}maxlength="{{$c.Len}}"{{end}} 
-				{{if gt $c.DecimalLen 0}} oninput="if(isNaN(value)) { value = null } if(value.indexOf('.')>0){value=value.slice(0,value.indexOf('.')+{{$c.DecimalLen|add1}})}"{{end}}
+				<el-input size="medium" {{if gt $c.Len 0}}maxlength="{{$c.Len}}"{{end}} 
+				{{- if gt $c.DecimalLen 0}} oninput="if(isNaN(value)) { value = null } if(value.indexOf('.')>0){value=value.slice(0,value.indexOf('.')+{{$c.DecimalLen|add1}})}"{{end}}
 				 clearable v-model="addData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
 				</el-input>
       </el-form-item>
@@ -54,8 +54,8 @@ const TmplCreateVue = `
       {{end}}
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button size="small" @click="resetForm('addForm')">取 消</el-button>
-      <el-button size="small" type="success" @click="add('addForm')">确 定</el-button>
+      <el-button size="medium" @click="resetForm('addForm')">取 消</el-button>
+      <el-button size="medium" type="success" @click="add('addForm')">确 定</el-button>
     </div>
   </el-dialog>
   <!--Add Form -->
