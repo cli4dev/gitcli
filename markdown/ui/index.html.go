@@ -17,4 +17,12 @@ const publicIndexHTML = `
   </body>
 </html>
 
+<style>
+  .app-content-body{
+    adding-bottom: 0px !important;
+  }
+  .panel{
+    margin-bottom: 0px !important;
+  }
+</style>
 `

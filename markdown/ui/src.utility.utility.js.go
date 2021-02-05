@@ -211,4 +211,11 @@ Utility.prototype.dateFormat = function (date, fmt = "yyyy-MM-dd HH:mm") {
     }
     return fmt
 }
+
+// 设置管理系统table组件的高度
+Utility.prototype.getTableHeight = function (id){
+    var hd = document.body.clientHeight //网页可见区域高
+    var panelBody = document.getElementById(id)
+    return hd - panelBody.clientHeight - 196  //220
+}
 `

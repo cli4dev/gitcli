@@ -16,8 +16,6 @@ import (
 //MYSQL mysql数据库
 const MYSQL = "mysql"
 
-var fieldMap = map[string]bool{}
-
 type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
