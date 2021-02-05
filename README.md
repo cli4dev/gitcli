@@ -94,7 +94,8 @@ RD: "radio"       //表单单选框,默认使用dds字典表枚举,指定表名�
 TA: "textarea"    //表单文本域
 CC: "color-class"  //状态颜色过滤器
 DATE: "date-picker" //表单日期选择器
-DTIME: "datetime-picker" //表单日期时间选择器
+DTIME: "datetime-picker" //表单日期时间选择器,
+Fixed: 列表表单固定列
 
 //C,R,U,Q,L子约束
 f:前端过滤器，L(f:过滤器参数)

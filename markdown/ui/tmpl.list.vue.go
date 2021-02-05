@@ -16,7 +16,6 @@ const TmplList = `
 					<el-input type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="queryData.{{$c.Name}}">
 					</el-input>
 				</el-form-item>
-				{{- else if $c.Con|RD}}
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
 					<el-select size="medium" v-model="queryData.{{$c.Name}}" {{- if (qDicCName $c.Name $tb) }} @change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})" {{- end}} clearable filterable class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
@@ -59,7 +58,7 @@ const TmplList = `
 		<el-scrollbar style="height:100%">
 			<el-table :data="dataList.items" stripe style="width: 100%">
 				{{- range $i,$c:=$rows|list}}
-				<el-table-column prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
+				<el-table-column {{if $c.Con|FIXED}}fixed{{end}} prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
 				{{- if or ($c.Con|SL) ($c.Con|SLM)  ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
 						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|leCon) $tb) $c.Name)|lower}}")}}</span>
