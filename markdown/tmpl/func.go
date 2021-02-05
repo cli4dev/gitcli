@@ -60,6 +60,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"DATE":     getKWS("date"),  //表单日期选择器
 		"CC":       getKWS("cc"),    //表单颜色样式
 		"FIXED":    getKWS("fixed"), //表单固定列
+		"SORT":     getKWS("sort"),  //表单固定列
 
 		"query":         getRows("q"),               //查询字段
 		"list":          getRows("l"),               //列表展示字段

@@ -58,7 +58,7 @@ const TmplList = `
 		<el-scrollbar style="height:100%">
 			<el-table :data="dataList.items" stripe style="width: 100%">
 				{{- range $i,$c:=$rows|list}}
-				<el-table-column {{if $c.Con|FIXED}}fixed{{end}} prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
+				<el-table-column {{if $c.Con|FIXED}}fixed{{end}} {{if $c.Con|SORT}}sortable{{end}} prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
 				{{- if or ($c.Con|SL) ($c.Con|SLM)  ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
 						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|leCon) $tb) $c.Name)|lower}}")}}</span>
