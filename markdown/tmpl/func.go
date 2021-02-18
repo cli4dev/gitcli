@@ -23,11 +23,28 @@ type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
 	return map[string]interface{}{
-		"varName": getVarName, //获取pascal变量名称
-		"names":   getNames,   //去掉首位下划线，并根据下划线分隔字符串
-		"mod":     getMod,     //余数
-		"rmhd":    rmhd,       //去除首段名称
-		"isNull":  isNull(tp), //返回空语句
+		//参数计算函数
+		"add1": add(1), //加1
+		"mod":  getMod, //余数
+
+		//字符串处理函数
+		"varName":   getVarName,            //获取pascal变量名称
+		"names":     getNames,              //去掉首位下划线，并根据下划线分隔字符串
+		"rmhd":      rmhd,                  //去除首段名称
+		"isNull":    isNull(tp),            //返回空语句
+		"firstStr":  getStringByIndex(0),   //第一个字符
+		"lastStr":   getLastStringByIndex,  //最后一个字符
+		"l2d":       replaceUnderline("."), //下划线替换为.
+		"hasPrefix": strings.HasPrefix,     //字符串前缀判定
+		"lowerName": fGetLowerCase,         //小驼峰式命名
+		"upperName": fGetUpperCase,         //大驼峰式命名
+
+		//文件路径处理的函数
+		"rpath":        getRouterPath, //获取路由地址
+		"fpath":        getFilePath,   //获取文件地址
+		"parentPath":   getParentPath, //获取文件夹地址
+		"importPath":   getImportPath, //go项目引用路径
+		"fileBasePath": filepath.Base, //文件基础路径
 
 		//枚举处理函数
 		"fIsEnumTB": hasKW("di", "dn"), //数据表的字段是否包含字典数据配置
@@ -36,7 +53,7 @@ func getfuncs(tp string) map[string]interface{} {
 		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
 		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
 
-		//数据库和sql相关处理函数
+		//数据库，sql，后端modules相关处理函数
 		"shortName": shortName,               //获取特殊字段前的字符串
 		"dbType":    dbType(tp),              //转换为SQL的数据类型
 		"codeType":  codeType,                //转换为GO代码的数据类型
@@ -95,19 +112,6 @@ func getfuncs(tp string) map[string]interface{} {
 		"uDicCName":     getDicChildrenName("u", webEnumComponents...), //更新下拉字段级联枚举对应的引用枚举名称
 		"uDicPName":     getDicParentName("u", webEnumComponents...),   //更新下拉字段级联枚举对应的被引用枚举名称
 
-		//对特定参数进行处理的函数
-		"add1":         add(1),                //加1
-		"firstStr":     getStringByIndex(0),   //第一个字符
-		"lastStr":      getLastStringByIndex,  //最后一个字符
-		"rpath":        getRouterPath,         //获取路由地址
-		"fpath":        getFilePath,           //获取文件地址
-		"parentPath":   getParentPath,         //获取文件夹地址
-		"l2d":          replaceUnderline("."), //下划线替换为.
-		"importPath":   getImportPath,         //go项目引用路径
-		"fileBasePath": filepath.Base,         //文件基础路径
-		"hasPrefix":    strings.HasPrefix,     //字符串前缀判定
-		"lowerName":    fGetLowerCase,         //小驼峰式命名
-		"upperName":    fGetUpperCase,         //大驼峰式命名
 	}
 }
 
