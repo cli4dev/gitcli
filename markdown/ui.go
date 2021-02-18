@@ -72,20 +72,17 @@ func create(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
+
 		root := c.Args().Get(1)
 		confPath := tmpl.GetWebConfPath(root)
 
 		//读取文件
-		dbtp := tmpl.MYSQL
-		template := uiMap[tp]
-
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
-
-		//过滤数据表
 		allTables := tbs.Tbs
+		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 
 		for _, tb := range tbs.Tbs {
@@ -101,7 +98,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 			tb.FilterRowByKW(c.String("kw"))
 
 			//翻译文件
-			content, err := tmpl.Translate(template, dbtp, tb)
+			content, err := tmpl.Translate(uiMap[tp], tmpl.MYSQL, tb)
 			if err != nil {
 				return fmt.Errorf("翻译%s模板出错:%+v", tp, err)
 			}

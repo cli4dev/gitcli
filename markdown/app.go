@@ -21,18 +21,23 @@ func createApp(c *cli.Context) (err error) {
 
 func createServiceBlock() func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
+		//生成services
 		if err := createBlockCode("service")(c); err != nil {
 			return err
 		}
+		//生成sql
 		if err := createCurd()(c); err != nil {
 			return err
 		}
+		//生成modules/db/seq
 		if err := createModulesSeq()(c); err != nil {
 			return err
 		}
+		//生成field.go
 		if err := showField()(c); err != nil {
 			return err
 		}
+		//生成conf.go
 		return createGORouter()(c)
 	}
 }
@@ -125,7 +130,6 @@ func createEnum() func(c *cli.Context) (err error) {
 		projectPath := utils.GetProjectPath(root)
 
 		//读取文件
-		dbtp := tmpl.MYSQL
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
@@ -139,7 +143,7 @@ func createEnum() func(c *cli.Context) (err error) {
 		tbs.SetPkg(path)
 
 		//翻译文件
-		content, err := tmpl.Translate(app.TmplEnumsHandler, dbtp, tbs)
+		content, err := tmpl.Translate(app.TmplEnumsHandler, tmpl.MYSQL, tbs)
 		if err != nil {
 			return fmt.Errorf("翻译%s模板出错:%+v", "enums", err)
 		}

@@ -11,18 +11,23 @@ import (
 
 func createCurd() func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
+		//创建sql
 		if err = showSQL("curd")(c); err != nil {
 			return err
 		}
+		//创建数据库引擎引入文件
 		if err = createConstFile("driver")(c); err != nil {
 			return err
 		}
+		//创建序列sql
 		if err = createConstFile("seq")(c); err != nil {
 			return err
 		}
+		//创建序列表安装文件
 		if err = createConstFile("seq.install.go")(c); err != nil {
 			return err
 		}
+		///创建序列表安装sql
 		if err = createConstFile("seq.install.sql")(c); err != nil {
 			return err
 		}
@@ -50,19 +55,19 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 
+		//获取相关路径
+		root := c.Args().Get(1)
+		projectPath := utils.GetProjectPath(root)
+
 		//读取文件
-		dbtp := tmpl.MYSQL
-		tpName := sqlMap[sqlType]
 		tb, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return err
 		}
-		root := c.Args().Get(1)
-
-		projectPath := utils.GetProjectPath(root)
-
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
+
+		dbtp := tmpl.MYSQL
 
 		for _, tb := range tb.Tbs {
 			path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), tb.Name, fmt.Sprintf("%s.", dbtp))
@@ -72,7 +77,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 			tb.SetPkg(path)
 
 			//翻译文件
-			content, err := tmpl.Translate(tpName, dbtp, tb)
+			content, err := tmpl.Translate(sqlMap[sqlType], dbtp, tb)
 			if err != nil {
 				return err
 			}
@@ -100,20 +105,20 @@ func createConstFile(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 
-		//读取文件
-		dbtp := tmpl.MYSQL
-		tpName := sqlMap[tp]
+		//获取相关路径
 		root := c.Args().Get(1)
 		projectPath := utils.GetProjectPath(root)
-		basePath := utils.GetProjectBasePath(projectPath)
 
+		dbtp := tmpl.MYSQL
 		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), sqlPathMap[tp], dbtp)
+
+		//文件存在则不生成
 		if tmpl.PathExists(path) {
 			return
 		}
 		//翻译文件
-		content, err := tmpl.Translate(tpName, dbtp, map[string]interface{}{
-			"BasePath": basePath,
+		content, err := tmpl.Translate(sqlMap[tp], dbtp, map[string]interface{}{
+			"BasePath": utils.GetProjectBasePath(projectPath),
 		})
 		if err != nil {
 			return err

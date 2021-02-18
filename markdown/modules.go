@@ -19,17 +19,19 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
+
 		root := c.Args().Get(1)
 		projectPath := utils.GetProjectPath(root)
 		basePath := utils.GetProjectBasePath(projectPath)
-		//读取文件
-		template := modulesMap[tp]
+
+		//判断文件是否存在
 		path := path.Join(projectPath, "modules/db/mysql.seq.info.go")
 		if tmpl.PathExists(path) {
 			return
 		}
 
-		content, err := tmpl.Translate(template, "", map[string]interface{}{
+		//翻译
+		content, err := tmpl.Translate(modulesMap[tp], "", map[string]interface{}{
 			"BasePath":    basePath,
 			"ProjectPath": projectPath,
 		})
@@ -37,6 +39,7 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
+		//生成文件
 		fs, err := tmpl.Create(path, c.Bool("cover"))
 		if err != nil {
 			return err

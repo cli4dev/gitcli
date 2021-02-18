@@ -33,38 +33,34 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 
+		//获取配置
 		root := c.Args().Get(1)
-		projectPath := utils.GetProjectPath(root)
-
-		webPath, webSrcPath := utils.GetWebSrcPath(projectPath)
 		confPath := tmpl.GetWebConfPath(root)
 		if confPath == "" {
 			return
 		}
-
-		//读取文件
-		template := confMap[tp]
-
-		if webSrcPath == "" {
-			return
-		}
-		path := path.Join(webPath, confPathMap[tp])
-
 		confs, err := tmpl.GetSnippetConf(confPath)
 		if err != nil {
 			return err
 		}
-
-		content, err := tmpl.Translate(template, "", confs)
+		//翻译
+		content, err := tmpl.Translate(confMap[tp], "", confs)
 		if err != nil {
 			return err
 		}
 
+		//获取有关路径
+		projectPath := utils.GetProjectPath(root)
+		webPath, webSrcPath := utils.GetWebSrcPath(projectPath)
+		if webSrcPath == "" {
+			return
+		}
+		path := path.Join(webPath, confPathMap[tp])
+		//生成文件
 		fs, err := tmpl.Create(path, c.Bool("cover"))
 		if err != nil {
 			return err
 		}
-
 		logs.Log.Info("生成文件:", path)
 		fs.WriteString(content)
 		fs.Close()
@@ -77,26 +73,22 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-		root := c.Args().Get(1)
-		projectPath := utils.GetProjectPath(root)
 
-		gomod := utils.GetGOMOD()
+		//获取配置
+		root := c.Args().Get(1)
 		confPath := tmpl.GetGoConfPath(root)
 		if confPath == "" {
 			return
 		}
-
-		//读取文件
-		template := confMap[tp]
-		path := path.Join(projectPath, "init.go")
-
 		confs, err := tmpl.GetSnippetConf(confPath)
 		if err != nil {
 			return err
 		}
 
-		content, err := tmpl.Translate(template, "", map[string]interface{}{
-			"GOMOD":       gomod,
+		projectPath := utils.GetProjectPath(root)
+		//翻译内容
+		content, err := tmpl.Translate(confMap[tp], "", map[string]interface{}{
+			"GOMOD":       utils.GetGOMOD(),
 			"ProjectPath": projectPath,
 			"Confs":       confs,
 		})
@@ -104,11 +96,12 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 			return err
 		}
 
+		//生成文件
+		path := path.Join(projectPath, "init.go")
 		fs, err := tmpl.Create(path, c.Bool("cover"))
 		if err != nil {
 			return err
 		}
-
 		logs.Log.Info("生成文件:", path)
 		fs.WriteString(content)
 		fs.Close()
