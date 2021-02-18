@@ -62,7 +62,7 @@ const TmplList = `
 				<el-table-column {{if $c.Con|FIXED}}fixed{{end}} {{if $c.Con|SORT}}sortable{{end}} prop="{{$c.Name}}" label="{{$c.Desc|shortName}}" align="center">
 				{{- if or ($c.Con|SL) ($c.Con|SLM)  ($c.Con|CB) ($c.Con|RD)}}
 					<template slot-scope="scope">
-						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|leCon) $tb) $c.Name)|lower}}")}}</span>
+						<span {{if ($c.Con|CC)}}:class="scope.row.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{scope.row."}}{{$c.Name}} | fltrEnum("{{(or (dicName $c.Con ($c.Con|leCon) $tb) $c.Name)|lower}}")}}</span>
 					</template>
 				{{- else if and ($c.Type|isString) (gt $c.Len $len )}}
 					<template slot-scope="scope">
@@ -162,7 +162,7 @@ export default {
       queryData:{},               //查询数据对象 
 			{{- range $i,$c:=$rows|query -}}
 			{{if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}: {{if (qDicPName $c.Con $tb) }}[]{{else}}this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"){{end}},
+			{{$c.Name|lowerName}}: {{if (qDicPName $c.Con $tb) }}[]{{else}}this.$enum.get("{{(or (dicName $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}"){{end}},
 			{{- end}}
 			{{- if or ($c.Con|DTIME) ($c.Con|DATE) ($c.Type|isTime) }}
 			{{$c.Name|lowerName}}: this.$utility.dateFormat(new Date(),"{{dateFormatDef $c.Con ($c.Con|qfCon)}}"),{{end}}
@@ -192,7 +192,7 @@ export default {
 		set{{$c.Name|upperName}}(pid){
 			this.{{$c.Name|lowerName}}=[];
 			this.queryData.{{$c.Name}} = ""
-			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicType $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}",pid)
+			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicName $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}",pid)
 		},
 		{{- end}}
 		{{- end }}

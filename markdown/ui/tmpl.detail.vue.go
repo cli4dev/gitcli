@@ -22,7 +22,7 @@ const TmplDetail = `
                   </el-col>
             {{- if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|RD) ($c.Con|CB)}}
                   <el-col :span="6">
-                    <div {{if ($c.Con|CC)}}:class="info.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicType $c.Con ($c.Con|reCon) $tb) $c.Name)|lower}}") }}</div>
+                    <div {{if ($c.Con|CC)}}:class="info.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicName $c.Con ($c.Con|reCon) $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
             {{- else if and ($c.Type|isString) (gt $c.Len $len )}}
                   <el-col :span="6">

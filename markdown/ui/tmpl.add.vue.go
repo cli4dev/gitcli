@@ -69,9 +69,9 @@ export default {
 			dialogAddVisible: false,
 			{{- range $i,$c:=$rows|create -}}
 			{{if or ($c.Con|SL) ($c.Con|CB) ($c.Con|RD) }}
-			{{$c.Name|lowerName}}:{{if (cDicPName $c.Con $tb) }} []{{else}}this.$enum.get("{{(or (dicType $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"){{end}},
+			{{$c.Name|lowerName}}:{{if (cDicPName $c.Con $tb) }} []{{else}}this.$enum.get("{{(or (dicName $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"){{end}},
 			{{- else if $c.Con|SLM }}
-			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicType $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"),
+			{{$c.Name|lowerName}}: this.$enum.get("{{(or (dicName $c.Con ($c.Con|ceCon) $tb) $c.Name)|lower}}"),
 			{{$c.Name|lowerName}}Array: [],
       {{- end}}
 			{{- end}}
@@ -109,7 +109,7 @@ export default {
 		set{{$c.Name|upperName}}(pid){
 			this.{{$c.Name|lowerName}}=[];
 			this.addData.{{$c.Name}} = ""
-			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicType $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}",pid)
+			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicName $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}",pid)
 		},
 		{{- end}}
 		{{- end }}

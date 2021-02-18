@@ -16,13 +16,16 @@ import (
 //MYSQL mysql数据库
 const MYSQL = "mysql"
 
+//webEnumComponents 前端涉及枚举的组件类型名称
+var webEnumComponents = []string{"sl", "cb", "rd", "slm"}
+
 type callHanlder func(string) string
 
 func getfuncs(tp string) map[string]interface{} {
 	return map[string]interface{}{
 		"varName": getVarName, //获取pascal变量名称
-		"names":   getNames,
-		"mod":     getMod,
+		"names":   getNames,   //去掉首位下划线，并根据下划线分隔字符串
+		"mod":     getMod,     //余数
 		"rmhd":    rmhd,       //去除首段名称
 		"isNull":  isNull(tp), //返回空语句
 
@@ -33,79 +36,78 @@ func getfuncs(tp string) map[string]interface{} {
 		"fIsDN":     getKWS("dn"),      //字段是否为字典Name
 		"fIsDT":     getKWS("dt"),      //字段是否为字典Type
 
-		"shortName": shortName,       //获取特殊字段前的字符串
-		"dbType":    dbType(tp),      //转换为SQL的数据类型
-		"codeType":  codeType,        //转换为GO代码的数据类型
-		"defValue":  defValue(tp),    //返回SQL中的默认值
-		"seqTag":    getSEQTag(tp),   //获取SEQ的变量值
-		"seqValue":  getSEQValue(tp), //获取SEQ起始值
-		"pks":       getPKS,          //获取主键列表
-		"indexs":    getDBIndex(tp),  //获取表的索引串
-		"maxIndex":  getMaxIndex,     //最大索引值
-		"lower":     getLower,        //获取变量的最小写字符
-		"order":     getOrderBy,
+		//数据库和sql相关处理函数
+		"shortName": shortName,               //获取特殊字段前的字符串
+		"dbType":    dbType(tp),              //转换为SQL的数据类型
+		"codeType":  codeType,                //转换为GO代码的数据类型
+		"defValue":  defValue(tp),            //返回SQL中的默认值
+		"seqTag":    getSEQTag(tp),           //获取SEQ的变量值
+		"seqValue":  getSEQValue(tp),         //获取SEQ起始值
+		"pks":       getPKS,                  //获取主键列表
+		"indexs":    getDBIndex(tp),          //获取表的索引串
+		"maxIndex":  getMaxIndex,             //最大索引值
+		"lower":     getLower,                //获取变量的最小写字符
+		"order":     getOrderBy,              //order排序
+		"ismysql":   stringsEqual("mysql"),   //是否是mysql
+		"isoracle":  stringsEqual("oracle"),  //是否是oracle
+		"isTime":    isType("time.Time"),     //是否是time
+		"isDecimal": isType("types.Decimal"), //是否是decimal
+		"isInt64":   isType("int64"),         //是否是int64
+		"isInt":     isType("int"),           //是否是int
+		"isString":  isType("string"),        //是否是string
 
-		"add1": add(1), //加1
+		//前后端约束处理函数
+		"query":  getRows("q"),           //查询字段
+		"list":   getRows("l"),           //列表展示字段
+		"detail": getRows("r"),           //详情展示字段
+		"create": getRows("c"),           //创建字段
+		"delete": getRows("d"),           //删除时判定字段
+		"update": getRows("u"),           //更新字段
+		"delCon": getBracketContent("d"), //删除字段约束
 
-		"ismysql":  stringsEqual("mysql"),
-		"isoracle": stringsEqual("oracle"),
-		"SL":       getKWS("sl"),    //表单下拉框
-		"SLM":      getKWS("slm"),   //表单下拉框
-		"CB":       getKWS("cb"),    //表单复选框
-		"RD":       getKWS("rd"),    //表单单选框
-		"TA":       getKWS("ta"),    //表单文本域
-		"DTIME":    getKWS("dtime"), //表单日期时间选择器
-		"DATE":     getKWS("date"),  //表单日期选择器
-		"CC":       getKWS("cc"),    //表单颜色样式
-		"FIXED":    getKWS("fixed"), //表单固定列
-		"SORT":     getKWS("sort"),  //表单固定列
+		//前端约束处理函数
+		"SL":            getKWS("sl"),                                  //表单下拉框
+		"SLM":           getKWS("slm"),                                 //表单下拉框
+		"CB":            getKWS("cb"),                                  //表单复选框
+		"RD":            getKWS("rd"),                                  //表单单选框
+		"TA":            getKWS("ta"),                                  //表单文本域
+		"DTIME":         getKWS("dtime"),                               //表单日期时间选择器
+		"DATE":          getKWS("date"),                                //表单日期选择器
+		"dateType":      getDateType,                                   //日期字段对应的组件的日期类型
+		"dateFormat":    getDateFormat,                                 //日期字段对应的组件的日期格式
+		"dateFormatDef": getDateFormatDef,                              //日期字段对应的组件的日期默认值
+		"CC":            getKWS("cc"),                                  //表单颜色样式
+		"FIXED":         getKWS("fixed"),                               //表单固定列
+		"SORT":          getKWS("sort"),                                //表单固定列
+		"lfCon":         getSubConContent("l", "f"),                    //列表展示字段的过滤器子约束l(f:xx)
+		"leCon":         getSubConContent("l", "e"),                    //列表展示字段的枚举子约束l(e:xx)
+		"qeCon":         getSubConContent("q", "e"),                    //查询字段的枚举子约束q(e:xx)
+		"qfCon":         getSubConContent("q", "f"),                    //查询字段的枚举子约束q(f:xx)
+		"rfCon":         getSubConContent("r", "f"),                    //详情展示字段的过滤器子约束r(f:xx)
+		"reCon":         getSubConContent("r", "e"),                    //详情展示字段的枚举子约束r(e:xx)
+		"ueCon":         getSubConContent("u", "e"),                    //编辑字段的格式枚举子约束u(e:xx)
+		"ceCon":         getSubConContent("c", "e"),                    //添加字段的格式枚举子约束c(e:xx)
+		"dicName":       getDicName(webEnumComponents...),              //字段的对应的枚举名称
+		"qDicCName":     getDicChildrenName("q", webEnumComponents...), //查询下拉字段级联枚举对应的引用枚举名称
+		"qDicPName":     getDicParentName("q", webEnumComponents...),   //查询下拉字段级联枚举对应的被引用枚举名称
+		"cDicCName":     getDicChildrenName("c", webEnumComponents...), //创建下拉字段级联枚举对应的引用枚举名称
+		"cDicPName":     getDicParentName("c", webEnumComponents...),   //创建下拉字段级联枚举对应的被引用枚举名称
+		"uDicCName":     getDicChildrenName("u", webEnumComponents...), //更新下拉字段级联枚举对应的引用枚举名称
+		"uDicPName":     getDicParentName("u", webEnumComponents...),   //更新下拉字段级联枚举对应的被引用枚举名称
 
-		"query":         getRows("q"),               //查询字段
-		"list":          getRows("l"),               //列表展示字段
-		"detail":        getRows("r"),               //详情展示字段
-		"create":        getRows("c"),               //创建字段
-		"delete":        getRows("d"),               //删除时判定字段
-		"update":        getRows("u"),               //更新字段
-		"delCon":        getBracketContent("d"),     //删除字段约束
-		"lfCon":         getSubConContent("l", "f"), //列表展示字段的过滤器子约束l(f:xx)
-		"leCon":         getSubConContent("l", "e"), //列表展示字段的枚举子约束l(e:xx)
-		"qeCon":         getSubConContent("q", "e"), //查询字段的枚举子约束q(e:xx)
-		"qfCon":         getSubConContent("q", "f"), //查询字段的枚举子约束q(f:xx)
-		"rfCon":         getSubConContent("r", "f"), //详情展示字段的过滤器子约束r(f:xx)
-		"reCon":         getSubConContent("r", "e"), //详情展示字段的枚举子约束r(e:xx)
-		"ueCon":         getSubConContent("u", "e"), //编辑字段的格式枚举子约束u(e:xx)
-		"ceCon":         getSubConContent("c", "e"), //添加字段的格式枚举子约束c(e:xx)
-		"firstStr":      getStringByIndex(0),        //获取约束的内容
-		"lastStr":       getLastStringByIndex,
-		"dicType":       getDicType("sl", "cb", "rd", "slm"),
-		"dateType":      getDateType,
-		"dateFormat":    getDateFormat,
-		"dateFormatDef": getDateFormatDef,
-		"qDicCName":     getDicChildrenName("q"),
-		"qDicPName":     getDicParentName("q"),
-		"cDicCName":     getDicChildrenName("c"),
-		"cDicPName":     getDicParentName("c"),
-		"uDicCName":     getDicChildrenName("u"),
-		"uDicPName":     getDicParentName("u"),
-
+		//对特定参数进行处理的函数
+		"add1":         add(1),                //加1
+		"firstStr":     getStringByIndex(0),   //第一个字符
+		"lastStr":      getLastStringByIndex,  //最后一个字符
 		"rpath":        getRouterPath,         //获取路由地址
 		"fpath":        getFilePath,           //获取文件地址
 		"parentPath":   getParentPath,         //获取文件夹地址
 		"l2d":          replaceUnderline("."), //下划线替换为.
-		"importPath":   getImportPath,
-		"fileBasePath": filepath.Base,
-		"hasPrefix":    strings.HasPrefix,
-
-		"var":       getVar,
-		"vars":      joinVars,
-		"isTime":    isType("time.Time"),
-		"isDecimal": isType("types.Decimal"),
-		"isInt64":   isType("int64"),
-		"isInt":     isType("int"),
-		"isString":  isType("string"),
-
-		"lowerName": fGetLowerCase, //小驼峰式命名
-		"upperName": fGetUpperCase, //大驼峰式命名
+		"importPath":   getImportPath,         //go项目引用路径
+		"fileBasePath": filepath.Base,         //文件基础路径
+		"hasPrefix":    strings.HasPrefix,     //字符串前缀判定
+		"lowerName":    fGetLowerCase,         //小驼峰式命名
+		"upperName":    fGetUpperCase,         //大驼峰式命名
 	}
 }
 
@@ -475,31 +477,6 @@ func getKWCons(input string, keyword string) bool {
 	return false
 }
 
-func getJoin(text ...string) string {
-	return strings.Join(text, "")
-}
-
-var vars = map[string][]string{}
-
-func joinVars(name string) []string {
-	return vars[name]
-}
-
-func getVar(name string, value ...string) string {
-	if len(value) == 0 {
-		return strings.Join(vars[name], "")
-	}
-	if t, ok := vars[name]; ok {
-		old := make([]string, 0, len(t)+len(value))
-		old = append(old, t...)
-		old = append(old, value...)
-		vars[name] = old
-	} else {
-		vars[name] = value
-	}
-	return ""
-}
-
 func isType(t string) func(input string) bool {
 	return func(input string) bool {
 		tp := codeType(input)
@@ -553,7 +530,7 @@ func getLastStringByIndex(s []string) string {
 	return types.GetStringByIndex(s, len(s)-1)
 }
 
-func getDicType(keys ...string) func(con string, subcon string, tb *Table) string {
+func getDicName(keys ...string) func(con string, subcon string, tb *Table) string {
 	return func(con string, subcon string, tb *Table) string {
 		tp := subcon
 		if tp == "" || strings.HasPrefix(subcon, "#") {
@@ -628,7 +605,7 @@ func getDateType(con, subCon string) string {
 	return "date"
 }
 
-func getDicChildrenName(tp string) func(name string, t *Table) string {
+func getDicChildrenName(tp string, keys ...string) func(name string, t *Table) string {
 	return func(name string, t *Table) string {
 		kw := fmt.Sprintf("#%s", name)
 		for _, v := range t.Rows {
@@ -639,7 +616,7 @@ func getDicChildrenName(tp string) func(name string, t *Table) string {
 			if subCon != "" { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
 				return ""
 			}
-			con := getBracketContent("sl", "rd", "cb", "slm")(v.Con)
+			con := getBracketContent(keys...)(v.Con)
 			if strings.Contains(con, kw) {
 				return v.Name
 			}
@@ -648,7 +625,7 @@ func getDicChildrenName(tp string) func(name string, t *Table) string {
 	}
 }
 
-func getDicParentName(tp string) func(con string, t *Table) string {
+func getDicParentName(tp string, keys ...string) func(con string, t *Table) string {
 	return func(con string, t *Table) string {
 		subCon := getSubConContent(tp, "e")(con)             //该字段枚举子约束
 		if subCon != "" && !strings.HasPrefix(subCon, "#") { //字段标识配置配置了对应枚举,不再处理组件标识的级联枚举
@@ -661,9 +638,9 @@ func getDicParentName(tp string) func(con string, t *Table) string {
 		}
 
 		if parentName == "" {
-			//查找组件约束的联动
-			c := getBracketContent("sl", "rd", "slm", "cb")(con)
-			if strings.Index(c, "#") < 0 { //该字段组件约束没有联动
+			//查找组件约束的级联
+			c := getBracketContent(keys...)(con)
+			if strings.Index(c, "#") < 0 { //该字段组件约束没有级联
 				return ""
 			}
 			for _, v := range strings.Split(c, ",") {
