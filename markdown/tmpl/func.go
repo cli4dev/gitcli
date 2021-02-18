@@ -118,6 +118,7 @@ func getfuncs(tp string) map[string]interface{} {
 func getLower(s string) string {
 	return strings.ToLower(s)
 }
+
 func getMod(x int, y int) int {
 	return x % y
 }
@@ -165,6 +166,7 @@ func getVarName(input string) string {
 	}
 	return strings.Join(nitems, "")
 }
+
 func getNames(input string) []string {
 	items := strings.Split(strings.Trim(input, "_"), "_")
 	return items
@@ -271,9 +273,11 @@ func defValue(tp string) func(*Row) string {
 	}
 	return func(row *Row) string { return "" }
 }
+
 func getPKS(t *Table) []string {
 	return t.GetPKS()
 }
+
 func getSEQTag(tp string) func(r *Row) string {
 	switch tp {
 	case MYSQL:
@@ -286,6 +290,7 @@ func getSEQTag(tp string) func(r *Row) string {
 	}
 	return func(r *Row) string { return "" }
 }
+
 func getSEQValue(tp string) func(r *Table) string {
 	switch tp {
 	case MYSQL:
@@ -303,6 +308,7 @@ func getSEQValue(tp string) func(r *Table) string {
 	}
 	return func(r *Table) string { return "" }
 }
+
 func getMaxIndex(r interface{}) int {
 	v := reflect.ValueOf(r)
 	if v.Kind() == reflect.Ptr {
@@ -593,6 +599,7 @@ func getDateFormatDef(con, subCon string) string {
 	f = strings.ReplaceAll(f, "s", "0")
 	return f
 }
+
 func getDateType(con, subCon string) string {
 	if subCon == "" {
 		if getKWS("dtime")(con) {
@@ -716,6 +723,7 @@ func getBracketContent(keys ...string) func(con string) string {
 		return s
 	}
 }
+
 func hasKW(tp ...string) func(t *Table) bool {
 	return func(t *Table) bool {
 		ext := map[string]bool{}
