@@ -41,8 +41,7 @@ func Create(path string, append bool) (file *os.File, err error) {
 	dir := filepath.Dir(path)
 	if !PathExists(dir) {
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
-			err = fmt.Errorf("创建文件夹%s失败:%v", path, err)
-			return nil, err
+			return nil, fmt.Errorf("创建文件夹%s失败:%v", path, err)
 		}
 	}
 
@@ -50,8 +49,7 @@ func Create(path string, append bool) (file *os.File, err error) {
 	if !PathExists(path) {
 		srcf, err = os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, os.ModePerm)
 		if err != nil {
-			err = fmt.Errorf("无法打开文件:%s(err:%v)", path, err)
-			return nil, err
+			return nil, fmt.Errorf("无法打开文件:%s(err:%v)", path, err)
 		}
 		return srcf, nil
 
@@ -61,8 +59,7 @@ func Create(path string, append bool) (file *os.File, err error) {
 	}
 	srcf, err = os.OpenFile(path, os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	if err != nil {
-		err = fmt.Errorf("无法打开文件:%s(err:%v)", path, err)
-		return nil, err
+		return nil, fmt.Errorf("无法打开文件:%s(err:%v)", path, err)
 	}
 	return srcf, nil
 

@@ -16,10 +16,7 @@ func createApp(c *cli.Context) (err error) {
 	}
 	//创建项目
 	err = app.CreateApp(c.Args().First())
-	if err != nil {
-		return err
-	}
-	return nil
+	return
 }
 
 func createServiceBlock() func(c *cli.Context) (err error) {
@@ -49,6 +46,8 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		dbtp := tmpl.MYSQL
 		root := c.Args().Get(1)
 
+		confPath := tmpl.GetGoConfPath(root)
+		filedPath := tmpl.GetFieldConfPath(root)
 		projectPath, err := utils.GetProjectPath(root)
 		if err != nil {
 			return err
@@ -57,9 +56,6 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-
-		confPath := tmpl.GetGoConfPath(root)
-		filedPath := tmpl.GetFieldConfPath(root)
 
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
@@ -137,7 +133,6 @@ func createEnum() func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-
 		basePath, err := utils.GetProjectBasePath(projectPath)
 		if err != nil {
 			return err
@@ -147,7 +142,6 @@ func createEnum() func(c *cli.Context) (err error) {
 		tbs.FilterByKW(c.String("table"))
 
 		//根据关键字过滤
-
 		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "system.enums", "go")
 		tbs.SetPkg(path)
 

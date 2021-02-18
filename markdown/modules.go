@@ -29,10 +29,6 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-		confPath := tmpl.GetGoConfPath(root)
-		if confPath == "" {
-			return
-		}
 		//读取文件
 		template := modulesMap[tp]
 		path := path.Join(projectPath, "modules/db/mysql.seq.info.go")
@@ -63,8 +59,3 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 var modulesMap = map[string]string{
 	"seq": tmpl.ModulesDBSeqTmpl,
 }
-
-// var confPathMap = map[string]string{
-// 	"vue.router": "src/router/index.js",
-// 	"vue.menus":  "public/menus.json",
-// }

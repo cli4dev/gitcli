@@ -51,9 +51,6 @@ func Clear(dir string) error {
 	if err := run(dir, "npm", "install", "--no-optional", "--verbose"); err != nil {
 		return err
 	}
-	// if err := run(dir, "npm", "cache", "clear", "--force"); err != nil {
-	// 	return err
-	// }
 	return run(dir, "npm", "install")
 }
 

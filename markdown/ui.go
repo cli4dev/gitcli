@@ -24,15 +24,17 @@ func createUI(c *cli.Context) (err error) {
 
 //createUI 创建web项目页面
 func createPage(c *cli.Context) (err error) {
+	//创建页面
 	for k := range uiMap {
 		if err := create(k)(c); err != nil {
 			return err
 		}
 	}
+	//创建路由
 	if err := createVueRouter()(c); err != nil {
 		return err
 	}
-
+	//创建菜单
 	return createVueMenus()(c)
 }
 
@@ -70,7 +72,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-	     root:= c.Args().Get(1)
+		root := c.Args().Get(1)
 		confPath := tmpl.GetWebConfPath(root)
 
 		//读取文件

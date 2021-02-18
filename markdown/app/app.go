@@ -12,8 +12,7 @@ import (
 var tmptls = map[string]string{
 	"main.go": tmplMainGo,
 	"conf.go": tmplConfGo,
-	//"app.go":  tmplAppGo,
-	"go.mod": tmplGoMod,
+	"go.mod":  tmplGoMod,
 }
 
 //CreateApp 创建web项目
@@ -38,9 +37,6 @@ func CreateApp(name string) error {
 			return fmt.Errorf("翻译%s模板出错:%+v", file, err)
 		}
 		fs, err := tmpl.Create(filepath.Join(projectPath, file), true)
-		if err != nil {
-			return err
-		}
 		if err != nil {
 			return err
 		}
