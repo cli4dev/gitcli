@@ -75,7 +75,6 @@ func GetGOMOD() (string, error) {
 //未使用gomod则判断path中是否存在$GOPATH，存在则返回$GOPATH下面的名字
 //默认返回空
 func GetProjectBasePath(projectPath string) (string, error) {
-	envs := []byte{}
 	envs, err := exec.Command("go", "env").Output()
 	if err != nil {
 		return "", fmt.Errorf("执行go env出错，%+v", err)

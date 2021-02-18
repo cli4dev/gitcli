@@ -39,7 +39,7 @@ func createConf(tp string) func(c *cli.Context) (err error) {
 		}
 
 		webPath, webSrcPath := utils.GetWebSrcPath(projectPath)
-		confPath := tmpl.GetVueConfPath(root)
+		confPath := tmpl.GetWebConfPath(root)
 		if confPath == "" {
 			return
 		}

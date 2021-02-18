@@ -10,10 +10,10 @@ import (
 
 //SnippetConf 用于vue的路由,hydra服务的注册,import的路径等代码片段生成
 type SnippetConf struct {
-	Name      string `json:"name"`
-	HasDetail bool   `json:"has_detail"`
-	BasePath  string `json:"base_path"`
-	Desc      string `json:"desc"`
+	Name      string `json:"name"`       //表名
+	HasDetail bool   `json:"has_detail"` //是否有详情页
+	BasePath  string `json:"base_path"`  //项目路径
+	Desc      string `json:"desc"`       //描述
 }
 
 //NewSnippetConf .
@@ -90,6 +90,7 @@ func NewFieldConf(t *Table) *FieldConf {
 	return &FieldConf{Fields: fields}
 }
 
+//GetFieldConf .
 func GetFieldConf(path string) (map[string]*FieldItem, error) {
 	conf := make(map[string]*FieldItem, 0)
 	err := readConf(path, &conf)
@@ -162,7 +163,7 @@ func GetFieldConfPath(root string) string {
 	return path.Join(projectPath, fmt.Sprintf(".gitcli/server_filed.json"))
 }
 
-func GetVueConfPath(root string) string {
+func GetWebConfPath(root string) string {
 	projectPath, err := utils.GetProjectPath(root)
 	if err != nil {
 		panic(err)

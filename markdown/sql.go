@@ -11,24 +11,19 @@ import (
 
 func createCurd() func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
-		err = showSQL("curd")(c)
-		if err != nil {
+		if err = showSQL("curd")(c); err != nil {
 			return err
 		}
-		err = createConstFile("driver")(c)
-		if err != nil {
+		if err = createConstFile("driver")(c); err != nil {
 			return err
 		}
-		err = createConstFile("seq")(c)
-		if err != nil {
+		if err = createConstFile("seq")(c); err != nil {
 			return err
 		}
-		err = createConstFile("seq.install.go")(c)
-		if err != nil {
+		if err = createConstFile("seq.install.go")(c); err != nil {
 			return err
 		}
-		err = createConstFile("seq.install.sql")(c)
-		if err != nil {
+		if err = createConstFile("seq.install.sql")(c); err != nil {
 			return err
 		}
 		return nil
@@ -38,6 +33,7 @@ func createCurd() func(c *cli.Context) (err error) {
 func showSelect() func(c *cli.Context) (err error) {
 	return showSQL("select")
 }
+
 func showUpdate() func(c *cli.Context) (err error) {
 	return showSQL("update")
 }

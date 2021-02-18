@@ -71,7 +71,7 @@ func create(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 	     root:= c.Args().Get(1)
-		confPath := tmpl.GetVueConfPath(root)
+		confPath := tmpl.GetWebConfPath(root)
 
 		//读取文件
 		dbtp := tmpl.MYSQL
