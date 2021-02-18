@@ -59,10 +59,7 @@ func showSQL(sqlType string) func(c *cli.Context) (err error) {
 		}
 		root := c.Args().Get(1)
 
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
+		projectPath := utils.GetProjectPath(root)
 
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
@@ -107,16 +104,8 @@ func createConstFile(tp string) func(c *cli.Context) (err error) {
 		dbtp := tmpl.MYSQL
 		tpName := sqlMap[tp]
 		root := c.Args().Get(1)
-
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
-
-		basePath, err := utils.GetProjectBasePath(projectPath)
-		if err != nil {
-			return err
-		}
+		projectPath := utils.GetProjectPath(root)
+		basePath := utils.GetProjectBasePath(projectPath)
 
 		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/sql", projectPath), sqlPathMap[tp], dbtp)
 		if tmpl.PathExists(path) {

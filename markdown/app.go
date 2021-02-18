@@ -42,21 +42,17 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-		//读取文件
+
 		dbtp := tmpl.MYSQL
+
+		//获取生成文件有关路径
 		root := c.Args().Get(1)
-
 		confPath := tmpl.GetGoConfPath(root)
-		filedPath := tmpl.GetFieldConfPath(root)
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
-		basePath, err := utils.GetProjectBasePath(projectPath)
-		if err != nil {
-			return err
-		}
+		fieldPath := tmpl.GetFieldConfPath(root)
+		projectPath := utils.GetProjectPath(root)
+		basePath := utils.GetProjectBasePath(projectPath)
 
+		//读取文件
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
@@ -74,7 +70,7 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 			if err != nil {
 				logs.Log.Error(err)
 			}
-			err = tmpl.NewFieldConf(tb).SaveConf(filedPath)
+			err = tmpl.NewFieldConf(tb).SaveConf(fieldPath)
 			if err != nil {
 				logs.Log.Error(err)
 			}
@@ -89,6 +85,8 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 			if err != nil {
 				return fmt.Errorf("翻译%s模板出错:%+v", tp, err)
 			}
+
+			//终端输出内容
 			if !c.Bool("w2f") {
 				logs.Log.Info(content)
 				return nil
@@ -102,7 +100,6 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 			logs.Log.Info("生成文件:", path)
 			fs.WriteString(content)
 			fs.Close()
-
 		}
 		return nil
 	}
@@ -122,26 +119,22 @@ func createEnum() func(c *cli.Context) (err error) {
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
+
+		//获取生成文件有关路径
+		root := c.Args().Get(1)
+		projectPath := utils.GetProjectPath(root)
+
 		//读取文件
 		dbtp := tmpl.MYSQL
 		tbs, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
-		root := c.Args().Get(1)
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
-		basePath, err := utils.GetProjectBasePath(projectPath)
-		if err != nil {
-			return err
-		}
 
 		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 
-		//根据关键字过滤
+		//设置包名
 		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "system.enums", "go")
 		tbs.SetPkg(path)
 
@@ -155,6 +148,8 @@ func createEnum() func(c *cli.Context) (err error) {
 			return nil
 		}
 
+		//保存配置内容
+		basePath := utils.GetProjectBasePath(projectPath)
 		confPath := tmpl.GetGoConfPath(root)
 		tb := &tmpl.Table{
 			Name:     "_system_enums",

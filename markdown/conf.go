@@ -28,15 +28,13 @@ func createGORouter() func(c *cli.Context) (err error) {
 
 func createConf(tp string) func(c *cli.Context) (err error) {
 	return func(c *cli.Context) (err error) {
+
 		if len(c.Args()) == 0 {
 			return fmt.Errorf("未指定markdown文件")
 		}
-		root := c.Args().Get(1)
 
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
+		root := c.Args().Get(1)
+		projectPath := utils.GetProjectPath(root)
 
 		webPath, webSrcPath := utils.GetWebSrcPath(projectPath)
 		confPath := tmpl.GetWebConfPath(root)
@@ -80,15 +78,9 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 		root := c.Args().Get(1)
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
+		projectPath := utils.GetProjectPath(root)
 
-		gomod, err := utils.GetGOMOD()
-		if err != nil {
-			return err
-		}
+		gomod := utils.GetGOMOD()
 		confPath := tmpl.GetGoConfPath(root)
 		if confPath == "" {
 			return

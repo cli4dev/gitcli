@@ -22,21 +22,21 @@ func GetGitcliHomePath() string {
 }
 
 //GetProjectPath 获取项目路径
-func GetProjectPath(root string) (string, error) {
+func GetProjectPath(root string) string {
 	npath := root
 	if !strings.HasPrefix(npath, "./") && !strings.HasPrefix(npath, "/") && !strings.HasPrefix(npath, "../") {
 		srcPath, err := os.Getwd()
 		if err != nil {
-			return "", err
+			panic(err)
 		}
 		npath = filepath.Join(srcPath, npath)
 	}
 
 	aPath, err := filepath.Abs(npath)
 	if err != nil {
-		return "", fmt.Errorf("不是有效的项目路径:%s", root)
+		panic(fmt.Errorf("不是有效的项目路径:%s,%+v", root, err))
 	}
-	return aPath, nil
+	return aPath
 }
 
 //GetWebSrcPath 获取web项目src目录
@@ -56,28 +56,28 @@ func GetWebSrcPath(projectPath string) (string, string) {
 	return GetWebSrcPath(parentDir)
 }
 
-func GetGOMOD() (string, error) {
+func GetGOMOD() string {
 	envs, err := exec.Command("go", "env").Output()
 	if err != nil {
-		return "", fmt.Errorf("执行go env出错，%+v", err)
+		panic(fmt.Errorf("执行go env出错，%+v", err))
 	}
 	for _, v := range strings.Split(string(envs), "\n") {
 		if strings.HasPrefix(v, "GOMOD=") {
 			gomod := strings.TrimPrefix(v, `GOMOD="`)
 			gomod = strings.TrimRight(gomod, `"`)
-			return gomod, nil
+			return gomod
 		}
 	}
-	return "", nil
+	return ""
 }
 
 //GetProjectBasePath 如果开启了gomod 则返回module名
 //未使用gomod则判断path中是否存在$GOPATH，存在则返回$GOPATH下面的名字
 //默认返回空
-func GetProjectBasePath(projectPath string) (string, error) {
+func GetProjectBasePath(projectPath string) string {
 	envs, err := exec.Command("go", "env").Output()
 	if err != nil {
-		return "", fmt.Errorf("执行go env出错，%+v", err)
+		panic(fmt.Errorf("执行go env出错，%+v", err))
 	}
 	var basePath, gopath, gomod string
 	for _, v := range strings.Split(string(envs), "\n") {
@@ -94,7 +94,7 @@ func GetProjectBasePath(projectPath string) (string, error) {
 	if gomod != "" && strings.Contains(gomod, projectPath) {
 		f, err := os.Open(gomod)
 		if err != nil {
-			return "", fmt.Errorf("打开%s文件出错，%+v", gomod, err)
+			panic(fmt.Errorf("打开%s文件出错，%+v", gomod, err))
 		}
 		defer f.Close()
 
@@ -110,16 +110,16 @@ func GetProjectBasePath(projectPath string) (string, error) {
 				break
 			}
 		}
-		return basePath, nil
+		return basePath
 	}
 	if gopath != "" {
 		root := fmt.Sprintf("%s/src/", gopath)
 		if strings.HasPrefix(strings.ToLower(projectPath), strings.ToLower(root)) {
 			basePath = projectPath[len(root):]
 		}
-		return basePath, nil
+		return basePath
 	}
-	return "", nil
+	return ""
 }
 
 func pathExists(path string) bool {

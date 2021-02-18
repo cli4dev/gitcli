@@ -23,20 +23,20 @@ func showCode(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 
+		//获取生成文件有关路径
+		root := c.Args().Get(1)
+		projectPath := utils.GetProjectPath(root)
+
 		//读取文件
 		dbtp := tmpl.MYSQL
 		tb, err := tmpl.Markdown2DB(c.Args().First())
 		if err != nil {
 			return err
 		}
-		root := c.Args().Get(1)
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
 
 		//过滤数据表
 		tb.FilterByKW(c.String("table"))
+
 		script := entityMap[tp]
 		for _, tb := range tb.Tbs {
 			//翻译文件
@@ -72,12 +72,8 @@ func showFiledCode(tp string) func(c *cli.Context) (err error) {
 		}
 
 		//读取文件
-		dbtp := tmpl.MYSQL
 		root := c.Args().Get(1)
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
+		projectPath := utils.GetProjectPath(root)
 
 		filedPath := tmpl.GetFieldConfPath(root)
 		if filedPath == "" {
@@ -85,7 +81,6 @@ func showFiledCode(tp string) func(c *cli.Context) (err error) {
 		}
 		//过滤数据表
 		script := entityMap[tp]
-		//翻译文件
 
 		path := tmpl.GetFileName(fmt.Sprintf("%s/modules/const/%s", projectPath, tp), "field", "")
 
@@ -93,8 +88,8 @@ func showFiledCode(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return err
 		}
-
-		content, err := tmpl.Translate(script, dbtp, confs)
+		//翻译文件
+		content, err := tmpl.Translate(script, tmpl.MYSQL, confs)
 		if err != nil {
 			return err
 		}

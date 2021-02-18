@@ -20,15 +20,8 @@ func createModules(tp string) func(c *cli.Context) (err error) {
 			return fmt.Errorf("未指定markdown文件")
 		}
 		root := c.Args().Get(1)
-		projectPath, err := utils.GetProjectPath(root)
-		if err != nil {
-			return err
-		}
-
-		basePath, err := utils.GetProjectBasePath(projectPath)
-		if err != nil {
-			return err
-		}
+		projectPath := utils.GetProjectPath(root)
+		basePath := utils.GetProjectBasePath(projectPath)
 		//读取文件
 		template := modulesMap[tp]
 		path := path.Join(projectPath, "modules/db/mysql.seq.info.go")

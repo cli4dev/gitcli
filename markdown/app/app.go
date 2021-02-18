@@ -17,14 +17,8 @@ var tmptls = map[string]string{
 
 //CreateApp 创建web项目
 func CreateApp(name string) error {
-	projectPath, err := utils.GetProjectPath(name)
-	if err != nil {
-		return err
-	}
-	basePath, err := utils.GetProjectBasePath(projectPath)
-	if err != nil {
-		return err
-	}
+	projectPath := utils.GetProjectPath(name)
+	basePath := utils.GetProjectBasePath(projectPath)
 	for file, template := range tmptls {
 		//翻译文件
 		param := map[string]interface{}{

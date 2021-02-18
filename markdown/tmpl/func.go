@@ -724,7 +724,6 @@ func getBracketContent(keys ...string) func(con string) string {
 				continue
 			}
 			str := strs[0]
-			//str = strings.TrimPrefix(str, fmt.Sprintf("%s(", key))
 			str = str[strings.Index(str, "(")+1 : len(str)]
 			str = strings.TrimRight(str, ")")
 			s = fmt.Sprintf("%s,%s", s, str)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"path"
 
-	logs "github.com/lib4dev/cli/logger"
 	"github.com/micro-plat/gitcli/markdown/utils"
 )
 
@@ -154,10 +153,7 @@ func readConf(path string, conf interface{}) error {
 }
 
 func GetFieldConfPath(root string) string {
-	projectPath, err := utils.GetProjectPath(root)
-	if err != nil {
-		logs.Log.Warnf("获取配置的文件地址错误,", err)
-	}
+	projectPath := utils.GetProjectPath(root)
 	if projectPath == "" {
 		return ""
 	}
@@ -165,10 +161,7 @@ func GetFieldConfPath(root string) string {
 }
 
 func GetWebConfPath(root string) string {
-	projectPath, err := utils.GetProjectPath(root)
-	if err != nil {
-		logs.Log.Warnf("获取配置的文件地址错误,", err)
-	}
+	projectPath := utils.GetProjectPath(root)
 	webPath, _ := utils.GetWebSrcPath(projectPath)
 	if webPath == "" {
 		return ""
@@ -177,10 +170,7 @@ func GetWebConfPath(root string) string {
 }
 
 func GetGoConfPath(root string) string {
-	projectPath, err := utils.GetProjectPath(root)
-	if err != nil {
-		logs.Log.Warnf("获取配置的文件地址错误,", err)
-	}
+	projectPath := utils.GetProjectPath(root)
 	if projectPath == "" {
 		return ""
 	}
