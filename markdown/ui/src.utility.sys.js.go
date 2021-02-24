@@ -89,11 +89,11 @@ Sys.prototype.findMenuItem = function(menus, path){
     if (!cur){                
         path = path.substring(0, path.lastIndexOf('/'));
         if (!path){
-            return {}
+            return getMenuItem(menus, '/')
         }
         cur = getMenuItem(menus, path)
     }
-    return cur || getMenuItem(menus, '/')
+    return cur || this.findMenuItem(menus, "/")
 }
 
 //getMenus获取菜单数据
@@ -110,11 +110,15 @@ Sys.prototype.getMenus = function(url){
 
         //远程获取菜单
         let menuURL = url || "/sso/member/menus/get"
-        let res = that.$http.xget(menuURL)
-
-        //保存菜单信息
-        Object.assign(that.$env.conf, { menus: res || [] }) 
-        resolve(res);
+        that.$http.get(menuURL)
+        .then(res => {             
+            //保存菜单信息
+            Object.assign(that.$env.conf, { menus: res || [] }) 
+            resolve(res);
+        })
+        .catch(err => {
+            reject(err)
+        })
     });
 }
 
@@ -130,11 +134,15 @@ Sys.prototype.getSystemInfo = function(url ){
 
         //获取远程系统信息
         let systemInfoURL = url || "/sso/system/info/get"
-        let res = that.$http.xget(systemInfoURL)
-        
-        //保存系统信息
-        Object.assign(that.$env.conf, { system: res || {} }) 
-        resolve(res);
+        that.$http.get(systemInfoURL)
+        .then(res => {             
+            //保存系统信息
+            Object.assign(that.$env.conf, { system: res || {} }) 
+            resolve(res);
+        })
+        .catch(err => {
+            reject(err)
+        })
     });
 }
 
