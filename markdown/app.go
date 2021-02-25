@@ -62,7 +62,6 @@ func createBlockCode(tp string) func(c *cli.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
-
 		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 
@@ -134,7 +133,6 @@ func createEnum() func(c *cli.Context) (err error) {
 		if err != nil {
 			return fmt.Errorf("处理markdown文件表格出错:%+v", err)
 		}
-
 		//过滤数据表
 		tbs.FilterByKW(c.String("table"))
 

@@ -32,11 +32,9 @@ func createScheme(c *cli.Context) (err error) {
 
 	//是否删除表
 	tbs.DropTable(c.Bool("drop"))
-
 	//过滤数据表
 	tbs.FilterByKW(c.String("table"))
 	tbs.Exclude()
-
 	tbs.BuildSEQFile(c.Bool("seqfile"))
 
 	//循环创建表

@@ -9,6 +9,7 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -23,16 +24,15 @@ func GetGitcliHomePath() string {
 
 //GetProjectPath 获取项目路径
 func GetProjectPath(root string) string {
-	npath := root
-	if !strings.HasPrefix(npath, "./") && !strings.HasPrefix(npath, "/") && !strings.HasPrefix(npath, "../") {
+	if !strings.HasPrefix(root, "./") && !strings.HasPrefix(root, "/") && !strings.HasPrefix(root, "../") {
 		srcPath, err := os.Getwd()
 		if err != nil {
 			panic(err)
 		}
-		npath = filepath.Join(srcPath, npath)
+		root = filepath.Join(srcPath, root)
 	}
 
-	aPath, err := filepath.Abs(npath)
+	aPath, err := filepath.Abs(root)
 	if err != nil {
 		panic(fmt.Errorf("不是有效的项目路径:%s,%+v", root, err))
 	}
@@ -56,41 +56,33 @@ func GetWebSrcPath(projectPath string) (string, string) {
 	return GetWebSrcPath(parentDir)
 }
 
-func GetGOMOD() string {
+func getGOENV(key string) string {
 	envs, err := exec.Command("go", "env").Output()
 	if err != nil {
 		panic(fmt.Errorf("执行go env出错，%+v", err))
 	}
-	for _, v := range strings.Split(string(envs), "\n") {
-		if strings.HasPrefix(v, "GOMOD=") {
-			gomod := strings.TrimPrefix(v, `GOMOD="`)
-			gomod = strings.TrimRight(gomod, `"`)
-			return gomod
-		}
+	rex := regexp.MustCompile(fmt.Sprintf(`%s="(.*?)"`, key))
+	strs := rex.FindAllString(string(envs), -1)
+	if len(strs) < 1 {
+		return ""
 	}
-	return ""
+	env := strs[0]
+	env = strings.TrimPrefix(env, fmt.Sprintf(`%s="`, key))
+	env = strings.TrimRight(env, `"`)
+	return env
+}
+
+//GetGOMOD .
+func GetGOMOD() string {
+	return getGOENV("GOMOD")
 }
 
 //GetProjectBasePath 如果开启了gomod 则返回module名
 //未使用gomod则判断path中是否存在$GOPATH，存在则返回$GOPATH下面的名字
 //默认返回空
 func GetProjectBasePath(projectPath string) string {
-	envs, err := exec.Command("go", "env").Output()
-	if err != nil {
-		panic(fmt.Errorf("执行go env出错，%+v", err))
-	}
-	var basePath, gopath, gomod string
-	for _, v := range strings.Split(string(envs), "\n") {
-		if strings.HasPrefix(v, "GOPATH=") {
-			gopath = strings.TrimPrefix(v, `GOPATH="`)
-			gopath = strings.TrimRight(gopath, `"`)
-			continue
-		}
-		if strings.HasPrefix(v, "GOMOD=") {
-			gomod = strings.TrimPrefix(v, `GOMOD="`)
-			gomod = strings.TrimRight(gomod, `"`)
-		}
-	}
+	gomod := getGOENV("GOMOD")
+	basePath := ""
 	if gomod != "" && strings.Contains(gomod, projectPath) {
 		f, err := os.Open(gomod)
 		if err != nil {
@@ -112,6 +104,8 @@ func GetProjectBasePath(projectPath string) string {
 		}
 		return basePath
 	}
+
+	gopath := getGOENV("GOPATH")
 	if gopath != "" {
 		root := fmt.Sprintf("%s/src/", gopath)
 		if strings.HasPrefix(strings.ToLower(projectPath), strings.ToLower(root)) {

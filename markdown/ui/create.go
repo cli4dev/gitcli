@@ -26,8 +26,8 @@ var tmptls = map[string]string{
 	"public/index.html":          publicIndexHTML,
 	"package.json":               packageJSON,
 	"babel.config.js":            babelConfigJS,
-	".gitignore":                 gitignore,
 	"vue.config.js":              vueConfigJS,
+	".gitignore":                 gitignore,
 }
 
 var ssoTmptls = map[string]string{
@@ -59,19 +59,13 @@ func run(dir string, name string, args ...interface{}) error {
 	session.SetDir(filepath.Join("./", dir))
 	logs.Log.Info(append([]interface{}{name}, args...)...)
 	session.Command(name, args...)
-	if err := session.Run(); err != nil {
-		return err
-	}
-	return nil
+	return session.Run()
 }
 
 //createFiles 创建文件
 func createFiles(name string) error {
 	for path, content := range tmptls {
 		fs, err := tmpl.Create(filepath.Join(".", name, path), true)
-		if err != nil {
-			return err
-		}
 		if err != nil {
 			return err
 		}

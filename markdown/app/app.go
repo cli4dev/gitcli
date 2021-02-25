@@ -18,13 +18,12 @@ var tmptls = map[string]string{
 //CreateApp 创建web项目
 func CreateApp(name string) error {
 	projectPath := utils.GetProjectPath(name)
-	basePath := utils.GetProjectBasePath(projectPath)
 	for file, template := range tmptls {
 		//翻译文件
 		param := map[string]interface{}{
 			"projectPath": projectPath,
 			"router":      true,
-			"basePath":    basePath,
+			"basePath":    utils.GetProjectBasePath(projectPath),
 		}
 		content, err := tmpl.Translate(template, tmpl.MYSQL, param)
 		if err != nil {

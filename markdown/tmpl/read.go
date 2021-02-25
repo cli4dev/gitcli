@@ -21,7 +21,7 @@ type Tables struct {
 	SEQFile   bool
 }
 
-//FilterByKW	过滤行信息
+//FilterByKW 过滤行信息
 func (t *Tables) FilterByKW(kwc string) {
 	if kwc == "" {
 		return
