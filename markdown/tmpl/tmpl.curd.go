@@ -1,4 +1,4 @@
-package tmpl
+﻿package tmpl
 
 const MarkdownCurdSql = `
 {{- $length := 32 -}}
@@ -29,7 +29,7 @@ values
 (
 	{{if ne (.|seqValue) $empty}}{{range $i,$c:=$pks}}@{{$c}},{{end}}{{end}}
 	{{- range $i,$c:=$createrows}}
-	{{if or ($c.Type|codeType|isInt) ($c.Type|codeType|isInt64) ($c.Type|codeType|isDecimal) }}if(isnull(@{{$c.Name}})||@{{$c.Name}}='',0,@{{$c.Name}}),{{else -}}
+	{{if or ($c.Type|codeType|isInt) ($c.Type|codeType|isInt64) ($c.Type|codeType|isDecimal) }}if(isnull(@{{$c.Name}})||@{{$c.Name}}='',0,@{{$c.Name}}){{if lt $i ($createrows|maxIndex)}},{{end}}{{else -}}
 	@{{$c.Name}}{{if lt $i ($createrows|maxIndex)}},{{end}}{{end}}
 	{{- end}}
 ){###}
@@ -199,7 +199,7 @@ const Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}} = {###}
 update {{.Name}}{{.DBLink}} 
 set
 {{- range $i,$c:=$updaterows}}
-	{{$c.Name}} =	{{if or ($c.Type|codeType|isInt) ($c.Type|codeType|isInt64) ($c.Type|codeType|isDecimal) }}if(isnull(@{{$c.Name}})||@{{$c.Name}}='',0,@{{$c.Name}}),{{else -}}
+	{{$c.Name}} =	{{if or ($c.Type|codeType|isInt) ($c.Type|codeType|isInt64) ($c.Type|codeType|isDecimal) }}if(isnull(@{{$c.Name}})||@{{$c.Name}}='',0,@{{$c.Name}}){{if lt $i ($updaterows|maxIndex)}},{{end}}{{else -}}
 	@{{$c.Name}}{{if lt $i ($updaterows|maxIndex)}},{{end}}{{end}}
 {{- end}}
 where
