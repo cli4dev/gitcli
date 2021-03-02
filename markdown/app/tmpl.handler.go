@@ -8,12 +8,14 @@ const TmplServiceHandler = `
 package {{.PKG}}
 
 import (
+	{{- if or (gt ($rows|list|len) 0) (gt ($rows|create|len) 0) (gt ($rows|detail|len) 0) (gt ($rows|update|len) 0) (gt ($rows|delete|len) 0)}}
 	"net/http"
 	"github.com/micro-plat/hydra"
 	"github.com/micro-plat/lib4go/errs"
-	"github.com/micro-plat/lib4go/types"
 	"{{.BasePath}}/modules/const/sql"
 	"{{.BasePath}}/modules/const/field"
+	{{- end}}
+	{{if gt ($rows|list|len) 0}}"github.com/micro-plat/lib4go/types"{{end}}
 	{{if and (ne (.|seqValue) $empty) (gt (.Rows|create|len) 0)}}"{{.BasePath}}/modules/db"{{end}}
 )
 

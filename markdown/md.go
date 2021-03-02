@@ -24,6 +24,7 @@ func init() {
 						cli.StringFlag{Name: "table,t", Usage: `-表名称`},
 						cli.BoolFlag{Name: "w2f,f", Usage: `-生成到文件`},
 						cli.BoolFlag{Name: "cover,v", Usage: `-文件已存在时自动覆盖`},
+						cli.BoolFlag{Name: "dds", Usage: `-引用dds`},
 					},
 				},
 				{

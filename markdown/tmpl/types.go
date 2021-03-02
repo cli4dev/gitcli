@@ -18,6 +18,7 @@ var tp2mysql = map[string]string{
 	"^string$":                    "tinytext",
 	"^text$":                      "text",
 	"^longtext$":                  "longtext",
+	"^clob$":                      "longtext",
 }
 var def2mysql = []map[string]string{
 	{

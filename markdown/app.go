@@ -140,8 +140,13 @@ func createEnum() func(c *cli.Context) (err error) {
 		path := tmpl.GetFilePath(fmt.Sprintf("%s/services/system", projectPath), "system.enums", "go")
 		tbs.SetPkg(path)
 
+		tml := app.TmplEnumsHandler
+		if c.Bool("dds") {
+			tml = app.TmplEnumsHandlerDDS
+		}
+
 		//翻译文件
-		content, err := tmpl.Translate(app.TmplEnumsHandler, tmpl.MYSQL, tbs)
+		content, err := tmpl.Translate(tml, tmpl.MYSQL, tbs)
 		if err != nil {
 			return fmt.Errorf("翻译%s模板出错:%+v", "enums", err)
 		}

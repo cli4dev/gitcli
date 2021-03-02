@@ -113,13 +113,14 @@ func getGOENV(key string) string {
 	if err != nil {
 		panic(fmt.Errorf("执行go env出错，%+v", err))
 	}
-	rex := regexp.MustCompile(fmt.Sprintf(`%s="(.*?)"`, key))
+	rex := regexp.MustCompile(fmt.Sprintf(`%s=(.*)`, key))
 	strs := rex.FindAllString(string(envs), -1)
 	if len(strs) < 1 {
 		return ""
 	}
 	env := strs[0]
-	env = strings.TrimPrefix(env, fmt.Sprintf(`%s="`, key))
+	env = strings.TrimPrefix(env, fmt.Sprintf(`%s=`, key))
+	env = strings.TrimPrefix(env, `"`)
 	env = strings.TrimRight(env, `"`)
 	return env
 }
@@ -159,9 +160,9 @@ func GetProjectBasePath(projectPath string) string {
 
 	gopath := getGOENV("GOPATH")
 	if gopath != "" {
-		root := fmt.Sprintf("%s/src/", gopath)
+		root := filepath.Join(gopath, "src")
 		if strings.HasPrefix(strings.ToLower(projectPath), strings.ToLower(root)) {
-			basePath = projectPath[len(root):]
+			basePath = projectPath[len(root)+1:]
 		}
 		return basePath
 	}

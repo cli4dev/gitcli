@@ -11,7 +11,7 @@ const TmplCreateVue = `
     <el-form :model="addData" {{if gt ($rows|create|len) 5 -}}:inline="true"{{- end}} :rules="rules" ref="addForm" label-width="110px">
     	{{- range $i,$c:=$rows|create }}
       {{if $c.Con|TA -}}
-			<el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
+			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
 				<el-input size="medium" type="textarea" :rows="2" placeholder="请输入{{$c.Desc|shortName}}" v-model="addData.{{$c.Name}}">
         </el-input>
 			</el-form-item>
@@ -44,7 +44,7 @@ const TmplCreateVue = `
 					<el-date-picker size="medium" class="input-cos"  v-model="addData.{{$c.Name}}" type="{{dateType $c.Con ($c.Con|ceCon)}}" value-format="{{dateFormat $c.Con ($c.Con|ceCon)}}"  placeholder="选择日期"></el-date-picker>
 			</el-form-item>
       {{- else -}}
-      <el-form-item label="{{$c.Desc|shortName}}" prop="{{$c.Name}}">
+      <el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
 				<el-input size="medium" {{if gt $c.Len 0}}maxlength="{{$c.Len}}"{{end}} 
 				{{- if gt $c.DecimalLen 0}} oninput="if(isNaN(value)) { value = null } if(value.indexOf('.')>0){value=value.slice(0,value.indexOf('.')+{{$c.DecimalLen|add1}})}"{{end}}
 				 clearable v-model="addData.{{$c.Name}}" placeholder="请输入{{$c.Desc|shortName}}">
