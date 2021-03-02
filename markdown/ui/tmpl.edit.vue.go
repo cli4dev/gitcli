@@ -6,6 +6,7 @@ const TmplEditVue = `
 {{- $empty := "" -}}
 {{- $tb :=. -}}
 {{- $pks := .|pks -}}
+{{- $choose:= false -}}
 <template>
 	<el-dialog title="编辑{{.Desc}}"{{if gt ($rows|len) 5}} width="65%" {{- else}} width="25%" {{- end}} @closed="closed" :visible.sync="dialogFormVisible">
 		<el-form :model="editData" {{if gt ($rows|update|len) 5 -}}:inline="true"{{- end}} :rules="rules" ref="editForm" label-width="110px">
@@ -23,7 +24,9 @@ const TmplEditVue = `
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select size="medium" style="width: 100%;"	v-model="editData.{{$c.Name}}" {{- if (uDicCName $c.Name $tb) }} @change="set{{(uDicCName $c.Name $tb)|upperName}}(editData.{{$c.Name}})"	{{- end}}	clearable filterable class="input-cos" placeholder="---请选择---">
+				<el-select size="medium" style="width: 100%;"	v-model="editData.{{$c.Name}}" clearable filterable class="input-cos" placeholder="---请选择---"
+				 {{- if (qDicPName $c.Con $tb) }} @change="handleChooseTool()"{{$choose = true}}{{end}}
+				 {{- if (uDicCName $c.Name $tb) }} @change="set{{(uDicCName $c.Name $tb)|upperName}}(editData.{{$c.Name}})"	{{- end}}	>
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 				</el-select>
 			</el-form-item>
@@ -98,6 +101,10 @@ export default {
 		closed() {
 			this.refresh()
 		},
+		{{- if $choose}}
+		handleChooseTool() {
+      this.$forceUpdate()
+    },{{end}}
 		show() {
 			this.editData = this.$http.xget("/{{.Name|rmhd|rpath}}", { {{range $i,$c:=$pks}}{{$c}}: this.editData.{{$c}}{{end}} })
 			{{- range $i,$c:=$rows|update -}}
@@ -108,9 +115,8 @@ export default {
 			this.dialogFormVisible = true;
 		},
 		{{- range $i,$c:=$rows|update -}}
-		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (uDicPName $c.Con $tb)  }}
+		{{if (uDicPName $c.Con $tb)  }}
 		set{{$c.Name|upperName}}(pid){
-			this.{{$c.Name|lowerName}} = []
 			this.editData.{{$c.Name}} = ""
 			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicName $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}",pid)
 		},

@@ -5,6 +5,7 @@ const TmplCreateVue = `
 {{- $empty := "" -}}
 {{- $rows := .Rows -}}
 {{- $tb :=. -}}
+{{- $choose:= false -}}
 <template>
   <!-- Add Form -->
   <el-dialog title="添加{{.Desc}}" {{- if gt ($rows|create|len) 5}} width="65%" {{else}} width="25%" {{- end}} :visible.sync="dialogAddVisible">
@@ -23,7 +24,9 @@ const TmplCreateVue = `
 			</el-form-item>
 			{{- else if $c.Con|SL }}
 			<el-form-item label="{{$c.Desc|shortName}}:" prop="{{$c.Name}}">
-				<el-select size="medium" style="width: 100%;"	v-model="addData.{{$c.Name}}" {{- if (cDicCName $c.Name $tb) }} @change="set{{(cDicCName $c.Name $tb)|upperName}}(addData.{{$c.Name}})" {{- end}}	clearable filterable class="input-cos" placeholder="---请选择---">
+				<el-select size="medium" style="width: 100%;"	v-model="addData.{{$c.Name}}"	clearable filterable class="input-cos" placeholder="---请选择---"
+				{{- if (qDicPName $c.Con $tb) }} @change="handleChooseTool()"{{$choose = true}}{{end}}
+				{{- if (cDicCName $c.Name $tb) }} @change="set{{(cDicCName $c.Name $tb)|upperName}}(addData.{{$c.Name}})" {{- end}}>
 					<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 				</el-select>
 			</el-form-item>
@@ -104,10 +107,13 @@ export default {
 		show(){
 			this.dialogAddVisible = true;
 		},
+		{{- if $choose}}
+		handleChooseTool() {
+      this.$forceUpdate()
+    },{{end}}
 		{{- range $i,$c:=$rows|create -}}
-		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (cDicPName $c.Con $tb)  }}
+		{{if (cDicPName $c.Con $tb)  }}
 		set{{$c.Name|upperName}}(pid){
-			this.{{$c.Name|lowerName}}=[];
 			this.addData.{{$c.Name}} = ""
 			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicName $c.Con ($c.Con|ueCon) $tb) $c.Name)|lower}}",pid)
 		},

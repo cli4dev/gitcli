@@ -543,13 +543,13 @@ func getLastStringByIndex(s []string) string {
 func getDicName(keys ...string) func(con string, subcon string, tb *Table) string {
 	return func(con string, subcon string, tb *Table) string {
 		tp := subcon
-		if tp == "" || strings.HasPrefix(subcon, "#") {
-			tp = getBracketContent(keys...)(con)
-			if tp == "" {
+		if tp == "" || strings.HasPrefix(subcon, "#") { //子约束为空或指定级联
+			tp = getBracketContent(keys...)(con)        //获取组件的约束
+			if tp == "" || strings.HasPrefix(tp, "#") { //约束不是表名，不是指定枚举名称
 				return ""
 			}
 		}
-		for _, tb := range tb.AllTables {
+		for _, tb := range tb.AllTables { //查看是否匹配表名
 			if tb.Name == tp {
 				if hasKW("di", "dn")(tb) && hasKW("dt")(tb) {
 					for _, v := range tb.Rows {
@@ -691,6 +691,7 @@ func getSubConContent(tp, kw string) func(con string) string {
 			}
 			subConMap[v[0:sub]] = v[sub+1 : len(v)]
 		}
+		//		fmt.Println("con:", con, "map:", subConMap)
 		if v, ok := subConMap[kw]; ok {
 			return v
 		}

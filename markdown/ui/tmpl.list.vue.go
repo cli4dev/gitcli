@@ -5,6 +5,7 @@ const TmplList = `
 {{- $rows := .Rows -}}
 {{- $pks := .|pks -}}
 {{- $tb :=. -}}
+{{- $choose:= false -}}
 <template>
 	<div class="panel panel-default">
     	<!-- query start -->
@@ -18,7 +19,9 @@ const TmplList = `
 				</el-form-item>
 				{{- else if or ($c.Con|SL) ($c.Con|SLM) }}
 				<el-form-item>
-					<el-select size="medium" v-model="queryData.{{$c.Name}}" {{- if (qDicCName $c.Name $tb) }} @change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})" {{- end}} clearable filterable class="input-cos" placeholder="请选择{{$c.Desc|shortName}}">
+					<el-select size="medium" v-model="queryData.{{$c.Name}}"  clearable filterable class="input-cos" placeholder="请选择{{$c.Desc|shortName}}"
+					{{- if (qDicPName $c.Con $tb) }} @change="handleChooseTool()"{{$choose = true}}{{end}} 
+					{{- if (qDicCName $c.Name $tb) }} @change="set{{(qDicCName $c.Name $tb)|upperName}}(queryData.{{$c.Name}})" {{- end}}>
 						<el-option value="" label="全部"></el-option>
 						<el-option v-for="(item, index) in {{$c.Name|lowerName}}" :key="index" :value="item.value" :label="item.name"></el-option>
 					</el-select>
@@ -182,15 +185,18 @@ export default {
     init(){
       this.query()
 		},
+		{{- if $choose}}
+		handleChooseTool() {
+      this.$forceUpdate()
+    },{{end}}
 		{{- if gt $tb.ELTableIndex 0}}
 		indexMethod(index) {
 			return index * {{$tb.ELTableIndex}};
 		},
 		{{- end}}
 		{{- range $i,$c:=$rows|query -}}
-		{{if and (or ($c.Con|SL) ($c.Con|SLM) ($c.Con|CB) ($c.Con|RD)) (qDicPName $c.Con $tb)  }}
+		{{if (qDicPName $c.Con $tb)  }}
 		set{{$c.Name|upperName}}(pid){
-			this.{{$c.Name|lowerName}}=[];
 			this.queryData.{{$c.Name}} = ""
 			this.{{$c.Name|lowerName}}=this.$enum.get("{{(or (dicName $c.Con ($c.Con|qeCon) $tb) $c.Name)|lower}}",pid)
 		},
@@ -206,7 +212,7 @@ export default {
 			{{- end -}}
       {{- end}}
       let res = this.$http.xpost("/{{.Name|rmhd|rpath}}/query",this.$utility.delEmptyProperty(this.queryData))
-			this.dataList.items = res.items
+			this.dataList.items = res.items || []
 			this.dataList.count = res.count
     },
     /**改变页容量*/
