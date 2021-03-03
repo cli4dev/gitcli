@@ -102,7 +102,7 @@ func GetWebSrcPath(projectPath string) (string, string) {
 	parentDir := projectPath[0:n]
 	srcPath := path.Join(parentDir, "src")
 	appVuePath := path.Join(srcPath, "App.vue")
-	if pathExists(appVuePath) { //存在返回
+	if PathExists(appVuePath) { //存在返回
 		return parentDir, srcPath
 	}
 	return GetWebSrcPath(parentDir)
@@ -169,7 +169,7 @@ func GetProjectBasePath(projectPath string) string {
 	return ""
 }
 
-func pathExists(path string) bool {
+func PathExists(path string) bool {
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		return false

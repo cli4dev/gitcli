@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/micro-plat/gitcli/pulls"
 	_ "github.com/micro-plat/gitcli/resets"
+	_ "github.com/micro-plat/gitcli/server"
 	_ "github.com/micro-plat/gitcli/update"
 )
 
