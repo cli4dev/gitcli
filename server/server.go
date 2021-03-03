@@ -139,7 +139,6 @@ func (s *server) watchChildren(path string) error {
 			if cldWatcher.GetError() != nil {
 				return fmt.Errorf("监控项目文件发生错误：%+v", cldWatcher.GetError())
 			}
-			fmt.Println("-----------", path)
 			s.hasNotify = true
 		LOOP:
 			ch, err = s.fs.WatchChildren(path)
