@@ -93,7 +93,7 @@ Sys.prototype.findMenuItem = function(menus, path){
         }
         cur = getMenuItem(menus, path)
     }
-    return cur || this.findMenuItem(menus, "/")
+    return cur || getMenuItem(menus, "/")
 }
 
 //getMenus获取菜单数据

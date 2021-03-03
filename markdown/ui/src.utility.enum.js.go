@@ -56,7 +56,9 @@ Enum.prototype.set = function (data, type) {
       if (!window._EnumList_[tp]) {
         window._EnumList_[tp] = [];
       }
-      window._EnumList_[tp].push(item);
+      if(JSON.stringify(window._EnumList_[tp]).includes(JSON.stringify(item)) === false){
+        window._EnumList_[tp].push(item);
+      }
     }
   });
   return
