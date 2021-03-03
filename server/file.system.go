@@ -199,7 +199,7 @@ func (l *fs) WatchValue(path string) (data chan registry.ValueWatcher, err error
 		syncChan: make(chan fsnotify.Event, 100),
 	}
 	go func(rpath string, v *fsValueWatcher) {
-		dataFile := l.getDataPath(rpath)
+		dataFile := l.formatPath(rpath) // l.getDataPath(rpath)
 		if err := l.watcher.Add(dataFile); err != nil {
 			v.watcher <- &valueEntity{path: rpath, Err: err}
 		}

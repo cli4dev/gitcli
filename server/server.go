@@ -63,12 +63,14 @@ func (s *server) start() {
 	}
 	logs.Log.Info("进行应用程序安装")
 	if err := s.session.Command("go", "install").Run(); err != nil {
-		panic(err)
+		logs.Log.Error(err)
+		return
 	}
 	logs.Log.Info("应用程序启动")
 	s.running = true
 	if err := s.session.Command(s.serverName, "run").Run(); err != nil {
-		panic(err)
+		logs.Log.Error(err)
+		return
 	}
 }
 
@@ -126,4 +128,5 @@ func (s *server) watch() error {
 			}
 		}
 	}
+
 }
