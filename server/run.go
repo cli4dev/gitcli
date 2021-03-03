@@ -27,19 +27,10 @@ func runServer() func(c *cli.Context) (err error) {
 		}
 
 		//服务启动
-		errChan := make(chan error, 1)
-		go func() {
-			if err := s.resume(); err != nil {
-				errChan <- err
-			}
-		}()
+		go s.resume()
 
 		//文件监控
-		go func() {
-			if err := s.watch(); err != nil {
-				errChan <- err
-			}
-		}()
+		go s.watch()
 
 		//服务退出
 		var sigChan = make(chan os.Signal, 3)
@@ -47,7 +38,7 @@ func runServer() func(c *cli.Context) (err error) {
 		select {
 		case <-sigChan:
 			s.close()
-		case err = <-errChan:
+		case err = <-s.errChan:
 			s.close()
 			return err
 		}

@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
+	ifs "io/fs"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/codeskyblue/go-sh"
@@ -15,8 +17,11 @@ type server struct {
 	path       string
 	fs         *fs
 	running    bool
+	hasNotify  bool
 	notifyChan chan int
 	closeChan  chan int
+	ticker     *time.Ticker
+	errChan    chan error
 }
 
 func newServer(serverName, path string) (*server, error) {
@@ -33,11 +38,13 @@ func newServer(serverName, path string) (*server, error) {
 		session:    session,
 		notifyChan: make(chan int, 1),
 		closeChan:  make(chan int, 1),
+		errChan:    make(chan error, 1),
+		ticker:     time.NewTicker(time.Second),
 	}, nil
 }
 
 //Reset 拉取项目
-func (s *server) resume() error {
+func (s *server) resume() {
 
 	go s.start()
 
@@ -52,7 +59,7 @@ func (s *server) resume() error {
 			}()
 		case <-s.closeChan:
 			s.pause()
-			return nil
+			return
 		}
 	}
 }
@@ -61,7 +68,6 @@ func (s *server) start() {
 	if s.running {
 		return
 	}
-	logs.Log.Info("进行应用程序安装")
 	if err := s.session.Command("go", "install").Run(); err != nil {
 		logs.Log.Error(err)
 		return
@@ -84,15 +90,30 @@ func (s *server) close() {
 	s.running = false
 	close(s.closeChan)
 	close(s.notifyChan)
+	close(s.errChan)
 	time.Sleep(time.Second)
 }
 
-func (s *server) watch() error {
+func (s *server) watch() {
 
 	s.fs.Start()
 
+	filepath.WalkDir(s.path, func(path string, d ifs.DirEntry, err error) error {
+		if d.IsDir() { //@todo 排除不监控的文件
+			go func() {
+				if err := s.watchChildren(path); err != nil {
+					s.errChan <- err
+				}
+			}()
+		}
+		return nil
+	})
+
+}
+
+func (s *server) watchChildren(path string) error {
 	//监控子节点变化
-	ch, err := s.fs.WatchChildren(s.path)
+	ch, err := s.fs.WatchChildren(path)
 	if err != nil {
 		s.fs.Close()
 		return err
@@ -105,19 +126,23 @@ func (s *server) watch() error {
 			if !s.running {
 				return fmt.Errorf("超时未获取到文件监控")
 			}
-			//logs.Log.Info("项目未发生变化")
+		case <-s.ticker.C:
+			if s.hasNotify {
+				logs.Log.Info("项目发生变化，应用程序重启")
+				s.notifyChan <- 1
+			}
+			s.hasNotify = false
 		case <-s.closeChan:
 			s.fs.Close()
-			logs.Log.Info("关闭文件监控")
 			return nil
 		case cldWatcher := <-ch:
 			if cldWatcher.GetError() != nil {
 				return fmt.Errorf("监控项目文件发生错误：%+v", cldWatcher.GetError())
 			}
-			logs.Log.Info("项目发生变化，应用程序重启")
-			s.notifyChan <- 1
+			fmt.Println("-----------", path)
+			s.hasNotify = true
 		LOOP:
-			ch, err = s.fs.WatchChildren(s.path)
+			ch, err = s.fs.WatchChildren(path)
 			if err != nil {
 				if !s.running {
 					return fmt.Errorf("应用程序未启动，未获取到文件监控")
@@ -128,5 +153,4 @@ func (s *server) watch() error {
 			}
 		}
 	}
-
 }
