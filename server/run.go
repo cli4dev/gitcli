@@ -2,10 +2,7 @@ package server
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 
 	"github.com/micro-plat/gitcli/markdown/utils"
 	"github.com/urfave/cli"
@@ -29,17 +26,9 @@ func runServer() func(c *cli.Context) (err error) {
 		//服务启动
 		go s.resume()
 
-		//服务退出
-		var sigChan = make(chan os.Signal, 3)
-		signal.Notify(sigChan, syscall.SIGTERM, os.Interrupt)
-		select {
-		case <-sigChan:
-			s.close()
-		case err = <-s.errChan:
-			s.close()
-			return err
-		}
+		//服务关闭
+		err = s.close()
 
-		return nil
+		return
 	}
 }
