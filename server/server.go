@@ -46,17 +46,16 @@ func newServer(serverName, path string) (*server, error) {
 //Reset 拉取项目
 func (s *server) resume() {
 
+	s.fs.Start()
 	go s.start()
+	go s.watch()
 
 	for {
 		select {
 		case <-s.notifyChan:
-			go func() {
-				if s.running {
-					s.pause()
-				}
-				s.start()
-			}()
+			s.pause()
+			go s.start()
+			go s.watch()
 		case <-s.closeChan:
 			s.pause()
 			return
@@ -68,12 +67,12 @@ func (s *server) start() {
 	if s.running {
 		return
 	}
+	s.running = true
 	if err := s.session.Command("go", "install").Run(); err != nil {
 		logs.Log.Error(err)
 		return
 	}
 	logs.Log.Info("应用程序启动")
-	s.running = true
 	if err := s.session.Command(s.serverName, "run").Run(); err != nil {
 		logs.Log.Error(err)
 		return
@@ -81,9 +80,11 @@ func (s *server) start() {
 }
 
 func (s *server) pause() {
-	logs.Log.Info("关闭正在运行的应用程序")
-	s.running = false
-	s.session.Kill(os.Interrupt)
+	if s.running {
+		logs.Log.Info("关闭正在运行的应用程序")
+		s.running = false
+		s.session.Kill(os.Interrupt)
+	}
 }
 
 func (s *server) close() {
@@ -95,9 +96,6 @@ func (s *server) close() {
 }
 
 func (s *server) watch() {
-
-	s.fs.Start()
-
 	filepath.WalkDir(s.path, func(path string, d ifs.DirEntry, err error) error {
 		if d.IsDir() { //@todo 排除不监控的文件
 			go func() {
@@ -127,11 +125,13 @@ func (s *server) watchChildren(path string) error {
 				return fmt.Errorf("超时未获取到文件监控")
 			}
 		case <-s.ticker.C:
-			if s.hasNotify {
-				logs.Log.Info("项目发生变化，应用程序重启")
-				s.notifyChan <- 1
+			if !s.hasNotify {
+				break
 			}
+			logs.Log.Info("项目发生变化，应用程序重启")
+			s.notifyChan <- 1
 			s.hasNotify = false
+			return nil
 		case <-s.closeChan:
 			s.fs.Close()
 			return nil

@@ -29,9 +29,6 @@ func runServer() func(c *cli.Context) (err error) {
 		//服务启动
 		go s.resume()
 
-		//文件监控
-		go s.watch()
-
 		//服务退出
 		var sigChan = make(chan os.Signal, 3)
 		signal.Notify(sigChan, syscall.SIGTERM, os.Interrupt)
