@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -55,7 +56,6 @@ func (s *server) resume() {
 		select {
 		case <-s.notifyChan:
 			s.pause()
-			logs.Log.Info("----------------------项目发生变化，应用程序重启----------------------")
 			go s.start()
 		case <-s.closeChan:
 			s.pause()
@@ -110,9 +110,20 @@ func (s *server) close() (err error) {
 	return err
 }
 
+var defExcludePath = []string{"vendor", "node_modules", ".gitignore", ".gitcli"}
+
+func (s *server) isExclude(path string) bool {
+	for _, v := range defExcludePath {
+		if strings.Contains(path, v) {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *server) watch() {
 	filepath.WalkDir(s.path, func(path string, d ifs.DirEntry, err error) error {
-		if d.IsDir() { //@todo 排除不监控的文件
+		if d.IsDir() && !s.isExclude(path) {
 			go s.watchChildren(path)
 		}
 		return nil
@@ -128,39 +139,35 @@ func (s *server) watchChildren(path string) {
 		return
 	}
 
-	deadline := time.Minute
 	for {
 		select {
-		case <-time.After(deadline):
-			if !s.running {
-				s.errChan <- fmt.Errorf("超时未获取到文件监控")
+		case <-s.ticker.C:
+			if s.hasNotify {
+				s.notifyChan <- 1
+				s.hasNotify = false
 				return
 			}
-		case <-s.ticker.C:
-			if !s.hasNotify {
-				break
-			}
-			s.notifyChan <- 1
-			s.hasNotify = false
-			return
 		case <-s.closeChan:
 			s.fs.Close()
 			return
 		case cldWatcher := <-ch:
-			if cldWatcher.GetError() != nil {
+			if cldWatcher.GetError() != nil && s.running {
 				s.errChan <- fmt.Errorf("监控项目文件发生错误：%+v", cldWatcher.GetError())
 				return
 			}
-			s.hasNotify = true
+			logs.Log.Info("----------------------项目发生变化，应用程序重启----------------------")
+			if !s.isExclude(cldWatcher.GetPath()) {
+				s.hasNotify = true
+			}
 		LOOP:
 			ch, err = s.fs.WatchChildren(path)
 			if err != nil {
-				if !s.running {
-					s.errChan <- fmt.Errorf("应用程序未启动，未获取到文件监控")
+				if s.running {
+					s.errChan <- fmt.Errorf("应用程序运行中，未获取到文件监控")
 					return
 				}
 				logs.Log.Errorf("文件监控错误%+v", err)
-				time.Sleep(time.Second * 5)
+				time.Sleep(time.Second * 3)
 				goto LOOP
 			}
 		}

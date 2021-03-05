@@ -289,7 +289,7 @@ func (l *fs) WatchChildren(path string) (data chan registry.ChildrenWatcher, err
 					if len(path) > 0 {
 						vals, version, err := l.GetChildren(rpath)
 						ett := &valuesEntity{
-							path:    l.exposePath(rpath),
+							path:    path,
 							values:  vals,
 							version: version,
 							Err:     err,
