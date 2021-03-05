@@ -12,6 +12,7 @@ import (
 
 	"github.com/codeskyblue/go-sh"
 	logs "github.com/lib4dev/cli/logger"
+	"github.com/urfave/cli"
 )
 
 type server struct {
@@ -25,9 +26,10 @@ type server struct {
 	closeChan  chan int
 	ticker     *time.Ticker
 	errChan    chan error
+	startFlag  map[string][]interface{}
 }
 
-func newServer(serverName, path string) (*server, error) {
+func newServer(c *cli.Context, path string) (*server, error) {
 	session := sh.InteractiveSession()
 	session.SetDir(path)
 	r, err := NewFileSystem(path)
@@ -35,7 +37,7 @@ func newServer(serverName, path string) (*server, error) {
 		return nil, err
 	}
 	return &server{
-		serverName: serverName,
+		serverName: filepath.Base(path),
 		path:       path,
 		fs:         r,
 		session:    session,
@@ -43,7 +45,22 @@ func newServer(serverName, path string) (*server, error) {
 		closeChan:  make(chan int, 1),
 		errChan:    make(chan error, 1),
 		ticker:     time.NewTicker(time.Second),
+		startFlag:  getStartFlag(c),
 	}, nil
+}
+
+func getStartFlag(c *cli.Context) map[string][]interface{} {
+	startFlag := map[string][]interface{}{
+		"install": []interface{}{"install"},
+		"run":     []interface{}{"run"},
+	}
+	for _, v := range strings.Split(c.String("install"), " ") {
+		startFlag["install"] = append(startFlag["install"], v)
+	}
+	for _, v := range strings.Split(c.String("run"), " ") {
+		startFlag["run"] = append(startFlag["run"], v)
+	}
+	return startFlag
 }
 
 //Reset 拉取项目
@@ -74,13 +91,13 @@ func (s *server) start() {
 	go s.watch()
 
 	//文件打包
-	err := s.session.Command("go", "install").Run()
+	err := s.session.Command("go", s.startFlag["install"]...).Run()
 	if err != nil {
 		return
 	}
 
 	//程序启动
-	s.session.Command(s.serverName, "run").Run()
+	s.session.Command(s.serverName, s.startFlag["run"]...).Run()
 
 	return
 }

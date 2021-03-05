@@ -8,14 +8,12 @@ import (
 func init() {
 	cmds.Register(
 		cli.Command{
-			Name:  "server",
-			Usage: "运行后端应用程序",
-			Subcommands: cli.Commands{
-				{
-					Name:   "run",
-					Usage:  "启动服务",
-					Action: runServer(),
-				},
+			Name:   "server",
+			Usage:  "运行后端应用程序",
+			Action: runServer(),
+			Flags: []cli.Flag{
+				cli.StringFlag{Name: "run", Required: false, Usage: `-应用程序启动参数`},
+				cli.StringFlag{Name: "install", Required: false, Usage: `-go install参数`},
 			},
 		})
 }

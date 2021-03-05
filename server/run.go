@@ -18,7 +18,7 @@ func runServer() func(c *cli.Context) (err error) {
 		}
 
 		//构建服务
-		s, err := newServer(filepath.Base(projectPath), projectPath)
+		s, err := newServer(c, projectPath)
 		if err != nil {
 			return err
 		}
