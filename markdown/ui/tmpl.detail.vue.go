@@ -20,7 +20,7 @@ const TmplDetail = `
                   <el-col :span="6">
                     <div class="pull-right" style="margin-right: 10px">{{$c.Desc|shortName}}:</div>
                   </el-col>
-            {{- if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|RD) ($c.Con|CB)}}
+            {{- if or ($c.Con|SL) ($c.Con|SLM) ($c.Con|RD) ($c.Con|CB) ($c.Con|reCon)}}
                   <el-col :span="6">
                     <div {{if ($c.Con|CC)}}:class="info.{{$c.Name}}|fltrTextColor"{{end}}>{{"{{ info."}}{{$c.Name}} | fltrEnum("{{(or (dicName $c.Con ($c.Con|reCon) $tb) $c.Name)|lower}}") }}</div>
                   </el-col>
@@ -30,7 +30,7 @@ const TmplDetail = `
                       <div slot="content" style="width: 110px">{{"{{info."}}{{$c.Name}}}}</div>
                       <div >{{"{{ info."}}{{$c.Name}} | fltrSubstr({{or ($c.Con|rfCon) "50"}}) }}</div>
                     </el-tooltip>
-                    <div>{{"{{ info."}}{{$c.Name}} | fltrEmpty }}</div>
+                    <div v-else>{{"{{ info."}}{{$c.Name}} | fltrEmpty }}</div>
                   </el-col>
           	{{- else if and (or ($c.Type|isInt64) ($c.Type|isInt)) (ne $c.Name ($pks|firstStr)) }}
                   <el-col :span="6">

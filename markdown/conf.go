@@ -23,7 +23,7 @@ func createVueMenus() func(c *cli.Context) (err error) {
 }
 
 func createGORouter() func(c *cli.Context) (err error) {
-	return createGo("conf.go")
+	return createGo("init.go")
 }
 
 func createConf(tp string) func(c *cli.Context) (err error) {
@@ -112,7 +112,7 @@ func createGo(tp string) func(c *cli.Context) (err error) {
 var confMap = map[string]string{
 	"vue.router": ui.SnippetSrcRouterIndexJS,
 	"vue.menus":  ui.SrcMenusJson,
-	"conf.go":    app.SnippetTmplConfGo,
+	"init.go":    app.SnippetTmplConfGo,
 }
 
 var confPathMap = map[string]string{

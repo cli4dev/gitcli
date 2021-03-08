@@ -86,7 +86,7 @@ where
 {{if $c.Type|codeType|isTime }}
 	and t.{{$c.Name}} >= @{{$c.Name}} 
 	and t.{{$c.Name}} < date_add(@{{$c.Name}}, interval 1 day)
-{{- else if and (gt $c.Len $length) ($c.Type|codeType|isString)}}
+{{- else if ($c.Type|codeType|isString)}}
 	?t.{{$c.Name}}
 {{- else}}
 	&t.{{$c.Name}}{{end}}
@@ -107,7 +107,7 @@ where
 {{if $c.Type|codeType|isTime }}
 	and t.{{$c.Name}} >= @{{$c.Name}} 
 	and t.{{$c.Name}} < date_add(@{{$c.Name}}, interval 1 day)
-{{- else if and (gt $c.Len $length) ($c.Type|codeType|isString)}}
+{{- else if ($c.Type|codeType|isString)}}
 	?t.{{$c.Name}}
 {{- else}}
 	&t.{{$c.Name}}{{end}}
@@ -150,7 +150,7 @@ where
 {{if $c.Type|codeType|isTime }}
 	and t.{{$c.Name}} >= to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
   and t.{{$c.Name}} < to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
-{{- else if  and (gt $c.Len $length) ($c.Type|codeType|isString)}}
+{{- else if ($c.Type|codeType|isString)}}
   ?t.{{$c.Name}}
 {{- else}}
 	&t.{{$c.Name}}{{end}}
@@ -178,7 +178,7 @@ from (select L.*
 			{{if $c.Type|codeType|isTime }}
 				and t.{{$c.Name}} >= to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')
 				and t.{{$c.Name}} < to_date(@{{$c.Name}},'yyyy-mm-dd hh24:mi:ss')+1
-			{{- else if and (gt $c.Len $length) ($c.Type|codeType|isString)}}
+			{{- else if ($c.Type|codeType|isString)}}
 				?t.{{$c.Name}}
 			{{- else}}
 				&t.{{$c.Name}}{{end}}
