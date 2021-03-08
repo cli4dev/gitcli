@@ -24,6 +24,7 @@ type server struct {
 	hasNotify  bool
 	notifyChan chan int
 	closeChan  chan int
+	watchers   map[string]string
 	ticker     *time.Ticker
 	errChan    chan error
 	startFlag  map[string][]interface{}
@@ -44,6 +45,7 @@ func newServer(c *cli.Context, path string) (*server, error) {
 		notifyChan: make(chan int, 1),
 		closeChan:  make(chan int, 1),
 		errChan:    make(chan error, 1),
+		watchers:   make(map[string]string, 0),
 		ticker:     time.NewTicker(time.Second),
 		startFlag:  getStartFlag(c),
 	}, nil
@@ -141,7 +143,10 @@ func (s *server) isExclude(path string) bool {
 func (s *server) watch() {
 	filepath.WalkDir(s.path, func(path string, d ifs.DirEntry, err error) error {
 		if d.IsDir() && !s.isExclude(path) {
-			go s.watchChildren(path)
+			if _, ok := s.watchers[path]; !ok {
+				s.watchers[path] = path
+				go s.watchChildren(path)
+			}
 		}
 		return nil
 	})
@@ -162,6 +167,7 @@ func (s *server) watchChildren(path string) {
 			if s.hasNotify {
 				s.notifyChan <- 1
 				s.hasNotify = false
+				delete(s.watchers, path)
 				return
 			}
 		case <-s.closeChan:

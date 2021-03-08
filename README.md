@@ -110,6 +110,22 @@ e:枚举参数
 ```
 
 
+### gitcli server
+功能：自动监控项目目录，文件发生变动后，自动安装并重启应用程序  
+用法：
+```
+gitcli server [项目路径] -install [go install参数] -run [应用启动参数]
+
+[]代表可选，goinstall参数和应用启动参数都需要以空格开头  
+```
+例如：
+```
+> gitcli server -install "" -run " -p platname -r zk://192.168.0.101 -d"
+
+表示在项目当前目录下执行
+> go install
+> serverName run -p platname -r zk://192.168.0.101 -d
+```
  
  
  
