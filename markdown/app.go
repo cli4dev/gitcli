@@ -15,7 +15,7 @@ func createApp(c *cli.Context) (err error) {
 		return fmt.Errorf("未指定项目名称")
 	}
 	//创建项目
-	err = app.CreateApp(c.Args().First())
+	err = app.CreateApp(c.Args().First(), c.Bool("sso"))
 	return
 }
 

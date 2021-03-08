@@ -134,8 +134,8 @@ func (u *{{.Name|rmhd|varName}}Handler) PutHandle(ctx hydra.IContext) (r interfa
 	}
 
 	ctx.Log().Info("2.执行操作")
-	count,err := hydra.C.DB().GetRegularDB().Execute(sql.Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
-	if err != nil||count<1 {
+	_, err := hydra.C.DB().GetRegularDB().Execute(sql.Update{{.Name|rmhd|upperName}}By{{$pks|firstStr|upperName}},ctx.Request().GetMap())
+	if err != nil {
 		return errs.NewErrorf(http.StatusNotExtended,"更新数据出错:%+v", err)
 	}
 

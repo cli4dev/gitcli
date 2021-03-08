@@ -45,7 +45,7 @@ const TmplList = `
 			{{end}}
 				{{- if gt ($rows|query|len) 0}}
 				<el-form-item>
-					<el-button  type="primary" @click="query" size="medium">查询</el-button>
+					<el-button  type="primary" @click="queryDatas" size="medium">查询</el-button>
 				</el-form-item>
 				{{end}}
 				{{- if gt ($rows|create|len) 0}}
@@ -205,6 +205,10 @@ export default {
 		{{- end}}
 		{{- end }}
     /**查询数据并赋值*/
+		queryDatas() {
+      this.paging.pi = 1
+      this.query()
+    },
     query(){
       this.queryData.pi = this.paging.pi
 			this.queryData.ps = this.paging.ps

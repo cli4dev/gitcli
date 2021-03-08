@@ -58,31 +58,13 @@ const srcSSOPublicEnvConfJson = `
     "api": {
         "host": "http://localhost:8089",
         "confURL": "",
-        "enumURL": ""
+        "enumURL": "/system/enums/query"
     },
     "sso": {
-        "ident": "sso",
-        "host": "http://ssov4.100bm0.com:6687"
+        "ident": "sso_ident",
+        "host": "http://ssov4.100bm1.com:6687"
     },
-    "menus": [
-        {
-            "name": "日常管理",
-            "children": [
-                {
-                    "name": "交易管理",
-                    "is_open": "1",
-                    "icon": "fa fa-line-chart text-danger",
-                    "children": [
-                        {
-                            "name": "交易订单",
-                            "icon": "fa fa-user-circle text-primary",
-                            "path": "/order"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
+    "menus": [],
     "sysList": []
 }
 `

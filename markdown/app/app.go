@@ -15,9 +15,19 @@ var tmptls = map[string]string{
 	"go.mod":  tmplGoMod,
 }
 
+var tmptlsSSO = map[string]string{
+	"conf.go": tmplConfSSoGo,
+}
+
 //CreateApp 创建web项目
-func CreateApp(name string) error {
+func CreateApp(name string, sso bool) error {
 	projectPath := utils.GetProjectPath(name)
+	tmptls := tmptls
+	if sso {
+		for k, v := range tmptlsSSO {
+			tmptls[k] = v
+		}
+	}
 	for file, template := range tmptls {
 		//翻译文件
 		param := map[string]interface{}{

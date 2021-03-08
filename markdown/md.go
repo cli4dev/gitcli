@@ -15,6 +15,9 @@ func init() {
 					Name:   "create",
 					Usage:  "创建app应用",
 					Action: createApp,
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "sso", Usage: `-生成sso相关内容`},
+					},
 				},
 				{
 					Name:   "enums",
